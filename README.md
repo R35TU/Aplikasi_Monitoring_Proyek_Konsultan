@@ -2,7 +2,7 @@ Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan 
 
 ## 🚀 Tech Stack
 
-### Frontend & Backend
+### Frontend
 
 | Teknologi    | Versi  | Kegunaan                               |
 | ------------ | ------ | -------------------------------------- |
@@ -11,7 +11,7 @@ Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan 
 | FL Chart     | latest | grafik untuk tracking progress proyek  |
 | Lucide Icons | latest | Library icon UI                        |
 
-### Database & Backend Service
+### Backend
 
 | Teknologi               | Kegunaan                                                                   |
 | ----------------------- | -------------------------------------------------------------------------- |
