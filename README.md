@@ -6,24 +6,17 @@ Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan 
 
 | Teknologi    | Versi  | Kegunaan                               |
 | ------------ | ------ | -------------------------------------- |
-| Flutter      | 3.x    | Framework utama mobile app             |
+| Flutter      | 3.x    | Framework utama untuk membuat PWA      |
 | Riverpod     | 2.x    | State management                       |
-| FL Chart     | latest | Grafik kalori & konsistensi pola makan |
+| FL Chart     | latest | grafik untuk tracking progress proyek  |
 | Lucide Icons | latest | Library icon UI                        |
-| Dio          | latest | HTTP client untuk konsumsi REST API    |
 
 ### Database & Backend Service
 
 | Teknologi               | Kegunaan                                                                   |
 | ----------------------- | -------------------------------------------------------------------------- |
-| Firebase Firestore      | Database utama — menyimpan log makanan, data gizi, dan riwayat konsistensi |
+| Firebase Firestore      | Database utama                                                             |
 | Firebase Authentication | Autentikasi pengguna (register & login)                                    |
-
-### External API
-
-| Teknologi     | Kegunaan                        |
-| ------------- | ------------------------------- |
-| FatSecret API | Data makanan dan kandungan gizi |
 
 ### Data & Tools
 
@@ -31,4 +24,3 @@ Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan 
 | --------------------- | ---------------------------- |
 | Git + GitHub          | Version control & kolaborasi |
 | VS Code + Flutter SDK | IDE                          |
-| Postman               | Testing REST API             |
