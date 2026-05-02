@@ -25,25 +25,27 @@ Aplikasi Sistem informasi CV.TATA SAKA CONCULTANT untuk Mentracking kinerja proy
 | Git + GitHub          | Version control & kolaborasi |
 | VS Code + Flutter SDK | IDE                          |
 
-
-## 📁 Project Structure
-
-```
 Cv.TATA SAKA CONSULTANT/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── LoginPage.dart          # Login Page
-│   │   │   ├── Dashboard.dart          # Statistics & progress bar
-│   │   ├── context/
-│   │   │   └── context.dart            # Global state management
-│   │   ├── utils/
-│   │   │   ├── constants.dart          # Categories, priorities, & colors
-│   │   │   └── theme.dart              # Global styles & animations
-│   │   ├── app.dart                    # Main MaterialApp configuration
-│   │   └── main.dart                   # Entry point aplikasi
-│   ├── web/                            # PWA specific files
-│   │   ├── index.html                  # Web entry point
-│   │   └── manifest.json               # PWA metadata (icons, colors, display)
-├── pubspec.yaml                        # Dependency management (Riverpod, Firebase)
-└── analysis_options.yaml               # Linting rules for clean code
+├── lib/
+│   ├── models/                      # DEFENSIVE: Skema data (Project, Task, User)
+│   │   └── project_model.dart
+│   ├── providers/                   # AUTOMATA: State management
+│   │   ├── auth_provider.dart
+│   │   └── project_provider.dart
+│   ├── ui/                          # Folder utama untuk tampilan
+│   │   ├── screens/                 # Halaman utama
+│   │   │   ├── login_page.dart
+│   │   │   └── dashboard_page.dart
+│   │   └── widgets/                 # Komponen kecil (Reusable)
+│   │       ├── project_card.dart
+│   │       └── progress_chart.dart
+│   ├── utils/
+│   │   ├── constants.dart           # Warna brand perusahaan & konstanta
+│   │   └── theme.dart
+│   ├── app.dart
+│   └── main.dart
+├── web/                             # PWA Metadata
+│   ├── index.html
+│   └── manifest.json
+├── pubspec.yaml
+└── analysis_options.yaml
