@@ -29,27 +29,28 @@ Aplikasi Sistem informasi CV.TATA SAKA CONCULTANT untuk Mentracking kinerja proy
 
 ```
 Cv.TATA SAKA CONSULTANT/
-├── lib/
-│   ├── models/                      # DEFENSIVE: Skema data (Project, Task, User)
-│   │   └── project_model.dart
-│   ├── providers/                   # AUTOMATA: State management
-│   │   ├── auth_provider.dart
-│   │   └── project_provider.dart
-│   ├── ui/                          # Folder utama untuk tampilan
-│   │   ├── screens/                 # Halaman utama
-│   │   │   ├── login_page.dart
-│   │   │   └── dashboard_page.dart
-│   │   └── widgets/                 # Komponen kecil (Reusable)
-│   │       ├── project_card.dart
-│   │       └── progress_chart.dart
-│   ├── utils/
-│   │   ├── constants.dart           # Warna brand perusahaan & konstanta
-│   │   └── theme.dart
-│   ├── app.dart
-│   └── main.dart
-├── web/                             # PWA Metadata
-│   ├── index.html
-│   └── manifest.json
-├── pubspec.yaml
-└── analysis_options.yaml
+├── frontend/
+│   ├── lib/
+│   │   ├── models/                      # DEFENSIVE: Skema data (Project, Task, User)
+│   │   │   └── project_model.dart
+│   │   ├── providers/                   # AUTOMATA: State management
+│   │   │   ├── auth_provider.dart
+│   │   │   └── project_provider.dart
+│   │   ├── ui/                          # Folder utama untuk tampilan
+│   │   │   ├── screens/                 # Halaman utama
+│   │   │   │   ├── login_page.dart
+│   │   │   │   └── dashboard_page.dart
+│   │   │   └── widgets/                 # Komponen kecil (Reusable)
+│   │   │       ├── project_card.dart
+│   │   │       └── progress_chart.dart
+│   │   ├── utils/
+│   │   │   ├── constants.dart           # Warna brand perusahaan & konstanta
+│   │   │   └── theme.dart
+│   │   ├── app.dart
+│   │   └── main.dart
+│   ├── web/                             # PWA Metadata
+│   │   ├── index.html
+│   │   └── manifest.json
+│   ├── pubspec.yaml
+│   └── analysis_options.yaml
 ```
