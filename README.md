@@ -25,6 +25,9 @@ Aplikasi Sistem informasi CV.TATA SAKA CONCULTANT untuk Mentracking kinerja proy
 | Git + GitHub          | Version control & kolaborasi |
 | VS Code + Flutter SDK | IDE                          |
 
+## 📁 Project Structure
+
+```
 Cv.TATA SAKA CONSULTANT/
 ├── lib/
 │   ├── models/                      # DEFENSIVE: Skema data (Project, Task, User)
@@ -49,3 +52,4 @@ Cv.TATA SAKA CONSULTANT/
 │   └── manifest.json
 ├── pubspec.yaml
 └── analysis_options.yaml
+```
