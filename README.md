@@ -1,4 +1,4 @@
-Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan gizi, dan konsistensi pola makan secara real-time.
+Aplikasi Sistem informasi CV.TATA SAKA CONCULTANT untuk Mentracking kinerja proyek secara detail 
 
 ## 🚀 Tech Stack
 
@@ -24,3 +24,26 @@ Aplikasi Smart Nutrition Tracker untuk memantau asupan kalori harian, pemenuhan 
 | --------------------- | ---------------------------- |
 | Git + GitHub          | Version control & kolaborasi |
 | VS Code + Flutter SDK | IDE                          |
+
+
+## 📁 Project Structure
+
+```
+Cv.TATA SAKA CONSULTANT/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── LoginPage.dart          # Login Page
+│   │   │   ├── Dashboard.dart          # Statistics & progress bar
+│   │   ├── context/
+│   │   │   └── context.dart            # Global state management
+│   │   ├── utils/
+│   │   │   ├── constants.dart          # Categories, priorities, & colors
+│   │   │   └── theme.dart              # Global styles & animations
+│   │   ├── app.dart                    # Main MaterialApp configuration
+│   │   └── main.dart                   # Entry point aplikasi
+│   ├── web/                            # PWA specific files
+│   │   ├── index.html                  # Web entry point
+│   │   └── manifest.json               # PWA metadata (icons, colors, display)
+├── pubspec.yaml                        # Dependency management (Riverpod, Firebase)
+└── analysis_options.yaml               # Linting rules for clean code
