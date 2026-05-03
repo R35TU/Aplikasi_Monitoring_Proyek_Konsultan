@@ -1,24 +1,32 @@
+import 'package:MyApp/ui/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
-import 'package:eatly/ui/pages/login_page.dart'; // Pastikan import ini ada
+import 'ui/pages/login_page.dart'; // Pastikan nama file sesuai dengan yang kamu buat
 
 void main() {
-  runApp(const EatlyApp());
+  runApp(const MyApp());
 }
 
-class EatlyApp extends StatelessWidget {
-  const EatlyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'eatly',
-      debugShowCheckedModeBanner: false, // Menghilangkan banner debug di pojok kanan
+      title: 'Tata Saka Monitoring',
+      debugShowCheckedModeBanner: false, // Menghilangkan banner debug
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        useMaterial3: true, // Biar tampilan lebih modern ala Android terbaru
+        // Mengatur warna utama aplikasi (Navy Dark)
+        primaryColor: const Color(0xFF0D1B3E),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0D1B3E),
+          primary: const Color(0xFF0D1B3E),
+        ),
+        // Mengatur font default agar terlihat bersih
+        useMaterial3: true,
+        fontFamily: 'sans-serif',
       ),
-      // Ganti home dari HomePage() menjadi LoginPage()
-      home: const LoginPage(), 
+      // Halaman pertama yang muncul saat aplikasi dibuka
+      home: WelcomePage(),
     );
   }
 }

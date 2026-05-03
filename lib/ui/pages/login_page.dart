@@ -1,7 +1,5 @@
-import 'package:eatly/ui/pages/personalization_page.dart';
 import 'package:flutter/material.dart';
-import 'package:eatly/ui/widgets/eatly_button.dart'; // Import reuse widget
-import 'package:eatly/ui/pages/home_page.dart';
+import 'welcome_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,26 +9,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  void handleLogin() {
-    final String inputName = _nameController.text.trim();
-
-    try {
-      // 1. Validasi Defensive sederhana untuk User Experience
-      if (inputName.length < 3) {
-        throw "Nama minimal 3 karakter ya!";
-      }
-
-      // 3. Navigasi ke Home
-      Navigator.pushReplacement(
+  void _handleLogin() {
+    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+      Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const WelcomePage()),
       );
-    } catch (e) {
-      // Menangani error agar aplikasi tidak crash (Defensive)
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        const SnackBar(content: Text("Silakan isi email dan password")),
       );
     }
   }
@@ -38,63 +28,95 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ... sisa kode UI sama seperti sebelumnya ...
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Track Your Nutrition,\nSmarter.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 40),
-            
-            // Icon Placeholder
-            const Icon(Icons.apple, size: 100, color: Colors.green),
-            
-            const SizedBox(height: 40),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                hintText: "Enter your name",
-                prefixIcon: const Icon(Icons.person),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
+          child: Column(
+            children: [
+              // Placeholder Logo
+              Container(
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.business, size: 60, color: Colors.grey[600]),
               ),
-            ),
-            const SizedBox(height: 20),
-            
-            // Menggunakan Teknik Code Reuse
-            // Menggunakan Teknik Code Reuse
-            EatlyButton(
-              label: "Get Started",
-              onPressed: () {
-                final String inputName = _nameController.text.trim();
-                
-                // Validasi Defensive sederhana (User Experience)
-                if (inputName.length >= 3) {
-                  // Langsung pindah ke halaman Personalization sambil membawa data nama
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PersonalizationPage(),
-                      // Tips: Data nama bisa dipassing di sini kalau mau, 
-                      // tapi untuk sekarang pindah halaman saja dulu agar error hilang.
-                    ),
-                  );
-                } else {
-                  // Tampilkan error jika nama kurang dari 3 karakter
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Nama minimal 3 karakter ya!"), 
-                      backgroundColor: Colors.red
-                    ),
-                  );
-                }
-              },
-            ),
-          ],
+              const SizedBox(height: 24),
+              const Text(
+                "SISTEM MONITORING PROYEK",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF0D1B3E)),
+              ),
+              const Text(
+                "CV. TATA SAKA CONSULTANT",
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+              const SizedBox(height: 40),
+              const Text("Masuk Untuk Melanjutkan", style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 20),
+              
+              // Input Email
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: "Enter Your Email",
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              // Input Password
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                ),
+              ),
+              
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 24, width: 24,
+                    child: Checkbox(value: true, onChanged: (val) {}, activeColor: const Color(0xFF0D1B3E)),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text("Ingat saya"),
+                ],
+              ),
+              const SizedBox(height: 30),
+              
+              // Tombol Login
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D1B3E),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: _handleLogin,
+                  child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 40),
+              const Text.rich(
+                TextSpan(
+                  text: "Don't have an account? ",
+                  children: [TextSpan(text: "Contact Us", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D1B3E)))],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
