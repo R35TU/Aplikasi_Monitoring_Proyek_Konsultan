@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'welcome_page.dart';
+import 'package:my_app/Frontend/ui/pages/dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,12 +13,14 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   void _handleLogin() {
+    // Memastikan kontrak input terpenuhi
     if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const WelcomePage()),
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
       );
     } else {
+      // Memberikan feedback jika input tidak valid
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Silakan isi email dan password")),
       );
@@ -28,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ... sisa kode UI sama seperti sebelumnya ...
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(

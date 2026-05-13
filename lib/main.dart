@@ -1,9 +1,19 @@
-import 'package:MyApp/ui/pages/welcome_page.dart';
+import 'package:my_app/Frontend/ui/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
-import 'ui/pages/login_page.dart'; // Pastikan nama file sesuai dengan yang kamu buat
+import 'package:provider/provider.dart'; //code reuse provider untuk state management
+import 'package:my_app/Frontend/providers/dashboard_provider.dart'; 
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // Membungkus aplikasi dengan MultiProvider agar state bisa diakses global
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        // Jika nanti ada AuthProvider, tinggal tambah di sini
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,20 +23,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tata Saka Monitoring',
-      debugShowCheckedModeBanner: false, // Menghilangkan banner debug
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Mengatur warna utama aplikasi (Navy Dark)
+        // Mengatur warna utama aplikasi sesuai keinginanmu
         primaryColor: const Color(0xFF0D1B3E),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0D1B3E),
           primary: const Color(0xFF0D1B3E),
         ),
-        // Mengatur font default agar terlihat bersih
+        // Mengatur font default 
         useMaterial3: true,
         fontFamily: 'sans-serif',
       ),
-      // Halaman pertama yang muncul saat aplikasi dibuka
-      home: WelcomePage(),
+      home: const WelcomePage(),
     );
   }
 }
