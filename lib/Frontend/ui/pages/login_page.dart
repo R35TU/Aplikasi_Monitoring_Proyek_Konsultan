@@ -1,5 +1,5 @@
+import 'dashboard_page.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/Frontend/ui/pages/dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,116 +9,179 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  void _handleLogin() {
-    // Memastikan kontrak input terpenuhi
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
-      );
-    } else {
-      // Memberikan feedback jika input tidak valid
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Silakan isi email dan password")),
-      );
-    }
-  }
+  bool _rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
-          child: Column(
-            children: [
-              // Placeholder Logo
-              Container(
-                height: 120,
-                width: 120,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Image.asset(
+                  'assets/images/bottom_bg.png',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  height: MediaQuery.of(context).size.height * 0.4, // Maksimal 40% tinggi layar
                 ),
-                child: Icon(Icons.business, size: 60, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                "SISTEM MONITORING PROYEK",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF0D1B3E)),
-              ),
-              const Text(
-                "CV. TATA SAKA CONSULTANT",
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              ),
-              const SizedBox(height: 40),
-              const Text("Masuk Untuk Melanjutkan", style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 20),
-              
-              // Input Email
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: "Enter Your Email",
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Input Password
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                ),
-              ),
-              
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  SizedBox(
-                    height: 24, width: 24,
-                    child: Checkbox(value: true, onChanged: (val) {}, activeColor: const Color(0xFF0D1B3E)),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Don't have an account? ",
+                        style: TextStyle(color: Colors.white, fontSize: 13),
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Text(
+                          "Contact Us",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  const Text("Ingat saya"),
-                ],
-              ),
-              const SizedBox(height: 30),
-              
-              // Tombol Login
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D1B3E),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: _handleLogin,
-                  child: const Text("Login", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
-              ),
-              const SizedBox(height: 40),
-              const Text.rich(
-                TextSpan(
-                  text: "Don't have an account? ",
-                  children: [TextSpan(text: "Contact Us", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D1B3E)))],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+
+          SafeArea(
+            child: Center( // Dibungkus Center agar form tidak terlalu lebar di Web
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500), // Maksimal lebar form 500px
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 60),
+                      Center(
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          width: 140,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Selamat Datang',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Silahkan masuk ke akun anda\nuntuk melanjutkan.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Username',
+                          hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
+                          filled: true,
+                          fillColor: const Color(0xFFF5F5F5),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
+                          filled: true,
+                          fillColor: const Color(0xFFF5F5F5),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: const Color(0xFF0011FF),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Ingat saya',
+                            style: TextStyle(fontSize: 14, color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DashboardPage()),
+                      );
+                    },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0011FF),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Masuk',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 150),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
