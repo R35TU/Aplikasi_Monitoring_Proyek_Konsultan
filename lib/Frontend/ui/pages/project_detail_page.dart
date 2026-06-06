@@ -80,7 +80,7 @@ class ProjectDetailPage extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: documents.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final doc = documents[index];
         final bool selected = doc['selected'] as bool;
@@ -122,7 +122,7 @@ class ProjectDetailPage extends StatelessWidget {
                           doc['subtitle'] as String,
                           style: TextStyle(
                             fontSize: 12,
-                            color: selected ? const Color(0xFF0055FF).withOpacity(0.9) : Colors.grey,
+                            color: selected ? const Color(0xFF0055FF).withValues(alpha: 0.9) : Colors.grey,
                           ),
                         ),
                       ],
@@ -188,7 +188,7 @@ class ProjectDetailPage extends StatelessWidget {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: 7,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    separatorBuilder: (context, index) => const SizedBox(width: 10),
                     itemBuilder: (context, index) {
                       final day = index + 1;
                       return _buildDateButton(day, index == 0);
@@ -227,30 +227,7 @@ class ProjectDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressBarWithLabel(double value, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            Text('${(value * 100).toInt()}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: value,
-            minHeight: 10,
-            backgroundColor: const Color(0xFFF2F4F7),
-            valueColor: AlwaysStoppedAnimation(color),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildDateButton(int day, bool selected) {
     return Container(
@@ -346,7 +323,7 @@ class ProjectDetailPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
+                    color: Colors.white.withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -520,44 +497,7 @@ class ProjectDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTile(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E5EA)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E5EA)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
 
   Widget _buildTeamMember(String name, String role) {
     return Container(
@@ -575,7 +515,7 @@ class ProjectDetailPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF0055FF).withOpacity(0.1),
+              color: const Color(0xFF0055FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
@@ -584,15 +524,6 @@ class ProjectDetailPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder(String title) {
-    return Center(
-      child: Text(
-        '$title belum tersedia',
-        style: const TextStyle(color: Colors.grey, fontSize: 16),
       ),
     );
   }
