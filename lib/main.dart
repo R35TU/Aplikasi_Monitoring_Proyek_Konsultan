@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
-import 'Frontend/ui/pages/splash_page.dart'; // Pastikan path import ini sesuai dengan letak filemu
+import 'Frontend/ui/pages/splash_page.dart';
+import 'backend/config/app_config.dart';
 
-void main() {
+void main() async {
+  // Pastikan binding Flutter diinisialisasi sebelum memuat file environment
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    // Secara default memuat konfigurasi development (.env.development)
+    await AppConfig.initialize(isProduction: false);
+  } catch (e) {
+    // Secara defensif menampilkan log error inisialisasi agar mudah ditelusuri
+    debugPrint('INITIALIZATION ERROR: $e');
+  }
+
   runApp(const MyApp());
 }
 

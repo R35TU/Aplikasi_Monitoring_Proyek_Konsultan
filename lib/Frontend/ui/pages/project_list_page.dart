@@ -199,7 +199,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5)),
             ],
           ),
           child: BottomNavigationBar(
@@ -259,7 +259,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -306,7 +306,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
+                          color: statusColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -334,9 +334,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildProgressBar((project.targetProgress * 100).toInt().toString() + '%', project.targetProgress, Colors.green),
+                      _buildProgressBar('${(project.targetProgress * 100).toInt()}%', project.targetProgress, Colors.green),
                       const SizedBox(height: 8),
-                      _buildProgressBar((project.actualProgress * 100).toInt().toString() + '%', project.actualProgress, const Color(0xFF0055FF)),
+                      _buildProgressBar('${(project.actualProgress * 100).toInt()}%', project.actualProgress, const Color(0xFF0055FF)),
                     ],
                   ),
                 ),
