@@ -18,6 +18,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
     ProjectModel(
       title: 'Pembangunan Jembatan',
       location: 'Purwokerto',
+      kategori: 'Infrastruktur',
       status: 'Progres',
       targetProgress: 0.8,
       actualProgress: 0.5,
@@ -26,6 +27,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
     ProjectModel(
       title: 'Gor hebat mantap',
       location: 'Purbalingga',
+      kategori: 'Gedung',
       status: 'Selesai',
       targetProgress: 1.0,
       actualProgress: 1.0,
@@ -34,6 +36,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
     ProjectModel(
       title: 'Gorong Gorong Manukan',
       location: 'Surabaya',
+      kategori: 'Infrastruktur',
       status: 'Selesai',
       targetProgress: 1.0,
       actualProgress: 1.0,
@@ -42,6 +45,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
     ProjectModel(
       title: 'Aspal Jl.Desa Kesugihan',
       location: 'Cilacap',
+      kategori: 'Infrastruktur',
       status: 'Progres',
       targetProgress: 0.4,
       actualProgress: 0.3,
@@ -50,6 +54,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
     ProjectModel(
       title: 'Koperasi Hitam Putih',
       location: 'Alam Lain',
+      kategori: 'Gedung',
       status: 'Progres',
       targetProgress: 0.1,
       actualProgress: 0.1,

@@ -8,10 +8,11 @@
 //   (dipakai bersama role_permissions.dart).
 //
 // FIELD :
-//   - id        : int
+//   - id        : String (firebaseUid)
 //   - name      : String  (tidak boleh kosong)
 //   - email     : String  (harus mengandung '@')
 //   - role      : String  (harus salah satu role yang valid)
+//   - nomorHp   : String?
 //   - createdAt : DateTime
 //
 // DEFENSIVE PROGRAMMING — tambahkan di constructor :
@@ -20,3 +21,26 @@
 //   assert(email.contains('@'), 'Format email tidak valid')
 //   assert(validRoles.contains(role), 'Role tidak dikenal: $role')
 // =============================================================
+
+class UserModel {
+  final String id;
+  final String name;
+  final String email;
+  final String role;
+  final String? nomorHp;
+  final DateTime? createdAt;
+
+  UserModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+    this.nomorHp,
+    this.createdAt,
+  }) {
+    final validRoles = ['super_admin','admin_lapangan','kontraktor','client','aph'];
+    assert(name.isNotEmpty, 'Nama tidak boleh kosong');
+    assert(email.contains('@'), 'Format email tidak valid');
+    assert(validRoles.contains(role), 'Role tidak dikenal: $role');
+  }
+}

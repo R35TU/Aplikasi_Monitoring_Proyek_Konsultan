@@ -8,16 +8,30 @@
 // =============================================================
 
 class ProjectModel {
+  final int? id;
   final String title;
   final String location;
-  final String status; // 'Progres', 'Selesai', 'Dibatalkan'
+  final String kategori;
+  final String? tanggalMulai;
+  final String? tanggalSelesai;
+  final double? nilaiKontrak;
+  final String? kontraktorId;
+  final String? dinasId;
+  final String status; // 'Perencanaan', 'Berjalan', 'Selesai', 'Dibatalkan'
   final double targetProgress;
   final double actualProgress;
   final String imagePath;
 
   ProjectModel({
+    this.id,
     required this.title,
     required this.location,
+    required this.kategori,
+    this.tanggalMulai,
+    this.tanggalSelesai,
+    this.nilaiKontrak,
+    this.kontraktorId,
+    this.dinasId,
     required this.status,
     required this.targetProgress,
     required this.actualProgress,

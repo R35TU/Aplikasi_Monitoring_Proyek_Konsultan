@@ -65,7 +65,7 @@
 > 📌 Proyek ini adalah **satu Flutter project** dengan pemisahan logis di dalam `lib/`:
 >
 > - `lib/backend/` → semua kode yang **bersentuhan dengan database SQLite & layanan eksternal**
-> - `lib/frontend/` → semua kode **pure UI** (screens, widgets, providers, routing, utils)
+> - `lib/Frontend/` → semua kode **pure UI** (pages, providers, routing, utils)
 
 ```
 CV.TATA SAKA CONSULTANT/
@@ -74,24 +74,27 @@ CV.TATA SAKA CONSULTANT/
 │   ├── backend/                                    # 🔴 BACKEND – database, model, service
 │   │   │
 │   │   ├── config/
-│   │   │   ├── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
-│   │   │   └── firebase_options.dart              # RUNTIME CONFIG – generated Firebase config
+│   │   │   └── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
 │   │   │
 │   │   ├── database/
 │   │   │   ├── app_database.dart                  # DRIFT – definisi database & koneksi SQLite
 │   │   │   ├── app_database.g.dart                # AUTO-GENERATED oleh build_runner
 │   │   │   └── tables/
-│   │   │       ├── users_table.dart               # DRIFT Table – skema tabel users
+│   │   │       ├── activity_histories_table.dart  # DRIFT Table – skema tabel riwayat aktivitas
+│   │   │       ├── documents_table.dart           # DRIFT Table – skema tabel dokumen/file
 │   │   │       ├── projects_table.dart            # DRIFT Table – skema tabel projects
 │   │   │       ├── reports_table.dart             # DRIFT Table – skema tabel laporan harian
-│   │   │       └── tasks_table.dart               # DRIFT Table – skema tabel item pekerjaan
+│   │   │       ├── tasks_table.dart               # DRIFT Table – skema tabel item pekerjaan
+│   │   │       └── users_table.dart               # DRIFT Table – skema tabel users
 │   │   │
 │   │   ├── models/                                # DEFENSIVE + PARAMETERIZATION
-│   │   │   ├── user_model.dart                    # Model domain pengguna + role
+│   │   │   ├── activity_history_model.dart        # Model domain riwayat aktivitas
+│   │   │   ├── db_result.dart                     # PARAMETERIZATION – DbResult<T> wrapper
+│   │   │   ├── document_model.dart                # Model domain dokumen/file
 │   │   │   ├── project_model.dart                 # Model domain paket proyek
 │   │   │   ├── report_model.dart                  # Model domain laporan harian
 │   │   │   ├── task_model.dart                    # Model domain item pekerjaan
-│   │   │   └── db_result.dart                     # PARAMETERIZATION – DbResult<T> wrapper
+│   │   │   └── user_model.dart                    # Model domain pengguna + role
 │   │   │
 │   │   ├── repositories/
 │   │   │   ├── base_repository.dart               # PARAMETERIZATION – abstract BaseRepo<T>
@@ -102,74 +105,40 @@ CV.TATA SAKA CONSULTANT/
 │   │   ├── services/
 │   │   │   ├── auth_service.dart                  # API – Firebase Authentication
 │   │   │   ├── storage_service.dart               # API – Firebase Storage (upload/download foto)
-│   │   │   ├── notification_service.dart          # API – Firebase Cloud Messaging (FCM)
 │   │   │   └── pdf_service.dart                   # CODE REUSE – generate & export PDF laporan
 │   │   │
 │   │   └── constants/
 │   │       └── role_permissions.dart              # TABLE-DRIVEN – Map role → allowed actions
 │   │
-│   ├── frontend/                                  # 🔵 FRONTEND – pure UI & state
+│   ├── Frontend/                                  # 🔵 FRONTEND – pure UI & state
 │   │   │
 │   │   ├── core/
 │   │   │   ├── constants/
-│   │   │   │   ├── app_constants.dart             # Konstanta global (label, nilai default)
 │   │   │   │   └── status_config.dart             # TABLE-DRIVEN – Map status → warna/label/icon
-│   │   │   ├── router/
-│   │   │   │   └── app_router.dart                # TABLE-DRIVEN – route table via go_router
-│   │   │   └── theme/
-│   │   │       └── app_theme.dart                 # Tema & warna brand global
+│   │   │   └── router/
+│   │   │       └── app_router.dart                # TABLE-DRIVEN – route table via go_router
 │   │   │
 │   │   ├── providers/
 │   │   │   ├── auth_provider.dart                 # AUTOMATA – FSM autentikasi
+│   │   │   ├── dashboard_provider.dart            # State management dashboard / overview proyek
 │   │   │   ├── report_provider.dart               # AUTOMATA – FSM workflow laporan
-│   │   │   ├── upload_provider.dart               # AUTOMATA – FSM upload foto
-│   │   │   └── project_provider.dart              # State management proyek aktif
+│   │   │   └── upload_provider.dart               # AUTOMATA – FSM upload foto
 │   │   │
 │   │   ├── ui/
-│   │   │   ├── screens/
-│   │   │   │   ├── auth/
-│   │   │   │   │   ├── login_page.dart
-│   │   │   │   │   └── reset_password_page.dart
-│   │   │   │   ├── dashboard/
-│   │   │   │   │   └── dashboard_page.dart        # Overview proyek + Kurva S
-│   │   │   │   ├── project/
-│   │   │   │   │   ├── project_list_page.dart
-│   │   │   │   │   └── project_detail_page.dart
-│   │   │   │   ├── report/
-│   │   │   │   │   ├── report_form_page.dart      # Input laporan harian dari lapangan
-│   │   │   │   │   ├── report_list_page.dart
-│   │   │   │   │   └── report_detail_page.dart
-│   │   │   │   └── admin/
-│   │   │   │       ├── user_management_page.dart
-│   │   │   │       └── access_control_page.dart   # Kelola izin akses APH/eksternal
-│   │   │   │
-│   │   │   └── widgets/                           # CODE REUSE – komponen reusable
-│   │   │       ├── project_card.dart              # Card ringkasan paket proyek
-│   │   │       ├── progress_chart.dart            # Wrapper FL Chart – progress bar
-│   │   │       ├── s_curve_chart.dart             # Kurva S proyek
-│   │   │       ├── status_badge.dart              # Badge status (TABLE-DRIVEN status_config)
-│   │   │       ├── role_guard.dart                # Guard akses (TABLE-DRIVEN role_permissions)
-│   │   │       └── photo_upload_widget.dart       # Komponen upload foto (reusable)
+│   │   │   └── pages/
+│   │   │       ├── dashboard_page.dart            # Overview proyek + Kurva S
+│   │   │       ├── login_page.dart                # Halaman login
+│   │   │       ├── project_detail_page.dart       # Detail proyek, tugas, & dokumen
+│   │   │       ├── project_list_page.dart         # Daftar proyek
+│   │   │       └── splash_page.dart               # Halaman splash screen / loading
 │   │   │
 │   │   └── utils/
-│   │       ├── validators.dart                    # DEFENSIVE – validasi input form
-│   │       ├── date_formatter.dart                # Utility format tanggal
-│   │       └── permission_checker.dart            # TABLE-DRIVEN – lookup role → akses halaman
+│   │       ├── permission_checker.dart            # TABLE-DRIVEN – lookup role → akses halaman
+│   │       └── validators.dart                    # DEFENSIVE – validasi input form
 │   │
-│   ├── app.dart                                   # Root widget aplikasi
 │   └── main.dart                                  # Entry point Flutter
 │
 ├── test/
-│   ├── unit/
-│   │   ├── backend/
-│   │   │   ├── models/                            # Unit test validasi model & DbResult
-│   │   │   └── repositories/                      # Unit test CRUD repository (SQLite in-memory)
-│   │   └── frontend/
-│   │       └── providers/                         # Unit test FSM state/automata
-│   └── performance/
-│       ├── db_insert_perf_test.dart               # Performance test: bulk INSERT ke SQLite
-│       ├── db_query_perf_test.dart                # Performance test: SELECT & filter query
-│       └── db_update_perf_test.dart               # Performance test: UPDATE & DELETE
 │
 ├── web/
 │   ├── index.html                                 # PWA Metadata
@@ -203,22 +172,20 @@ CV.TATA SAKA CONSULTANT/
 
 | Teknik               | File / Modul                                 | Deskripsi Implementasi                                                                   |
 | -------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Automata**         | `frontend/providers/auth_provider.dart`      | FSM: `unauthenticated → loading → authenticated → error`                                 |
-| **Automata**         | `frontend/providers/report_provider.dart`    | FSM: `draft → submitted → reviewed → approved / rejected`                                |
-| **Automata**         | `frontend/providers/upload_provider.dart`    | FSM: `idle → picking → uploading → success / failed`                                     |
-| **Table-driven**     | `backend/constants/role_permissions.dart`    | `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
-| **Table-driven**     | `frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                                  |
-| **Table-driven**     | `frontend/core/router/app_router.dart`       | List definisi route + required role (go_router)                                          |
-| **Parameterization** | `backend/repositories/base_repository.dart`  | `abstract class BaseRepository<T>` dengan method generik                                 |
-| **Parameterization** | `backend/models/db_result.dart`              | `class DbResult<T>` wrapper response success/error dari SQLite                           |
-| **Runtime Config**   | `backend/config/app_config.dart`             | Load `.env.development` / `.env.production` saat startup                                 |
-| **Code Reuse**       | `frontend/ui/widgets/`                       | Widget `progress_chart`, `s_curve_chart`, `photo_upload_widget` dipakai di banyak screen |
-| **Code Reuse**       | `backend/services/pdf_service.dart`          | Library PDF generation dipanggil dari berbagai modul                                     |
-| **API**              | `backend/services/auth_service.dart`         | Integrasi Firebase Authentication SDK                                                    |
-| **API**              | `backend/services/storage_service.dart`      | Integrasi Firebase Storage — upload/download foto                                        |
-| **API**              | `backend/services/notification_service.dart` | Integrasi FCM — push notification ke pengguna                                            |
-| **Defensive**        | `backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
-| **Defensive**        | `frontend/utils/validators.dart`             | Validasi input form sebelum disimpan ke SQLite                                           |
+| **Automata**         | `lib/Frontend/providers/auth_provider.dart`  | FSM: `unauthenticated → loading → authenticated → error`                                 |
+| **Automata**         | `lib/Frontend/providers/report_provider.dart`| FSM: `draft → submitted → reviewed → approved / rejected`                                |
+| **Automata**         | `lib/Frontend/providers/upload_provider.dart`| FSM: `idle → picking → uploading → success / failed`                                     |
+| **Table-driven**     | `lib/backend/constants/role_permissions.dart`| `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
+| **Table-driven**     | `lib/Frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                              |
+| **Table-driven**     | `lib/Frontend/core/router/app_router.dart`   | List definisi route + required role (go_router)                                          |
+| **Parameterization** | `lib/backend/repositories/base_repository.dart` | `abstract class BaseRepository<T>` dengan method generik                              |
+| **Parameterization** | `lib/backend/models/db_result.dart`          | `class DbResult<T>` wrapper response success/error dari SQLite                           |
+| **Runtime Config**   | `lib/backend/config/app_config.dart`         | Load `.env.development` / `.env.production` saat startup                                 |
+| **Code Reuse**       | `lib/backend/services/pdf_service.dart`      | Library PDF generation dipanggil dari berbagai modul                                     |
+| **API**              | `lib/backend/services/auth_service.dart`     | Integrasi Firebase Authentication SDK                                                    |
+| **API**              | `lib/backend/services/storage_service.dart`  | Integrasi Firebase Storage — upload/download foto                                        |
+| **Defensive**        | `lib/backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
+| **Defensive**        | `lib/Frontend/utils/validators.dart`         | Validasi input form sebelum disimpan ke SQLite                                           |
 
 ---
 
@@ -233,12 +200,11 @@ CV.TATA SAKA CONSULTANT/
 
 **Modul yang dikerjakan:**
 
-- `lib/frontend/providers/auth_provider.dart`
-- `lib/frontend/providers/upload_provider.dart`
-- `lib/frontend/providers/report_provider.dart`
-- `lib/frontend/ui/screens/auth/` (login, reset password)
-- `lib/frontend/ui/widgets/photo_upload_widget.dart`
-- `test/unit/frontend/providers/`
+- `lib/Frontend/providers/auth_provider.dart`
+- `lib/Frontend/providers/upload_provider.dart`
+- `lib/Frontend/providers/report_provider.dart`
+- `lib/Frontend/ui/pages/` (login, splash, dashboard, project list, project detail)
+- `test/unit/Frontend/providers/`
 
 **Teknik Konstruksi:**
 
@@ -261,12 +227,10 @@ CV.TATA SAKA CONSULTANT/
 **Modul yang dikerjakan:**
 
 - `lib/backend/constants/role_permissions.dart`
-- `lib/frontend/core/constants/status_config.dart`
-- `lib/frontend/core/router/app_router.dart`
-- `lib/frontend/utils/permission_checker.dart`
-- `lib/frontend/ui/widgets/status_badge.dart`
-- `lib/frontend/ui/widgets/role_guard.dart`
-- `lib/frontend/ui/screens/admin/`
+- `lib/Frontend/core/constants/status_config.dart`
+- `lib/Frontend/core/router/app_router.dart`
+- `lib/Frontend/utils/permission_checker.dart`
+- `lib/Frontend/ui/pages/`
 
 **Teknik Konstruksi:**
 
@@ -333,11 +297,7 @@ abstract class BaseRepository<T> {
 - `lib/backend/config/app_config.dart`
 - `lib/backend/services/auth_service.dart`
 - `lib/backend/services/storage_service.dart`
-- `lib/backend/services/notification_service.dart`
 - `lib/backend/services/pdf_service.dart`
-- `lib/frontend/ui/widgets/project_card.dart`
-- `lib/frontend/ui/widgets/progress_chart.dart`
-- `lib/frontend/ui/widgets/s_curve_chart.dart`
 - `.env.development` & `.env.production`
 
 **Teknik Konstruksi:**
@@ -360,7 +320,7 @@ abstract class BaseRepository<T> {
 | Pasangan 1       | Auth + Upload + Report FSM      | Automata         | —                           | ✅ Wajib  |
 | Pasangan 2       | RBAC + Routing + Utils          | Table-driven     | —                           | ✅ Wajib  |
 | Pasangan 3       | SQLite DB + Repository + Models | Parameterization | —                           | ✅ Wajib  |
-| Anggota 5        | Services + Config + Widgets     | API              | Runtime Config / Code Reuse | ✅ Wajib  |
+| Anggota 5        | Services + Config               | API              | Runtime Config / Code Reuse | ✅ Wajib  |
 
 ---
 
@@ -374,7 +334,7 @@ Unit testing dilakukan menggunakan **`flutter_test`** — package bawaan Flutter
 | ----------------- | --------------------------------- | -------------------------------------------------- |
 | Model validasi    | `test/unit/backend/models/`       | Null check, format data, konstruktor defensif      |
 | Repository CRUD   | `test/unit/backend/repositories/` | Insert, select, update, delete ke SQLite in-memory |
-| FSM Providers     | `test/unit/frontend/providers/`   | Transisi state valid & invalid pada Automata       |
+| FSM Providers     | `test/unit/Frontend/providers/`   | Transisi state valid & invalid pada Automata       |
 
 ### Cara Menjalankan Unit Test
 
@@ -549,7 +509,7 @@ class ReportModel {
 ### 4. Validasi Input Form (Frontend)
 
 ```dart
-// frontend/utils/validators.dart
+// Frontend/utils/validators.dart
 class Validators {
   static String? validateTitle(String? value) {
     if (value == null || value.trim().isEmpty) return 'Judul tidak boleh kosong';
@@ -569,7 +529,7 @@ class Validators {
 ### 5. Guard State Transition (Automata)
 
 ```dart
-// frontend/providers/report_provider.dart
+// Frontend/providers/report_provider.dart
 void submit() {
   // PRECONDITION: hanya bisa submit dari state DRAFT
   assert(state == ReportState.draft,
