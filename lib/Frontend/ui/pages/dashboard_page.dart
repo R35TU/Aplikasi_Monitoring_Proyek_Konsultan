@@ -15,33 +15,64 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Very light gray background
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
-        ),
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
+     appBar: AppBar(
+  backgroundColor: Colors.white,
+  elevation: 1,
+  shadowColor: Colors.black12,
+  leading: IconButton(
+    icon: const Icon(
+      Icons.menu,
+      color: Colors.black,
+    ),
+    onPressed: () {},
+  ),
+  centerTitle: true,
+  title: const Text(
+    "Dashboard",
+    style: TextStyle(
+      color: Colors.black,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  actions: [
+    Stack(
+      children: [
+        IconButton(
+          onPressed: () {
+            // Handle notification tap
+          },
+          icon: const Icon(
+            Icons.notifications_rounded,
             color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            size: 28,
           ),
         ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.black,
-              backgroundImage: const AssetImage('assets/images/logo.png'), // Using temporary logo
+        // Notification badge
+        Positioned(
+          right: 8,
+          top: 8,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+            child: const Text(
+              '3',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+    ),
+    const SizedBox(width: 8),
+  ],
+),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
