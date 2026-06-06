@@ -1,23 +1,7 @@
 import 'package:flutter/material.dart';
 
-// 1. Data Project
-class ProjectModel {
-  final String title;
-  final String location;
-  final String status; // 'Progres', 'Selesai', 'Dibatalkan'
-  final double targetProgress;
-  final double actualProgress;
-  final String imagePath;
-
-  ProjectModel({
-    required this.title,
-    required this.location,
-    required this.status,
-    required this.targetProgress,
-    required this.actualProgress,
-    required this.imagePath,
-  });
-}
+import '../../../backend/models/project_model.dart';
+import 'project_detail_page.dart';
 
 class ProjectListPage extends StatefulWidget {
   const ProjectListPage({super.key});
@@ -251,99 +235,108 @@ class _ProjectListPageState extends State<ProjectListPage> {
     // Determine colors based on status
     Color statusColor = project.status == 'Selesai' ? const Color(0xFF0055FF) : Colors.green;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ProjectDetailPage(project: project),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Project Image
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.asset(
-              project.imagePath,
-              width: double.infinity,
-              height: 120,
-              fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-          ),
-          
-          // Project Details
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left side: Title, Location, Status
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        project.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        project.location,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Project Image
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.asset(
+                project.imagePath,
+                width: double.infinity,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+            
+            // Project Details
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left side: Title, Location, Status
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          project.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(radius: 4, backgroundColor: statusColor),
-                            const SizedBox(width: 4),
-                            Text(
-                              project.status,
-                              style: TextStyle(
-                                color: statusColor,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                        const SizedBox(height: 4),
+                        Text(
+                          project.location,
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(radius: 4, backgroundColor: statusColor),
+                              const SizedBox(width: 4),
+                              Text(
+                                project.status,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                
-                // Right side: Progress Bars
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      _buildProgressBar('${(project.targetProgress * 100).toInt()}%', project.targetProgress, Colors.green),
-                      const SizedBox(height: 8),
-                      _buildProgressBar('${(project.actualProgress * 100).toInt()}%', project.actualProgress, const Color(0xFF0055FF)),
-                    ],
+                  
+                  // Right side: Progress Bars
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        _buildProgressBar('${(project.targetProgress * 100).toInt()}%', project.targetProgress, Colors.green),
+                        const SizedBox(height: 8),
+                        _buildProgressBar('${(project.actualProgress * 100).toInt()}%', project.actualProgress, const Color(0xFF0055FF)),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

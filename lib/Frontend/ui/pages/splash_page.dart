@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'login_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -13,66 +13,80 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xffFFFFFF),
       body: Stack(
         children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Image.asset(
-                  'assets/images/bottom_bg.png',
-                  width: double.infinity,
-                  // Menggunakan cover agar tidak rusak di layar lebar
-                  fit: BoxFit.cover, 
-                  height: MediaQuery.of(context).size.height * 0.4, // Maksimal 40% tinggi layar
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 30.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'CV. TATA SAKA CONSULTANT',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'KONSULTANT : PERENCANAAN DAN SUPERVISI',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
+
+          /// Background bawah
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              "assets/images/bottom_bg.png",
+              width: width,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+
+          /// Logo tengah
+          Center(
+            child: Image.asset(
+              "assets/images/logo.png",
+              width: width * 0.22,
+            ),
+          ),
+
+          /// Text bawah
+          Positioned(
+            bottom: height * 0.045,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: const [
+
+                Text(
+                  "CV. TATA SAKA CONSULTANT",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
+
+                SizedBox(height: 4),
+
+                Text(
+                  "KONSULTANT : PERENCANAAN DAN SUPERVISI",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+
               ],
             ),
           ),
-          
-          Center(
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 180,
-            ),
-          ),
+
         ],
       ),
     );
