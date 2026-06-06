@@ -1,224 +1,372 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:my_app/Frontend/providers/dashboard_provider.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'project_list_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        leading: const Icon(Icons.menu),
-        title: const Text("Dashboard", style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: const [Icon(Icons.notifications_none), SizedBox(width: 16)],
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: Colors.black,
-      ),
-      body: Consumer<DashboardProvider>(
-        builder: (context, provider, child) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: const Color(0xFFF8F9FA), // Very light gray background
+     appBar: AppBar(
+  backgroundColor: Colors.white,
+  elevation: 1,
+  shadowColor: Colors.black12,
+  leading: IconButton(
+    icon: const Icon(
+      Icons.menu,
+      color: Colors.black,
+    ),
+    onPressed: () {},
+  ),
+  centerTitle: true,
+  title: const Text(
+    "Dashboard",
+    style: TextStyle(
+      color: Colors.black,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  actions: [
+    Stack(
+      children: [
+        IconButton(
+          onPressed: () {
+            // Handle notification tap
+          },
+          icon: const Icon(
+            Icons.notifications_rounded,
+            color: Colors.black,
+            size: 28,
+          ),
+        ),
+        // Notification badge
+        Positioned(
+          right: 8,
+          top: 8,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+            child: const Text(
+              '3',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+    const SizedBox(width: 8),
+  ],
+),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Welcome Section
+            const Text(
+              'Selamat Datang,',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Aradea Kingdom',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+            const Text(
+              'Konsultan',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+
+            // 2. Summary Cards Section
+            Row(
               children: [
-                // Header Profil
-                const Row(
-                  children: [
-                    CircleAvatar(radius: 25, backgroundColor: Colors.grey),
-                    SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Selamat datang,", style: TextStyle(color: Colors.grey)),
-                        Text("Konsultan Kantor", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
-                    )
-                  ],
-                ),
-                const SizedBox(height: 25),
-
-                // Grid Statistik
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 1.4,
-                  children: [
-                    _statCard("Total Proyek", provider.totalProyek.toString(), Icons.people, Colors.blue),
-                    _statCard("On Progress", "12", Icons.refresh, Colors.teal),
-                    _statCard("Selesai", "8", Icons.check_circle_outline, Colors.green),
-                    _statCard("Terlambat", "4", Icons.exit_to_app, Colors.orange),
-                  ],
-                ),
-                const SizedBox(height: 25),
-
-                // List Proyek Section
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Proyek On Progress", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text("Lihat Semua", style: TextStyle(color: Colors.blue)),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                
-                provider.listNamaProyek.isEmpty 
-                  ? _buildEmptyState()
-                  : Column(children: [_proyekItem("Gedung Kantor", 0.65)]),
-
-                const SizedBox(height: 25),
-
-                // Donut Chart Section
-                _buildProgressChart(provider),
+                _buildSummaryCard(
+              'Total Proyek',
+              '5',
+              Icons.folder,
+              Colors.blue,
+              onTap: _navigateToProjectListPage,
+            ),
+                const SizedBox(width: 16),
+                _buildSummaryCard('Progres', '3', Icons.bar_chart, Colors.green),
               ],
             ),
-          );
-        },
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _buildSummaryCard('Laporan Hari Ini', '4', Icons.insert_drive_file, Colors.orange),
+                const SizedBox(width: 16),
+                _buildSummaryCard('Proyek Selesai', '2', Icons.check_box, Colors.blue),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            // 3. On Progress Projects Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Proyek On Progress',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                GestureDetector(
+                  onTap: () {},
+                  child: const Text(
+                    'Lihat Semua',
+                    style: TextStyle(fontSize: 14, color: Colors.blue, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildProgressItem('Fly Over Jl. Jendral Sudirman', 0.8, Colors.green),
+            _buildProgressItem('Pembangunan Jembatan Sirothol Mustakim', 0.4, Colors.orange),
+            _buildProgressItem('Pengecoran Jalan Desa Hebat Sekali', 0.15, Colors.deepOrange),
+            const SizedBox(height: 32),
+
+            // 4. Project Progress Section (Donut Chart)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Progres Proyek',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      // Circular Progress (Donut Chart)
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: CircularProgressIndicator(
+                                value: 1.0,
+                                strokeWidth: 20,
+                                color: Colors.blue.shade100, // Background progress color
+                              ),
+                            ),
+                            Transform.rotate(
+                              angle: -1.5708, // Rotate indicator to start from the top (12 o'clock)
+                              child: const SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: CircularProgressIndicator(
+                                  value: 0.67, // 67% progress value
+                                  strokeWidth: 20,
+                                  color: Color(0xFF3B82F6), // Main blue color
+                                  strokeCap: StrokeCap.round,
+                                ),
+                              ),
+                            ),
+                            const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '67%',
+                                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Rata-rata Progres',
+                                  style: TextStyle(fontSize: 8, color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 32),
+                      
+                      // Legend Section
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLegendItem(const Color(0xFF3B82F6), 'Selesai', '(37,5%)'),
+                            const SizedBox(height: 12),
+                            _buildLegendItem(Colors.blue.shade100, 'Proses', '(25.0%)'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      
+      // 5. Bottom Navigation Bar
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF3B82F6),
+          unselectedItemColor: Colors.grey.shade400,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          onTap: (index) {
+            if (index == 1) {
+              _navigateToProjectListPage();
+              return;
+            }
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
+            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
+            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
+            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+          ],
+        ),
       ),
     );
   }
 
-  // Widget untuk Donut Chart dan Legenda
-  Widget _buildProgressChart(DashboardProvider provider) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Progress Proyek", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          Row(
+  // Custom widget for Summary Cards
+  Widget _buildSummaryCard(String title, String count, IconData icon, Color iconColor, {VoidCallback? onTap}) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Donut Chart menggunakan Stack untuk teks di tengah
-              SizedBox(
-                height: 140,
-                width: 140,
-                child: Stack(
-                  children: [
-                    PieChart(
-                      PieChartData(
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 45,
-                        startDegreeOffset: -90,
-                        sections: [
-                          PieChartSectionData(color: Colors.greenAccent[700], value: 8, radius: 15, showTitle: false),
-                          PieChartSectionData(color: Colors.tealAccent[400], value: 12, radius: 15, showTitle: false),
-                          PieChartSectionData(color: Colors.redAccent, value: 4, radius: 15, showTitle: false),
-                        ],
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                  // Icon with 15% opacity background
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text("${provider.totalProyek}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                          const Text("Total Proyek", style: TextStyle(fontSize: 9, color: Colors.grey)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                    child: Icon(icon, color: iconColor, size: 18),
+                  ),
+                ],
               ),
-              const SizedBox(width: 25),
-              // Legenda
-              Expanded(
-                child: Column(
-                  children: [
-                    _chartLegend(Colors.greenAccent[700]!, "Selesai (8)"),
-                    _chartLegend(Colors.tealAccent[400]!, "On Progress (12)"),
-                    _chartLegend(Colors.redAccent, "Terlambat (4)"),
-                  ],
-                ),
+              const SizedBox(height: 12),
+              Text(
+                count,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _chartLegend(Color color, String label) {
+  void _navigateToProjectListPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProjectListPage()),
+    );
+  }
+
+  // Custom widget for Progress Bar list
+  Widget _buildProgressItem(String title, double progress, Color color) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-          const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
-      ),
-    );
-  }
-
-  Widget _statCard(String title, String count, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title, style: const TextStyle(color: Colors.grey, fontSize: 11)),
-              Icon(icon, color: color.withValues(alpha: 0.2), size: 20),
-            ],
+          Expanded(
+            flex: 3,
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          Text(count, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(40),
-      child: Column(
-        children: [
-          Icon(Icons.storage, size: 50, color: Colors.grey.withValues(alpha: 0.5)),
-          const SizedBox(height: 10),
-          const Text("Belum ada data di Database SQL", style: TextStyle(color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  Widget _proyekItem(String name, double progress) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(name, style: const TextStyle(fontSize: 13)),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: LinearProgressIndicator(
-              value: progress, 
-              color: Colors.blue, 
-              backgroundColor: Colors.grey[200],
-              minHeight: 6,
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.grey.shade300,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 8,
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // Custom widget for Donut Chart Legend
+  Widget _buildLegendItem(Color color, String title, String percentage) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(radius: 5, backgroundColor: color),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontSize: 12, color: Colors.black)),
+          ],
+        ),
+        Text(percentage, style: const TextStyle(fontSize: 12, color: Colors.black)),
+      ],
     );
   }
 }
