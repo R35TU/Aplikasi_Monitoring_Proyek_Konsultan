@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../backend/models/project_model.dart';
+import 'dashboard_page.dart';
 import 'project_detail_page.dart';
+import 'report_page.dart';
+import 'history_page.dart';
+import 'account_page.dart';
 
 class ProjectListPage extends StatefulWidget {
   const ProjectListPage({super.key});
@@ -195,10 +199,37 @@ class _ProjectListPageState extends State<ProjectListPage> {
             selectedFontSize: 12,
             unselectedFontSize: 12,
             onTap: (index) {
+              if (index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DashboardPage()),
+                );
+                return;
+              }
+              if (index == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ReportPage()),
+                );
+                return;
+              }
+              if (index == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HistoryPage()),
+                );
+                return;
+              }
+              if (index == 4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AccountPage()),
+                );
+                return;
+              }
               setState(() {
                 _selectedIndex = index;
               });
-              // Note: Add navigation logic here if needed
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Dashboard'),
