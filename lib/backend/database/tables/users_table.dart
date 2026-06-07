@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
+import 'perusahaan_table.dart';
 
 class Users extends Table {
   TextColumn get firebaseUid => text()();
-  TextColumn get nama => text().withLength(min: 1, max: 100)();
-  TextColumn get email => text().nullable()();
-  TextColumn get peran =>
-      text()(); // super_admin, admin_lapangan, kontraktor, client, aph
+  TextColumn get nama => text()();
+  TextColumn get username => text().nullable()();
+  TextColumn get peran => text()();
+  IntColumn get perusahaanId =>
+      integer().nullable().references(Perusahaan, #id)();
   TextColumn get nomorHp => text().nullable()();
 
   @override
