@@ -3,21 +3,31 @@
 // TEKNIK : Runtime Configuration
 // -------------------------------------------------------------
 // FUNGSI :
-//   Membaca variabel environment dari file .env.development
-//   atau .env.production saat aplikasi pertama kali dijalankan.
-//   Menyediakan nilai konfigurasi seperti nama database, base URL,
-//   dan mode debug kepada seluruh bagian aplikasi.
-//
-// CARA PAKAI :
-//   1. Tambahkan package flutter_dotenv di pubspec.yaml
-//   2. Load file .env di main.dart sebelum runApp()
-//   3. Akses nilai via AppConfig.dbName, AppConfig.isDebug, dst.
-//
-// CONTOH ISI .env :
-//   DB_NAME=tata_saka.db
-//   DEBUG=true
-//
-// CATATAN DEFENSIVE :
-//   Validasi bahwa variabel wajib tidak kosong saat load.
-//   Lempar Exception jika konfigurasi kritis tidak ditemukan.
+//   Membaca variabel environment dari file .env.
 // =============================================================
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class AppConfig {
+  static Future<void> load() async {
+    try {
+      await dotenv.load(fileName: ".env");
+    } catch (e) {
+      // Fallback if .env is missing, prevents crash on first run
+      print("Warning: .env file not found, using default configurations.");
+      dotenv.testLoad(fileInput: '''
+DB_NAME=konsultan.db
+DEBUG=true
+''');
+    }
+  }
+
+  static String get dbName {
+    final name = dotenv.env['DB_NAME'];
+    return name ?? 'konsultan_default.db';
+  }
+
+  static bool get isDebug {
+    return dotenv.env['DEBUG']?.toLowerCase() == 'true';
+  }
+}

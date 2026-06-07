@@ -1,25 +1,40 @@
-// =============================================================
-// FILE   : lib/backend/repositories/report_repository.dart
-// TEKNIK : Parameterization (via BaseRepository<ReportModel>)
-//          + Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Implementasi konkret dari BaseRepository<ReportModel>.
-//   Repository yang paling sering diakses karena laporan harian
-//   diinput setiap hari dari lapangan.
-//
-// METHOD YANG DIIMPLEMENTASI :
-//   - getAll()                  : ambil semua laporan
-//   - getById(int id)           : ambil laporan berdasarkan ID
-//   - getByProjectId(int id)    : ambil laporan per proyek (PENTING)
-//   - add(ReportModel)          : simpan laporan baru, return id
-//   - update(id, model)         : update laporan, return bool
-//   - delete(id)                : hapus laporan, return bool
-//
-// DIPAKAI OLEH :
-//   report_provider.dart (FSM Automata) untuk update status laporan.
-//
-// DEFENSIVE :
-//   assert(model.title.isNotEmpty, 'Judul tidak boleh kosong')
-//   assert(model.progress >= 0 && model.progress <= 100)
-// =============================================================
+import 'package:drift/drift.dart';
+import '../database/app_database.dart';
+import 'base_repository.dart';
+
+class ReportRepository implements BaseRepository<Report, ReportsCompanion> {
+  final AppDatabase db;
+
+  ReportRepository(this.db);
+
+  @override
+  Future<List<Report>> getAll() async {
+    return await db.select(db.reports).get();
+  }
+
+  @override
+  Future<Report?> getById(int id) async {
+    return await (db.select(db.reports)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  }
+
+  Future<List<Report>> getByProjectId(int projectId) async {
+    return await (db.select(db.reports)..where((tbl) => tbl.proyekId.equals(projectId))).get();
+  }
+
+  @override
+  Future<int> add(ReportsCompanion item) async {
+    return await db.into(db.reports).insert(item);
+  }
+
+  @override
+  Future<bool> updateItem(int id, ReportsCompanion item) async {
+    final result = await (db.update(db.reports)..where((tbl) => tbl.id.equals(id))).write(item);
+    return result > 0;
+  }
+
+  @override
+  Future<bool> deleteItem(int id) async {
+    final result = await (db.delete(db.reports)..where((tbl) => tbl.id.equals(id))).go();
+    return result > 0;
+  }
+}

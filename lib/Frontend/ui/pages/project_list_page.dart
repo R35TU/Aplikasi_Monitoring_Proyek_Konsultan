@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../backend/models/project_model.dart';
+import 'package:provider/provider.dart';
+import '../../providers/project_provider.dart';
 import 'dashboard_page.dart';
 import 'project_detail_page.dart';
 import 'report_page.dart';
@@ -17,49 +19,14 @@ class ProjectListPage extends StatefulWidget {
 class _ProjectListPageState extends State<ProjectListPage> {
   int _selectedIndex = 1; 
 
-  // 2. Dummy data
-  final List<ProjectModel> _allProjects = [
-    ProjectModel(
-      title: 'Pembangunan Jembatan',
-      location: 'Purwokerto',
-      status: 'Progres',
-      targetProgress: 0.8,
-      actualProgress: 0.5,
-      imagePath: 'assets/images/bottom_bg.png', 
-    ),
-    ProjectModel(
-      title: 'Gor hebat mantap',
-      location: 'Purbalingga',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Gorong Gorong Manukan',
-      location: 'Surabaya',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Aspal Jl.Desa Kesugihan',
-      location: 'Cilacap',
-      status: 'Progres',
-      targetProgress: 0.4,
-      actualProgress: 0.3,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Koperasi Hitam Putih',
-      location: 'Alam Lain',
-      status: 'Progres',
-      targetProgress: 0.1,
-      actualProgress: 0.1,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Load projects when the page initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProjectProvider>().loadProjects();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +97,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        _showAddProjectDialog(context);
+                      },
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text(
                         'Tambah Proyek',
@@ -171,13 +140,22 @@ class _ProjectListPageState extends State<ProjectListPage> {
             
             // 7. TabBar Views (The Lists)
             Expanded(
-              child: TabBarView(
-                children: [
-                  _buildProjectList(_allProjects), // Tab Semua
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Progres').toList()), // Tab Progres
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Selesai').toList()), // Tab Selesai
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Dibatalkan').toList()), // Tab Dibatalkan
-                ],
+              child: Consumer<ProjectProvider>(
+                builder: (context, provider, child) {
+                  if (provider.state == ProjectState.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final allProjects = provider.projects;
+                  
+                  return TabBarView(
+                    children: [
+                      _buildProjectList(allProjects), // Tab Semua
+                      _buildProjectList(allProjects.where((p) => p.status == 'Progres' || p.status == 'Perencanaan').toList()), // Tab Progres
+                      _buildProjectList(allProjects.where((p) => p.status == 'Selesai').toList()), // Tab Selesai
+                      _buildProjectList(allProjects.where((p) => p.status == 'Dibatalkan').toList()), // Tab Dibatalkan
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -392,6 +370,75 @@ class _ProjectListPageState extends State<ProjectListPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showAddProjectDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final locationController = TextEditingController();
+    String selectedStatus = 'Perencanaan';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Tambah Proyek Baru'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Nama Proyek'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: locationController,
+                      decoration: const InputDecoration(labelText: 'Lokasi'),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: selectedStatus,
+                      items: const [
+                        DropdownMenuItem(value: 'Perencanaan', child: Text('Perencanaan')),
+                        DropdownMenuItem(value: 'Progres', child: Text('Progres')),
+                        DropdownMenuItem(value: 'Selesai', child: Text('Selesai')),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) setStateDialog(() => selectedStatus = v);
+                      },
+                      decoration: const InputDecoration(labelText: 'Status Awal'),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (titleController.text.trim().isEmpty) return;
+                    final success = await context.read<ProjectProvider>().addProject(
+                      titleController.text.trim(),
+                      locationController.text.trim(),
+                      selectedStatus,
+                    );
+                    if (success && mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Proyek berhasil ditambahkan!')));
+                    }
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
+            );
+          }
+        );
+      },
     );
   }
 }

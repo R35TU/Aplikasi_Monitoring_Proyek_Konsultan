@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../backend/models/project_model.dart';
+import 'package:provider/provider.dart';
+import '../../providers/report_provider.dart';
 
 class DataReportDetailPage extends StatefulWidget {
   final ProjectModel project;
@@ -37,6 +39,16 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
     setState(() {
       if (_startDayIndex < _days.length - 7) {
         _startDayIndex++;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.project.id != null) {
+        context.read<ReportProvider>().loadReportsByProject(widget.project.id!);
       }
     });
   }
@@ -210,9 +222,32 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
             const SizedBox(height: 12),
 
             // Report items
-            _buildReportItem('Laporan Pengawasan Harian', 'Dibuat : 04 Januari 2025 - 10:48', const Color(0xFFE6F4EA), const Color(0xFF16A34A)),
-            const SizedBox(height: 12),
-            _buildReportItem('Laporan Fisik Harian', 'Dibuat : 04 Januari 2025 - 16:30', const Color(0xFFDDE8FF), const Color(0xFF2563EB)),
+            Consumer<ReportProvider>(
+              builder: (context, reportProvider, _) {
+                if (reportProvider.state == ReportFetchState.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                
+                final reports = reportProvider.reports;
+                if (reports.isEmpty) {
+                  return const Center(child: Text('Belum ada laporan untuk proyek ini.', style: TextStyle(color: Colors.grey)));
+                }
+
+                return Column(
+                  children: reports.map((r) {
+                    final isSubmitted = r.status == 'submitted';
+                    final colorBg = isSubmitted ? const Color(0xFFDDE8FF) : const Color(0xFFE6F4EA);
+                    final colorIcon = isSubmitted ? const Color(0xFF2563EB) : const Color(0xFF16A34A);
+                    final deskripsi = r.deskripsi ?? 'Tanpa deskripsi';
+                    
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildReportItem(deskripsi, 'Tanggal : ${r.tanggal} - ${r.progress}%', colorBg, colorIcon),
+                    );
+                  }).toList(),
+                );
+              }
+            ),
           ],
         ),
       ),

@@ -8,6 +8,7 @@
 // =============================================================
 
 class ProjectModel {
+  final int? id;
   final String title;
   final String location;
   final String status; // 'Progres', 'Selesai', 'Dibatalkan'
@@ -16,6 +17,7 @@ class ProjectModel {
   final String imagePath;
 
   ProjectModel({
+    this.id,
     required this.title,
     required this.location,
     required this.status,

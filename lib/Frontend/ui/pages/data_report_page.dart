@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../backend/models/project_model.dart';
+import 'package:provider/provider.dart';
+import '../../providers/project_provider.dart';
 import 'data_report_detail_page.dart';
 
 class DataReportPage extends StatefulWidget {
@@ -9,50 +11,14 @@ class DataReportPage extends StatefulWidget {
   @override
   State<DataReportPage> createState() => _DataReportPageState();
 }
-
 class _DataReportPageState extends State<DataReportPage> {
-  final List<ProjectModel> _projects = [
-    ProjectModel(
-      title: 'Pembangunan Jembatan',
-      location: 'Purwokerto',
-      status: 'Progres',
-      targetProgress: 0.8,
-      actualProgress: 0.5,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Gor Hebat Mantap',
-      location: 'Purbalingga',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Gorong Gorong Manukan',
-      location: 'Surabaya',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Aspal Jl.Desa Kesugihan',
-      location: 'Cilacap',
-      status: 'Progres',
-      targetProgress: 0.8,
-      actualProgress: 0.5,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Koperasi Hitam Putih',
-      location: 'Alam Lain',
-      status: 'Progres',
-      targetProgress: 0.1,
-      actualProgress: 0.1,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProjectProvider>().loadProjects();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,12 +93,20 @@ class _DataReportPageState extends State<DataReportPage> {
               ),
             ),
             Expanded(
-              child: TabBarView(
-                children: [
-                  _buildProjectList(_projects),
-                  _buildProjectList(_projects.where((p) => p.status == 'Progres').toList()),
-                  _buildProjectList(_projects.where((p) => p.status == 'Selesai').toList()),
-                ],
+              child: Consumer<ProjectProvider>(
+                builder: (context, provider, _) {
+                  if (provider.state == ProjectState.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final projects = provider.projects;
+                  return TabBarView(
+                    children: [
+                      _buildProjectList(projects),
+                      _buildProjectList(projects.where((p) => p.status == 'Progres' || p.status == 'Perencanaan').toList()),
+                      _buildProjectList(projects.where((p) => p.status == 'Selesai').toList()),
+                    ],
+                  );
+                }
               ),
             ),
           ],
