@@ -94,62 +94,6 @@ class _AccountEditPageState extends State<AccountEditPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF3B82F6),
-          unselectedItemColor: Colors.grey.shade400,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          onTap: (index) {
-            if (index == 0) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DashboardPage()),
-              );
-              return;
-            }
-            if (index == 1) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
-              );
-              return;
-            }
-            if (index == 2) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReportPage()),
-              );
-              return;
-            }
-            if (index == 3) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HistoryPage()),
-              );
-              return;
-            }
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
-          ],
-        ),
-      ),
     );
   }
 

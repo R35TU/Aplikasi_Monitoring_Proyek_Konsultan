@@ -16,6 +16,19 @@
 
 ---
 
+## 🧭 Peran Kelompok (Roles)
+
+Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih agar sesuai dengan keahlian tanpa merubah bagian lain dari proyek.
+
+| Nama (panggilan) | Peran utama |
+| ---------------- | ------------------------------------------------------------ |
+| Ulung Putra Sadewo (Ulung) | Runtime configuration, Code reuse / library |
+| Nadia Tambunan (Nadia) | Automata, Table-driven construction |
+| Muhammad Restu Aditya (Restu) | Code reuse / library, Runtime configuration |
+| Aradea Satria Permana (Aradea) | Parameterization / Generics, Automata |
+| Putra Anugrah Pamungkas (Putra) | API, Parameterization / Generics |
+
+
 ## 🛠️ Tech Stack
 
 ### Frontend
