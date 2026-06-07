@@ -251,6 +251,7 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
               onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Buat Rekapan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

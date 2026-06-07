@@ -70,11 +70,6 @@ class _AccountPageState extends State<AccountPage> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 2))],
                       ),
-                      child: const CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Color(0xFF2563EB),
-                        child: Icon(Icons.camera_alt, size: 18, color: Colors.white),
-                      ),
                     ),
                   ),
                 ],
