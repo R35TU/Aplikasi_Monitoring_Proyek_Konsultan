@@ -40,7 +40,6 @@ class UserModel {
   }) {
     final validRoles = ['super_admin','admin_lapangan','kontraktor','client','aph'];
     assert(name.isNotEmpty, 'Nama tidak boleh kosong');
-    assert(email.contains('@'), 'Format email tidak valid');
     assert(validRoles.contains(role), 'Role tidak dikenal: $role');
   }
 }

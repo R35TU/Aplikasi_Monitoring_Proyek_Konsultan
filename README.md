@@ -560,29 +560,72 @@ void approve() {
 
 ## 📦 Setup & Instalasi
 
+### 1. Prasyarat Sistem & Persiapan Awal
+Sebelum menjalankan aplikasi, pastikan Anda telah memenuhi prasyarat berikut sesuai platform target:
+
+#### Target Platform: Windows Desktop (Direkomendasikan untuk Menyimpan Data Permanen)
+Agar aplikasi dapat berjalan sebagai aplikasi native Windows desktop dan menyimpan database SQLite secara permanen di komputer Anda, lakukan hal berikut:
+1. **Aktifkan Developer Mode di Windows**:
+   * Buka Terminal/PowerShell lalu jalankan perintah:
+     ```powershell
+     start ms-settings:developers
+     ```
+   * Aktifkan toggle **Developer Mode**.
+2. **Instal Visual Studio Build Tools**:
+   * Unduh installer [Build Tools for Visual Studio 2026/2022](https://visualstudio.microsoft.com/downloads/).
+   * Jalankan installer tersebut, kemudian cari dan centang pilihan workload:
+     * **Desktop development with C++**
+   * Selesaikan instalasi lalu **restart komputer Anda**.
+
+---
+
+### 2. Langkah Instalasi & Menjalankan Aplikasi
+
+Jalankan perintah-perintah berikut di terminal:
+
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/<org>/cv-tata-saka-consultant.git
 cd cv-tata-saka-consultant
 
-# Install dependencies
+# 2. Install dependencies
 flutter pub get
 
-# Generate kode Drift (WAJIB setelah clone / setiap perubahan skema database)
+# 3. Generate kode Drift (WAJIB setelah clone / setiap kali ada perubahan skema database)
 dart run build_runner build --delete-conflicting-outputs
 
-# Salin file environment
-cp .env.development .env
-
-# Jalankan di web (development)
-flutter run -d chrome
-
-# Build PWA (production)
-flutter build web --release
+# 4. Salin file environment (.env)
+copy .env.development .env
+# Atau jika menggunakan Git Bash / Linux / macOS:
+# cp .env.development .env
 ```
 
-> ⚠️ **File yang tidak di-push ke GitHub:** `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`, `.env.production`
-> Minta file-file ini ke anggota yang setup Firebase/environment.
+#### Menjalankan Aplikasi di Windows Desktop (Paling Stabil / Data Tersimpan Permanen)
+```bash
+flutter run -d windows
+```
+
+#### Menjalankan Aplikasi di Web (Development)
+```bash
+flutter run -d chrome
+```
+
+---
+
+### 🔑 Akun & Kredensial Uji Coba (Demo Credentials)
+Setelah aplikasi berhasil dijalankan, gunakan akun dummy berikut untuk masuk ke sistem:
+
+| Role | Username / Email | Password | Fitur & Akses |
+| :--- | :--- | :--- | :--- |
+| **Admin Lapangan** | `admin` | `admin123` | Mengelola proyek, input laporan harian, mengunggah dokumentasi |
+| **Pengawas** | `pengawas` | `pengawas123` | Meninjau laporan, memberikan status persetujuan (*approved/rejected*) |
+
+> 💡 **Fitur "Ingat Saya" (Remember Me)**:
+> Jika Anda mencentang pilihan **"Ingat Saya"** pada halaman login, kredensial Anda akan disimpan secara lokal. Ketika aplikasi ditutup dan dibuka kembali, Anda akan langsung dialihkan ke halaman Dashboard tanpa harus memasukkan username dan password kembali.
+
+---
+
+> ⚠️ **File Tambahan Firebase (Opsional):** `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`, `.env.production`. Minta file-file ini ke anggota kelompok yang melakukan konfigurasi Firebase jika ingin build ke platform mobile.
 
 ---
 

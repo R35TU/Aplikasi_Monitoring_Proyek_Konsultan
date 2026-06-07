@@ -21,6 +21,9 @@ class ProjectModel {
   final double targetProgress;
   final double actualProgress;
   final String imagePath;
+  final String? deskripsi;
+  final String? sumberDana;
+  final String? namaPemilik;
 
   ProjectModel({
     this.id,
@@ -36,5 +39,8 @@ class ProjectModel {
     required this.targetProgress,
     required this.actualProgress,
     required this.imagePath,
+    this.deskripsi,
+    this.sumberDana,
+    this.namaPemilik,
   });
 }

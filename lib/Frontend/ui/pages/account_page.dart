@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 
 import 'dashboard_page.dart';
 import 'project_list_page.dart';
@@ -7,6 +9,7 @@ import 'history_page.dart';
 import 'account_edit_page.dart';
 import 'account_security_page.dart';
 import 'account_settings_page.dart';
+import 'login_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -20,6 +23,9 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.currentUser;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -83,10 +89,10 @@ class _AccountPageState extends State<AccountPage> {
             const SizedBox(height: 16),
             Center(
               child: Column(
-                children: const [
-                  Text('Restu Aditya', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
-                  Text('Konsultan', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                children: [
+                  Text(user?.name ?? 'Guest', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(user?.role ?? 'Role', style: const TextStyle(fontSize: 14, color: Colors.grey)),
                 ],
               ),
             ),
@@ -102,9 +108,9 @@ class _AccountPageState extends State<AccountPage> {
               ),
               child: Column(
                 children: [
-                  _buildProfileRow(Icons.person_outline, 'Nama Lengkap', 'Restu Aditya'),
-                  _buildProfileRow(Icons.badge_outlined, 'Username', 'konsultan_001'),
-                  _buildProfileRow(Icons.shield_outlined, 'Role', 'Konsultan'),
+                  _buildProfileRow(Icons.person_outline, 'Nama Lengkap', user?.name ?? 'Guest'),
+                  _buildProfileRow(Icons.badge_outlined, 'Username', user?.email ?? 'Username'),
+                  _buildProfileRow(Icons.shield_outlined, 'Role', user?.role ?? 'Role'),
                 ],
               ),
             ),
@@ -146,7 +152,15 @@ class _AccountPageState extends State<AccountPage> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  await Provider.of<AuthProvider>(context, listen: false).logout();
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                      (route) => false,
+                    );
+                  }
+                },
                 icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
                 label: const Text(
                   'Keluar Akun',

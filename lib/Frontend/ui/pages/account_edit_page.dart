@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../backend/models/user_model.dart';
+import '../../../backend/repositories/user_repository.dart';
+import '../../providers/auth_provider.dart';
 
 import 'dashboard_page.dart';
 import 'project_list_page.dart';
@@ -14,9 +18,26 @@ class AccountEditPage extends StatefulWidget {
 
 class _AccountEditPageState extends State<AccountEditPage> {
   int _selectedIndex = 4;
-  final TextEditingController _nameController = TextEditingController(text: 'Restu Aditya');
-  final TextEditingController _usernameController = TextEditingController(text: 'konsultan_001');
-  final TextEditingController _roleController = TextEditingController(text: 'Konsultan');
+  late final TextEditingController _nameController;
+  late final TextEditingController _usernameController;
+  late final TextEditingController _roleController;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = Provider.of<AuthProvider>(context, listen: false).currentUser;
+    _nameController = TextEditingController(text: user?.name ?? 'Restu Aditya');
+    _usernameController = TextEditingController(text: user?.email ?? 'konsultan_001');
+    _roleController = TextEditingController(text: user?.role ?? 'Konsultan');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _usernameController.dispose();
+    _roleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +58,28 @@ class _AccountEditPageState extends State<AccountEditPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () async {
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final user = authProvider.currentUser;
+              if (user != null) {
+                final updatedUser = UserModel(
+                  id: user.id,
+                  name: _nameController.text.trim(),
+                  email: _usernameController.text.trim(),
+                  role: _roleController.text.trim(),
+                  nomorHp: user.nomorHp,
+                );
+                final success = await Provider.of<UserRepository>(context, listen: false).update(user.id, updatedUser);
+                if (success) {
+                  authProvider.updateCurrentUser(updatedUser);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Gagal menyimpan profil')),
+                  );
+                }
+              }
+              Navigator.of(context).pop();
+            },
             icon: const Icon(Icons.save, color: Colors.black),
           ),
         ],

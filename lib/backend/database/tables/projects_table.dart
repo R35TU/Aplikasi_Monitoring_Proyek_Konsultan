@@ -20,4 +20,10 @@ class Projects extends Table {
     onDelete: KeyAction.setNull,
   )();
   TextColumn get status => text().withDefault(const Constant('Perencanaan'))();
+  RealColumn get targetProgress => real().withDefault(const Constant(0.0))();
+  RealColumn get actualProgress => real().withDefault(const Constant(0.0))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get deskripsi => text().nullable()();
+  TextColumn get sumberDana => text().nullable()();
+  TextColumn get namaPemilik => text().nullable()();
 }

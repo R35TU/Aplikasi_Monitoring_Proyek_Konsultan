@@ -9,6 +9,7 @@ class Users extends Table {
   IntColumn get perusahaanId =>
       integer().nullable().references(Perusahaan, #id)();
   TextColumn get nomorHp => text().nullable()();
+  TextColumn get password => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {firebaseUid};

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import 'login_page.dart';
+import 'dashboard_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -14,13 +17,27 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-      );
+    Timer(const Duration(seconds: 3), () async {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isLoggedIn = await authProvider.checkRememberedUser();
+
+      if (mounted) {
+        if (isLoggedIn) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DashboardPage(),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+          );
+        }
+      }
     });
   }
 

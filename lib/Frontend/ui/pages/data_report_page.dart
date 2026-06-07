@@ -15,6 +15,7 @@ class _DataReportPageState extends State<DataReportPage> {
     ProjectModel(
       title: 'Pembangunan Jembatan',
       location: 'Purwokerto',
+      kategori: 'Infrastruktur',
       status: 'Progres',
       targetProgress: 0.8,
       actualProgress: 0.5,
@@ -23,6 +24,7 @@ class _DataReportPageState extends State<DataReportPage> {
     ProjectModel(
       title: 'Gor Hebat Mantap',
       location: 'Purbalingga',
+      kategori: 'Gedung',
       status: 'Selesai',
       targetProgress: 1.0,
       actualProgress: 1.0,
@@ -31,6 +33,7 @@ class _DataReportPageState extends State<DataReportPage> {
     ProjectModel(
       title: 'Gorong Gorong Manukan',
       location: 'Surabaya',
+      kategori: 'Infrastruktur',
       status: 'Selesai',
       targetProgress: 1.0,
       actualProgress: 1.0,
@@ -39,6 +42,7 @@ class _DataReportPageState extends State<DataReportPage> {
     ProjectModel(
       title: 'Aspal Jl.Desa Kesugihan',
       location: 'Cilacap',
+      kategori: 'Infrastruktur',
       status: 'Progres',
       targetProgress: 0.8,
       actualProgress: 0.5,
@@ -47,6 +51,7 @@ class _DataReportPageState extends State<DataReportPage> {
     ProjectModel(
       title: 'Koperasi Hitam Putih',
       location: 'Alam Lain',
+      kategori: 'Gedung',
       status: 'Progres',
       targetProgress: 0.1,
       actualProgress: 0.1,

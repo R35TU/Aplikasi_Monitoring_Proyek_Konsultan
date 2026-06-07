@@ -366,23 +366,25 @@ class ProjectDetailPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    Expanded(child: _buildSmallInfoCard('Tanggal Mulai', '1 Januari 2026')),
+                    Expanded(child: _buildSmallInfoCard('Tanggal Mulai', project.tanggalMulai == null || project.tanggalMulai!.isEmpty ? '1 Januari 2026' : project.tanggalMulai!)),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildSmallInfoCard('Tanggal Selesai', '30 Februari 2026')),
+                    Expanded(child: _buildSmallInfoCard('Tanggal Selesai', project.tanggalSelesai == null || project.tanggalSelesai!.isEmpty ? '30 Februari 2026' : project.tanggalSelesai!)),
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildDetailInfoCard('Pemilik Proyek', 'Pemerintah Kabupaten Banyumas'),
+                _buildDetailInfoCard('Pemilik Proyek', project.namaPemilik == null || project.namaPemilik!.isEmpty ? 'Pemerintah Kabupaten Banyumas' : project.namaPemilik!),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard('Sumber Dana', 'APBD 2026'),
+                _buildDetailInfoCard('Sumber Dana', project.sumberDana == null || project.sumberDana!.isEmpty ? 'APBD 2026' : project.sumberDana!),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard('Konsultan Pengawas', 'CV. Tata Sakti Consultant'),
+                _buildDetailInfoCard('Konsultan Pengawas', 'CV. Tata Saka Consultant'),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard('Kontraktor Pelaksana', 'PT. Maju Mundur Jaya'),
+                _buildDetailInfoCard('Kontraktor Pelaksana', project.kontraktorId == null || project.kontraktorId!.isEmpty ? 'PT. Maju Mundur Jaya' : project.kontraktorId!),
                 const SizedBox(height: 12),
                 _buildDetailInfoCard(
                     'Deskripsi',
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
+                    project.deskripsi == null || project.deskripsi!.isEmpty
+                        ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+                        : project.deskripsi!),
                 const SizedBox(height: 24),
                 const Text('Tim Proyek', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,6 +12,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
+  bool obscurePassword = true;
 
   final TextEditingController usernameController =
       TextEditingController();
@@ -118,11 +121,24 @@ class _LoginPageState extends State<LoginPage> {
                         /// Password
                         TextField(
                           controller: passwordController,
-                          obscureText: true,
+                          obscureText: obscurePassword,
                           decoration: InputDecoration(
                             hintText: "Password",
                             filled: true,
                             fillColor: Colors.white,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
+                              },
+                            ),
                             contentPadding:
                                 const EdgeInsets.symmetric(
                               horizontal: 18,
@@ -191,14 +207,32 @@ class _LoginPageState extends State<LoginPage> {
                                     BorderRadius.circular(8),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const DashboardPage(),
-                                ),
-                              );
+                            onPressed: () async {
+                              final username = usernameController.text.trim();
+                              final password = passwordController.text.trim();
+
+                              if (username.isEmpty || password.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Username dan password harus diisi')),
+                                );
+                                return;
+                              }
+
+                              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                              final success = await authProvider.login(username, password, rememberMe: rememberMe);
+
+                              if (success) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const DashboardPage(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(authProvider.errorMessage ?? 'Login gagal')),
+                                );
+                              }
                             },
                             child: const Text(
                               "Masuk",
@@ -212,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
 
-                        SizedBox(height: height * 0.18),
+                        const SizedBox(height: 24),
 
                         /// Contact us
                         Row(
@@ -223,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                             const Text(
                               "Don't have an account? ",
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.grey,
                                 fontSize: 13,
                               ),
                             ),

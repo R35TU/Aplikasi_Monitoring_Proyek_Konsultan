@@ -331,6 +331,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _passwordMeta = const VerificationMeta(
+    'password',
+  );
+  @override
+  late final GeneratedColumn<String> password = GeneratedColumn<String>(
+    'password',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     firebaseUid,
@@ -339,6 +350,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     peran,
     perusahaanId,
     nomorHp,
+    password,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -400,6 +412,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         nomorHp.isAcceptableOrUnknown(data['nomor_hp']!, _nomorHpMeta),
       );
     }
+    if (data.containsKey('password')) {
+      context.handle(
+        _passwordMeta,
+        password.isAcceptableOrUnknown(data['password']!, _passwordMeta),
+      );
+    }
     return context;
   }
 
@@ -433,6 +451,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}nomor_hp'],
       ),
+      password: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}password'],
+      ),
     );
   }
 
@@ -449,6 +471,7 @@ class User extends DataClass implements Insertable<User> {
   final String peran;
   final int? perusahaanId;
   final String? nomorHp;
+  final String? password;
   const User({
     required this.firebaseUid,
     required this.nama,
@@ -456,6 +479,7 @@ class User extends DataClass implements Insertable<User> {
     required this.peran,
     this.perusahaanId,
     this.nomorHp,
+    this.password,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -471,6 +495,9 @@ class User extends DataClass implements Insertable<User> {
     }
     if (!nullToAbsent || nomorHp != null) {
       map['nomor_hp'] = Variable<String>(nomorHp);
+    }
+    if (!nullToAbsent || password != null) {
+      map['password'] = Variable<String>(password);
     }
     return map;
   }
@@ -489,6 +516,9 @@ class User extends DataClass implements Insertable<User> {
       nomorHp: nomorHp == null && nullToAbsent
           ? const Value.absent()
           : Value(nomorHp),
+      password: password == null && nullToAbsent
+          ? const Value.absent()
+          : Value(password),
     );
   }
 
@@ -504,6 +534,7 @@ class User extends DataClass implements Insertable<User> {
       peran: serializer.fromJson<String>(json['peran']),
       perusahaanId: serializer.fromJson<int?>(json['perusahaanId']),
       nomorHp: serializer.fromJson<String?>(json['nomorHp']),
+      password: serializer.fromJson<String?>(json['password']),
     );
   }
   @override
@@ -516,6 +547,7 @@ class User extends DataClass implements Insertable<User> {
       'peran': serializer.toJson<String>(peran),
       'perusahaanId': serializer.toJson<int?>(perusahaanId),
       'nomorHp': serializer.toJson<String?>(nomorHp),
+      'password': serializer.toJson<String?>(password),
     };
   }
 
@@ -526,6 +558,7 @@ class User extends DataClass implements Insertable<User> {
     String? peran,
     Value<int?> perusahaanId = const Value.absent(),
     Value<String?> nomorHp = const Value.absent(),
+    Value<String?> password = const Value.absent(),
   }) => User(
     firebaseUid: firebaseUid ?? this.firebaseUid,
     nama: nama ?? this.nama,
@@ -533,6 +566,7 @@ class User extends DataClass implements Insertable<User> {
     peran: peran ?? this.peran,
     perusahaanId: perusahaanId.present ? perusahaanId.value : this.perusahaanId,
     nomorHp: nomorHp.present ? nomorHp.value : this.nomorHp,
+    password: password.present ? password.value : this.password,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -546,6 +580,7 @@ class User extends DataClass implements Insertable<User> {
           ? data.perusahaanId.value
           : this.perusahaanId,
       nomorHp: data.nomorHp.present ? data.nomorHp.value : this.nomorHp,
+      password: data.password.present ? data.password.value : this.password,
     );
   }
 
@@ -557,14 +592,22 @@ class User extends DataClass implements Insertable<User> {
           ..write('username: $username, ')
           ..write('peran: $peran, ')
           ..write('perusahaanId: $perusahaanId, ')
-          ..write('nomorHp: $nomorHp')
+          ..write('nomorHp: $nomorHp, ')
+          ..write('password: $password')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(firebaseUid, nama, username, peran, perusahaanId, nomorHp);
+  int get hashCode => Object.hash(
+    firebaseUid,
+    nama,
+    username,
+    peran,
+    perusahaanId,
+    nomorHp,
+    password,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -574,7 +617,8 @@ class User extends DataClass implements Insertable<User> {
           other.username == this.username &&
           other.peran == this.peran &&
           other.perusahaanId == this.perusahaanId &&
-          other.nomorHp == this.nomorHp);
+          other.nomorHp == this.nomorHp &&
+          other.password == this.password);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -584,6 +628,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> peran;
   final Value<int?> perusahaanId;
   final Value<String?> nomorHp;
+  final Value<String?> password;
   final Value<int> rowid;
   const UsersCompanion({
     this.firebaseUid = const Value.absent(),
@@ -592,6 +637,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.peran = const Value.absent(),
     this.perusahaanId = const Value.absent(),
     this.nomorHp = const Value.absent(),
+    this.password = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -601,6 +647,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String peran,
     this.perusahaanId = const Value.absent(),
     this.nomorHp = const Value.absent(),
+    this.password = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : firebaseUid = Value(firebaseUid),
        nama = Value(nama),
@@ -612,6 +659,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? peran,
     Expression<int>? perusahaanId,
     Expression<String>? nomorHp,
+    Expression<String>? password,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -621,6 +669,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (peran != null) 'peran': peran,
       if (perusahaanId != null) 'perusahaan_id': perusahaanId,
       if (nomorHp != null) 'nomor_hp': nomorHp,
+      if (password != null) 'password': password,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -632,6 +681,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? peran,
     Value<int?>? perusahaanId,
     Value<String?>? nomorHp,
+    Value<String?>? password,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -641,6 +691,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       peran: peran ?? this.peran,
       perusahaanId: perusahaanId ?? this.perusahaanId,
       nomorHp: nomorHp ?? this.nomorHp,
+      password: password ?? this.password,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -666,6 +717,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (nomorHp.present) {
       map['nomor_hp'] = Variable<String>(nomorHp.value);
     }
+    if (password.present) {
+      map['password'] = Variable<String>(password.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -681,6 +735,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('peran: $peran, ')
           ..write('perusahaanId: $perusahaanId, ')
           ..write('nomorHp: $nomorHp, ')
+          ..write('password: $password, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -811,6 +866,74 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     requiredDuringInsert: false,
     defaultValue: const Constant('Perencanaan'),
   );
+  static const VerificationMeta _targetProgressMeta = const VerificationMeta(
+    'targetProgress',
+  );
+  @override
+  late final GeneratedColumn<double> targetProgress = GeneratedColumn<double>(
+    'target_progress',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _actualProgressMeta = const VerificationMeta(
+    'actualProgress',
+  );
+  @override
+  late final GeneratedColumn<double> actualProgress = GeneratedColumn<double>(
+    'actual_progress',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deskripsiMeta = const VerificationMeta(
+    'deskripsi',
+  );
+  @override
+  late final GeneratedColumn<String> deskripsi = GeneratedColumn<String>(
+    'deskripsi',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sumberDanaMeta = const VerificationMeta(
+    'sumberDana',
+  );
+  @override
+  late final GeneratedColumn<String> sumberDana = GeneratedColumn<String>(
+    'sumber_dana',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _namaPemilikMeta = const VerificationMeta(
+    'namaPemilik',
+  );
+  @override
+  late final GeneratedColumn<String> namaPemilik = GeneratedColumn<String>(
+    'nama_pemilik',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -823,6 +946,12 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     kontraktorId,
     dinasId,
     status,
+    targetProgress,
+    actualProgress,
+    imagePath,
+    deskripsi,
+    sumberDana,
+    namaPemilik,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -907,6 +1036,51 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         status.isAcceptableOrUnknown(data['status']!, _statusMeta),
       );
     }
+    if (data.containsKey('target_progress')) {
+      context.handle(
+        _targetProgressMeta,
+        targetProgress.isAcceptableOrUnknown(
+          data['target_progress']!,
+          _targetProgressMeta,
+        ),
+      );
+    }
+    if (data.containsKey('actual_progress')) {
+      context.handle(
+        _actualProgressMeta,
+        actualProgress.isAcceptableOrUnknown(
+          data['actual_progress']!,
+          _actualProgressMeta,
+        ),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('deskripsi')) {
+      context.handle(
+        _deskripsiMeta,
+        deskripsi.isAcceptableOrUnknown(data['deskripsi']!, _deskripsiMeta),
+      );
+    }
+    if (data.containsKey('sumber_dana')) {
+      context.handle(
+        _sumberDanaMeta,
+        sumberDana.isAcceptableOrUnknown(data['sumber_dana']!, _sumberDanaMeta),
+      );
+    }
+    if (data.containsKey('nama_pemilik')) {
+      context.handle(
+        _namaPemilikMeta,
+        namaPemilik.isAcceptableOrUnknown(
+          data['nama_pemilik']!,
+          _namaPemilikMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -956,6 +1130,30 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         DriftSqlType.string,
         data['${effectivePrefix}status'],
       )!,
+      targetProgress: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_progress'],
+      )!,
+      actualProgress: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}actual_progress'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      deskripsi: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deskripsi'],
+      ),
+      sumberDana: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sumber_dana'],
+      ),
+      namaPemilik: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nama_pemilik'],
+      ),
     );
   }
 
@@ -976,6 +1174,12 @@ class Project extends DataClass implements Insertable<Project> {
   final String? kontraktorId;
   final String? dinasId;
   final String status;
+  final double targetProgress;
+  final double actualProgress;
+  final String? imagePath;
+  final String? deskripsi;
+  final String? sumberDana;
+  final String? namaPemilik;
   const Project({
     required this.id,
     required this.namaProyek,
@@ -987,6 +1191,12 @@ class Project extends DataClass implements Insertable<Project> {
     this.kontraktorId,
     this.dinasId,
     required this.status,
+    required this.targetProgress,
+    required this.actualProgress,
+    this.imagePath,
+    this.deskripsi,
+    this.sumberDana,
+    this.namaPemilik,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1015,6 +1225,20 @@ class Project extends DataClass implements Insertable<Project> {
       map['dinas_id'] = Variable<String>(dinasId);
     }
     map['status'] = Variable<String>(status);
+    map['target_progress'] = Variable<double>(targetProgress);
+    map['actual_progress'] = Variable<double>(actualProgress);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    if (!nullToAbsent || deskripsi != null) {
+      map['deskripsi'] = Variable<String>(deskripsi);
+    }
+    if (!nullToAbsent || sumberDana != null) {
+      map['sumber_dana'] = Variable<String>(sumberDana);
+    }
+    if (!nullToAbsent || namaPemilik != null) {
+      map['nama_pemilik'] = Variable<String>(namaPemilik);
+    }
     return map;
   }
 
@@ -1044,6 +1268,20 @@ class Project extends DataClass implements Insertable<Project> {
           ? const Value.absent()
           : Value(dinasId),
       status: Value(status),
+      targetProgress: Value(targetProgress),
+      actualProgress: Value(actualProgress),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      deskripsi: deskripsi == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deskripsi),
+      sumberDana: sumberDana == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sumberDana),
+      namaPemilik: namaPemilik == null && nullToAbsent
+          ? const Value.absent()
+          : Value(namaPemilik),
     );
   }
 
@@ -1063,6 +1301,12 @@ class Project extends DataClass implements Insertable<Project> {
       kontraktorId: serializer.fromJson<String?>(json['kontraktorId']),
       dinasId: serializer.fromJson<String?>(json['dinasId']),
       status: serializer.fromJson<String>(json['status']),
+      targetProgress: serializer.fromJson<double>(json['targetProgress']),
+      actualProgress: serializer.fromJson<double>(json['actualProgress']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      deskripsi: serializer.fromJson<String?>(json['deskripsi']),
+      sumberDana: serializer.fromJson<String?>(json['sumberDana']),
+      namaPemilik: serializer.fromJson<String?>(json['namaPemilik']),
     );
   }
   @override
@@ -1079,6 +1323,12 @@ class Project extends DataClass implements Insertable<Project> {
       'kontraktorId': serializer.toJson<String?>(kontraktorId),
       'dinasId': serializer.toJson<String?>(dinasId),
       'status': serializer.toJson<String>(status),
+      'targetProgress': serializer.toJson<double>(targetProgress),
+      'actualProgress': serializer.toJson<double>(actualProgress),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'deskripsi': serializer.toJson<String?>(deskripsi),
+      'sumberDana': serializer.toJson<String?>(sumberDana),
+      'namaPemilik': serializer.toJson<String?>(namaPemilik),
     };
   }
 
@@ -1093,6 +1343,12 @@ class Project extends DataClass implements Insertable<Project> {
     Value<String?> kontraktorId = const Value.absent(),
     Value<String?> dinasId = const Value.absent(),
     String? status,
+    double? targetProgress,
+    double? actualProgress,
+    Value<String?> imagePath = const Value.absent(),
+    Value<String?> deskripsi = const Value.absent(),
+    Value<String?> sumberDana = const Value.absent(),
+    Value<String?> namaPemilik = const Value.absent(),
   }) => Project(
     id: id ?? this.id,
     namaProyek: namaProyek ?? this.namaProyek,
@@ -1106,6 +1362,12 @@ class Project extends DataClass implements Insertable<Project> {
     kontraktorId: kontraktorId.present ? kontraktorId.value : this.kontraktorId,
     dinasId: dinasId.present ? dinasId.value : this.dinasId,
     status: status ?? this.status,
+    targetProgress: targetProgress ?? this.targetProgress,
+    actualProgress: actualProgress ?? this.actualProgress,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    deskripsi: deskripsi.present ? deskripsi.value : this.deskripsi,
+    sumberDana: sumberDana.present ? sumberDana.value : this.sumberDana,
+    namaPemilik: namaPemilik.present ? namaPemilik.value : this.namaPemilik,
   );
   Project copyWithCompanion(ProjectsCompanion data) {
     return Project(
@@ -1129,6 +1391,20 @@ class Project extends DataClass implements Insertable<Project> {
           : this.kontraktorId,
       dinasId: data.dinasId.present ? data.dinasId.value : this.dinasId,
       status: data.status.present ? data.status.value : this.status,
+      targetProgress: data.targetProgress.present
+          ? data.targetProgress.value
+          : this.targetProgress,
+      actualProgress: data.actualProgress.present
+          ? data.actualProgress.value
+          : this.actualProgress,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      deskripsi: data.deskripsi.present ? data.deskripsi.value : this.deskripsi,
+      sumberDana: data.sumberDana.present
+          ? data.sumberDana.value
+          : this.sumberDana,
+      namaPemilik: data.namaPemilik.present
+          ? data.namaPemilik.value
+          : this.namaPemilik,
     );
   }
 
@@ -1144,7 +1420,13 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('nilaiKontrak: $nilaiKontrak, ')
           ..write('kontraktorId: $kontraktorId, ')
           ..write('dinasId: $dinasId, ')
-          ..write('status: $status')
+          ..write('status: $status, ')
+          ..write('targetProgress: $targetProgress, ')
+          ..write('actualProgress: $actualProgress, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('deskripsi: $deskripsi, ')
+          ..write('sumberDana: $sumberDana, ')
+          ..write('namaPemilik: $namaPemilik')
           ..write(')'))
         .toString();
   }
@@ -1161,6 +1443,12 @@ class Project extends DataClass implements Insertable<Project> {
     kontraktorId,
     dinasId,
     status,
+    targetProgress,
+    actualProgress,
+    imagePath,
+    deskripsi,
+    sumberDana,
+    namaPemilik,
   );
   @override
   bool operator ==(Object other) =>
@@ -1175,7 +1463,13 @@ class Project extends DataClass implements Insertable<Project> {
           other.nilaiKontrak == this.nilaiKontrak &&
           other.kontraktorId == this.kontraktorId &&
           other.dinasId == this.dinasId &&
-          other.status == this.status);
+          other.status == this.status &&
+          other.targetProgress == this.targetProgress &&
+          other.actualProgress == this.actualProgress &&
+          other.imagePath == this.imagePath &&
+          other.deskripsi == this.deskripsi &&
+          other.sumberDana == this.sumberDana &&
+          other.namaPemilik == this.namaPemilik);
 }
 
 class ProjectsCompanion extends UpdateCompanion<Project> {
@@ -1189,6 +1483,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<String?> kontraktorId;
   final Value<String?> dinasId;
   final Value<String> status;
+  final Value<double> targetProgress;
+  final Value<double> actualProgress;
+  final Value<String?> imagePath;
+  final Value<String?> deskripsi;
+  final Value<String?> sumberDana;
+  final Value<String?> namaPemilik;
   const ProjectsCompanion({
     this.id = const Value.absent(),
     this.namaProyek = const Value.absent(),
@@ -1200,6 +1500,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.kontraktorId = const Value.absent(),
     this.dinasId = const Value.absent(),
     this.status = const Value.absent(),
+    this.targetProgress = const Value.absent(),
+    this.actualProgress = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.deskripsi = const Value.absent(),
+    this.sumberDana = const Value.absent(),
+    this.namaPemilik = const Value.absent(),
   });
   ProjectsCompanion.insert({
     this.id = const Value.absent(),
@@ -1212,6 +1518,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.kontraktorId = const Value.absent(),
     this.dinasId = const Value.absent(),
     this.status = const Value.absent(),
+    this.targetProgress = const Value.absent(),
+    this.actualProgress = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.deskripsi = const Value.absent(),
+    this.sumberDana = const Value.absent(),
+    this.namaPemilik = const Value.absent(),
   }) : namaProyek = Value(namaProyek);
   static Insertable<Project> custom({
     Expression<int>? id,
@@ -1224,6 +1536,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<String>? kontraktorId,
     Expression<String>? dinasId,
     Expression<String>? status,
+    Expression<double>? targetProgress,
+    Expression<double>? actualProgress,
+    Expression<String>? imagePath,
+    Expression<String>? deskripsi,
+    Expression<String>? sumberDana,
+    Expression<String>? namaPemilik,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1236,6 +1554,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (kontraktorId != null) 'kontraktor_id': kontraktorId,
       if (dinasId != null) 'dinas_id': dinasId,
       if (status != null) 'status': status,
+      if (targetProgress != null) 'target_progress': targetProgress,
+      if (actualProgress != null) 'actual_progress': actualProgress,
+      if (imagePath != null) 'image_path': imagePath,
+      if (deskripsi != null) 'deskripsi': deskripsi,
+      if (sumberDana != null) 'sumber_dana': sumberDana,
+      if (namaPemilik != null) 'nama_pemilik': namaPemilik,
     });
   }
 
@@ -1250,6 +1574,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<String?>? kontraktorId,
     Value<String?>? dinasId,
     Value<String>? status,
+    Value<double>? targetProgress,
+    Value<double>? actualProgress,
+    Value<String?>? imagePath,
+    Value<String?>? deskripsi,
+    Value<String?>? sumberDana,
+    Value<String?>? namaPemilik,
   }) {
     return ProjectsCompanion(
       id: id ?? this.id,
@@ -1262,6 +1592,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       kontraktorId: kontraktorId ?? this.kontraktorId,
       dinasId: dinasId ?? this.dinasId,
       status: status ?? this.status,
+      targetProgress: targetProgress ?? this.targetProgress,
+      actualProgress: actualProgress ?? this.actualProgress,
+      imagePath: imagePath ?? this.imagePath,
+      deskripsi: deskripsi ?? this.deskripsi,
+      sumberDana: sumberDana ?? this.sumberDana,
+      namaPemilik: namaPemilik ?? this.namaPemilik,
     );
   }
 
@@ -1298,6 +1634,24 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
+    if (targetProgress.present) {
+      map['target_progress'] = Variable<double>(targetProgress.value);
+    }
+    if (actualProgress.present) {
+      map['actual_progress'] = Variable<double>(actualProgress.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (deskripsi.present) {
+      map['deskripsi'] = Variable<String>(deskripsi.value);
+    }
+    if (sumberDana.present) {
+      map['sumber_dana'] = Variable<String>(sumberDana.value);
+    }
+    if (namaPemilik.present) {
+      map['nama_pemilik'] = Variable<String>(namaPemilik.value);
+    }
     return map;
   }
 
@@ -1313,7 +1667,13 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('nilaiKontrak: $nilaiKontrak, ')
           ..write('kontraktorId: $kontraktorId, ')
           ..write('dinasId: $dinasId, ')
-          ..write('status: $status')
+          ..write('status: $status, ')
+          ..write('targetProgress: $targetProgress, ')
+          ..write('actualProgress: $actualProgress, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('deskripsi: $deskripsi, ')
+          ..write('sumberDana: $sumberDana, ')
+          ..write('namaPemilik: $namaPemilik')
           ..write(')'))
         .toString();
   }
@@ -4877,6 +5237,467 @@ class LoginHistoryCompanion extends UpdateCompanion<LoginHistoryData> {
   }
 }
 
+class $ActivityHistoriesTable extends ActivityHistories
+    with TableInfo<$ActivityHistoriesTable, ActivityHistory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ActivityHistoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (firebase_uid) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<String> timestamp = GeneratedColumn<String>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    action,
+    entityType,
+    entityId,
+    description,
+    timestamp,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'activity_histories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ActivityHistory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ActivityHistory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ActivityHistory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}timestamp'],
+      )!,
+    );
+  }
+
+  @override
+  $ActivityHistoriesTable createAlias(String alias) {
+    return $ActivityHistoriesTable(attachedDatabase, alias);
+  }
+}
+
+class ActivityHistory extends DataClass implements Insertable<ActivityHistory> {
+  final int id;
+  final String? userId;
+  final String action;
+  final String entityType;
+  final String entityId;
+  final String description;
+  final String timestamp;
+  const ActivityHistory({
+    required this.id,
+    this.userId,
+    required this.action,
+    required this.entityType,
+    required this.entityId,
+    required this.description,
+    required this.timestamp,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['action'] = Variable<String>(action);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_id'] = Variable<String>(entityId);
+    map['description'] = Variable<String>(description);
+    map['timestamp'] = Variable<String>(timestamp);
+    return map;
+  }
+
+  ActivityHistoriesCompanion toCompanion(bool nullToAbsent) {
+    return ActivityHistoriesCompanion(
+      id: Value(id),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      action: Value(action),
+      entityType: Value(entityType),
+      entityId: Value(entityId),
+      description: Value(description),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory ActivityHistory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ActivityHistory(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      action: serializer.fromJson<String>(json['action']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityId: serializer.fromJson<String>(json['entityId']),
+      description: serializer.fromJson<String>(json['description']),
+      timestamp: serializer.fromJson<String>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<String?>(userId),
+      'action': serializer.toJson<String>(action),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityId': serializer.toJson<String>(entityId),
+      'description': serializer.toJson<String>(description),
+      'timestamp': serializer.toJson<String>(timestamp),
+    };
+  }
+
+  ActivityHistory copyWith({
+    int? id,
+    Value<String?> userId = const Value.absent(),
+    String? action,
+    String? entityType,
+    String? entityId,
+    String? description,
+    String? timestamp,
+  }) => ActivityHistory(
+    id: id ?? this.id,
+    userId: userId.present ? userId.value : this.userId,
+    action: action ?? this.action,
+    entityType: entityType ?? this.entityType,
+    entityId: entityId ?? this.entityId,
+    description: description ?? this.description,
+    timestamp: timestamp ?? this.timestamp,
+  );
+  ActivityHistory copyWithCompanion(ActivityHistoriesCompanion data) {
+    return ActivityHistory(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      action: data.action.present ? data.action.value : this.action,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ActivityHistory(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('action: $action, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('description: $description, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    action,
+    entityType,
+    entityId,
+    description,
+    timestamp,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ActivityHistory &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.action == this.action &&
+          other.entityType == this.entityType &&
+          other.entityId == this.entityId &&
+          other.description == this.description &&
+          other.timestamp == this.timestamp);
+}
+
+class ActivityHistoriesCompanion extends UpdateCompanion<ActivityHistory> {
+  final Value<int> id;
+  final Value<String?> userId;
+  final Value<String> action;
+  final Value<String> entityType;
+  final Value<String> entityId;
+  final Value<String> description;
+  final Value<String> timestamp;
+  const ActivityHistoriesCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.description = const Value.absent(),
+    this.timestamp = const Value.absent(),
+  });
+  ActivityHistoriesCompanion.insert({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    required String action,
+    required String entityType,
+    required String entityId,
+    required String description,
+    required String timestamp,
+  }) : action = Value(action),
+       entityType = Value(entityType),
+       entityId = Value(entityId),
+       description = Value(description),
+       timestamp = Value(timestamp);
+  static Insertable<ActivityHistory> custom({
+    Expression<int>? id,
+    Expression<String>? userId,
+    Expression<String>? action,
+    Expression<String>? entityType,
+    Expression<String>? entityId,
+    Expression<String>? description,
+    Expression<String>? timestamp,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (action != null) 'action': action,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityId != null) 'entity_id': entityId,
+      if (description != null) 'description': description,
+      if (timestamp != null) 'timestamp': timestamp,
+    });
+  }
+
+  ActivityHistoriesCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? userId,
+    Value<String>? action,
+    Value<String>? entityType,
+    Value<String>? entityId,
+    Value<String>? description,
+    Value<String>? timestamp,
+  }) {
+    return ActivityHistoriesCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      action: action ?? this.action,
+      entityType: entityType ?? this.entityType,
+      entityId: entityId ?? this.entityId,
+      description: description ?? this.description,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<String>(timestamp.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ActivityHistoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('action: $action, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('description: $description, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4898,6 +5719,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $ProjectLogsTable projectLogs = $ProjectLogsTable(this);
   late final $LoginHistoryTable loginHistory = $LoginHistoryTable(this);
+  late final $ActivityHistoriesTable activityHistories =
+      $ActivityHistoriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4915,6 +5738,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     projectDocuments,
     projectLogs,
     loginHistory,
+    activityHistories,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -4959,20 +5783,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('activity_histories', kind: UpdateKind.update)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'projects',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('documents', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'users',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('documents', kind: UpdateKind.update)],
     ),
   ]);
 }
@@ -5243,6 +6053,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       required String peran,
       Value<int?> perusahaanId,
       Value<String?> nomorHp,
+      Value<String?> password,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -5253,6 +6064,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> peran,
       Value<int?> perusahaanId,
       Value<String?> nomorHp,
+      Value<String?> password,
       Value<int> rowid,
     });
 
@@ -5392,6 +6204,35 @@ final class $$UsersTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ActivityHistoriesTable, List<ActivityHistory>>
+  _activityHistoriesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.activityHistories,
+        aliasName: $_aliasNameGenerator(
+          db.users.firebaseUid,
+          db.activityHistories.userId,
+        ),
+      );
+
+  $$ActivityHistoriesTableProcessedTableManager get activityHistoriesRefs {
+    final manager =
+        $$ActivityHistoriesTableTableManager(
+          $_db,
+          $_db.activityHistories,
+        ).filter(
+          (f) => f.userId.firebaseUid.sqlEquals(
+            $_itemColumn<String>('firebase_uid')!,
+          ),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _activityHistoriesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
@@ -5424,6 +6265,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get nomorHp => $composableBuilder(
     column: $table.nomorHp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get password => $composableBuilder(
+    column: $table.password,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5574,6 +6420,31 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     );
     return f(composer);
   }
+
+  Expression<bool> activityHistoriesRefs(
+    Expression<bool> Function($$ActivityHistoriesTableFilterComposer f) f,
+  ) {
+    final $$ActivityHistoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firebaseUid,
+      referencedTable: $db.activityHistories,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ActivityHistoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.activityHistories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$UsersTableOrderingComposer
@@ -5607,6 +6478,11 @@ class $$UsersTableOrderingComposer
 
   ColumnOrderings<String> get nomorHp => $composableBuilder(
     column: $table.nomorHp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get password => $composableBuilder(
+    column: $table.password,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5659,6 +6535,9 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get nomorHp =>
       $composableBuilder(column: $table.nomorHp, builder: (column) => column);
+
+  GeneratedColumn<String> get password =>
+      $composableBuilder(column: $table.password, builder: (column) => column);
 
   $$PerusahaanTableAnnotationComposer get perusahaanId {
     final $$PerusahaanTableAnnotationComposer composer = $composerBuilder(
@@ -5807,6 +6686,32 @@ class $$UsersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> activityHistoriesRefs<T extends Object>(
+    Expression<T> Function($$ActivityHistoriesTableAnnotationComposer a) f,
+  ) {
+    final $$ActivityHistoriesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.firebaseUid,
+          referencedTable: $db.activityHistories,
+          getReferencedColumn: (t) => t.userId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ActivityHistoriesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.activityHistories,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$UsersTableTableManager
@@ -5829,6 +6734,7 @@ class $$UsersTableTableManager
             bool projectDocumentsRefs,
             bool projectLogsRefs,
             bool loginHistoryRefs,
+            bool activityHistoriesRefs,
           })
         > {
   $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
@@ -5850,6 +6756,7 @@ class $$UsersTableTableManager
                 Value<String> peran = const Value.absent(),
                 Value<int?> perusahaanId = const Value.absent(),
                 Value<String?> nomorHp = const Value.absent(),
+                Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 firebaseUid: firebaseUid,
@@ -5858,6 +6765,7 @@ class $$UsersTableTableManager
                 peran: peran,
                 perusahaanId: perusahaanId,
                 nomorHp: nomorHp,
+                password: password,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -5868,6 +6776,7 @@ class $$UsersTableTableManager
                 required String peran,
                 Value<int?> perusahaanId = const Value.absent(),
                 Value<String?> nomorHp = const Value.absent(),
+                Value<String?> password = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 firebaseUid: firebaseUid,
@@ -5876,6 +6785,7 @@ class $$UsersTableTableManager
                 peran: peran,
                 perusahaanId: perusahaanId,
                 nomorHp: nomorHp,
+                password: password,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -5892,6 +6802,7 @@ class $$UsersTableTableManager
                 projectDocumentsRefs = false,
                 projectLogsRefs = false,
                 loginHistoryRefs = false,
+                activityHistoriesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -5901,6 +6812,7 @@ class $$UsersTableTableManager
                     if (projectDocumentsRefs) db.projectDocuments,
                     if (projectLogsRefs) db.projectLogs,
                     if (loginHistoryRefs) db.loginHistory,
+                    if (activityHistoriesRefs) db.activityHistories,
                   ],
                   addJoins:
                       <
@@ -5945,7 +6857,7 @@ class $$UsersTableTableManager
                               $$UsersTableReferences(db, table, p0).reportsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.pengawasId == item.firebaseUid,
+                                (e) => e.pembuatId == item.firebaseUid,
                               ),
                           typedResults: items,
                         ),
@@ -6033,6 +6945,27 @@ class $$UsersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (activityHistoriesRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          ActivityHistory
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._activityHistoriesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).activityHistoriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.firebaseUid,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6060,6 +6993,7 @@ typedef $$UsersTableProcessedTableManager =
         bool projectDocumentsRefs,
         bool projectLogsRefs,
         bool loginHistoryRefs,
+        bool activityHistoriesRefs,
       })
     >;
 typedef $$ProjectsTableCreateCompanionBuilder =
@@ -6074,6 +7008,12 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       Value<String?> kontraktorId,
       Value<String?> dinasId,
       Value<String> status,
+      Value<double> targetProgress,
+      Value<double> actualProgress,
+      Value<String?> imagePath,
+      Value<String?> deskripsi,
+      Value<String?> sumberDana,
+      Value<String?> namaPemilik,
     });
 typedef $$ProjectsTableUpdateCompanionBuilder =
     ProjectsCompanion Function({
@@ -6087,6 +7027,12 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<String?> kontraktorId,
       Value<String?> dinasId,
       Value<String> status,
+      Value<double> targetProgress,
+      Value<double> actualProgress,
+      Value<String?> imagePath,
+      Value<String?> deskripsi,
+      Value<String?> sumberDana,
+      Value<String?> namaPemilik,
     });
 
 final class $$ProjectsTableReferences
@@ -6255,6 +7201,36 @@ class $$ProjectsTableFilterComposer
 
   ColumnFilters<String> get status => $composableBuilder(
     column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get targetProgress => $composableBuilder(
+    column: $table.targetProgress,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get actualProgress => $composableBuilder(
+    column: $table.actualProgress,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deskripsi => $composableBuilder(
+    column: $table.deskripsi,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sumberDana => $composableBuilder(
+    column: $table.sumberDana,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get namaPemilik => $composableBuilder(
+    column: $table.namaPemilik,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6454,6 +7430,36 @@ class $$ProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get targetProgress => $composableBuilder(
+    column: $table.targetProgress,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get actualProgress => $composableBuilder(
+    column: $table.actualProgress,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deskripsi => $composableBuilder(
+    column: $table.deskripsi,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sumberDana => $composableBuilder(
+    column: $table.sumberDana,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get namaPemilik => $composableBuilder(
+    column: $table.namaPemilik,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$UsersTableOrderingComposer get kontraktorId {
     final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -6541,6 +7547,32 @@ class $$ProjectsTableAnnotationComposer
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<double> get targetProgress => $composableBuilder(
+    column: $table.targetProgress,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get actualProgress => $composableBuilder(
+    column: $table.actualProgress,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get deskripsi =>
+      $composableBuilder(column: $table.deskripsi, builder: (column) => column);
+
+  GeneratedColumn<String> get sumberDana => $composableBuilder(
+    column: $table.sumberDana,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get namaPemilik => $composableBuilder(
+    column: $table.namaPemilik,
+    builder: (column) => column,
+  );
 
   $$UsersTableAnnotationComposer get kontraktorId {
     final $$UsersTableAnnotationComposer composer = $composerBuilder(
@@ -6703,6 +7735,8 @@ class $$ProjectsTableTableManager
           (Project, $$ProjectsTableReferences),
           Project,
           PrefetchHooks Function({
+            bool kontraktorId,
+            bool dinasId,
             bool reportsRefs,
             bool projectTeamsRefs,
             bool projectDocumentsRefs,
@@ -6732,6 +7766,12 @@ class $$ProjectsTableTableManager
                 Value<String?> kontraktorId = const Value.absent(),
                 Value<String?> dinasId = const Value.absent(),
                 Value<String> status = const Value.absent(),
+                Value<double> targetProgress = const Value.absent(),
+                Value<double> actualProgress = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String?> deskripsi = const Value.absent(),
+                Value<String?> sumberDana = const Value.absent(),
+                Value<String?> namaPemilik = const Value.absent(),
               }) => ProjectsCompanion(
                 id: id,
                 namaProyek: namaProyek,
@@ -6743,6 +7783,12 @@ class $$ProjectsTableTableManager
                 kontraktorId: kontraktorId,
                 dinasId: dinasId,
                 status: status,
+                targetProgress: targetProgress,
+                actualProgress: actualProgress,
+                imagePath: imagePath,
+                deskripsi: deskripsi,
+                sumberDana: sumberDana,
+                namaPemilik: namaPemilik,
               ),
           createCompanionCallback:
               ({
@@ -6756,6 +7802,12 @@ class $$ProjectsTableTableManager
                 Value<String?> kontraktorId = const Value.absent(),
                 Value<String?> dinasId = const Value.absent(),
                 Value<String> status = const Value.absent(),
+                Value<double> targetProgress = const Value.absent(),
+                Value<double> actualProgress = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String?> deskripsi = const Value.absent(),
+                Value<String?> sumberDana = const Value.absent(),
+                Value<String?> namaPemilik = const Value.absent(),
               }) => ProjectsCompanion.insert(
                 id: id,
                 namaProyek: namaProyek,
@@ -6767,6 +7819,12 @@ class $$ProjectsTableTableManager
                 kontraktorId: kontraktorId,
                 dinasId: dinasId,
                 status: status,
+                targetProgress: targetProgress,
+                actualProgress: actualProgress,
+                imagePath: imagePath,
+                deskripsi: deskripsi,
+                sumberDana: sumberDana,
+                namaPemilik: namaPemilik,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -6778,6 +7836,8 @@ class $$ProjectsTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                kontraktorId = false,
+                dinasId = false,
                 reportsRefs = false,
                 projectTeamsRefs = false,
                 projectDocumentsRefs = false,
@@ -6791,7 +7851,51 @@ class $$ProjectsTableTableManager
                     if (projectDocumentsRefs) db.projectDocuments,
                     if (projectLogsRefs) db.projectLogs,
                   ],
-                  addJoins: null,
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (kontraktorId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.kontraktorId,
+                                    referencedTable: $$ProjectsTableReferences
+                                        ._kontraktorIdTable(db),
+                                    referencedColumn: $$ProjectsTableReferences
+                                        ._kontraktorIdTable(db)
+                                        .firebaseUid,
+                                  )
+                                  as T;
+                        }
+                        if (dinasId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.dinasId,
+                                    referencedTable: $$ProjectsTableReferences
+                                        ._dinasIdTable(db),
+                                    referencedColumn: $$ProjectsTableReferences
+                                        ._dinasIdTable(db)
+                                        .firebaseUid,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (reportsRefs)
@@ -6899,6 +8003,8 @@ typedef $$ProjectsTableProcessedTableManager =
       (Project, $$ProjectsTableReferences),
       Project,
       PrefetchHooks Function({
+        bool kontraktorId,
+        bool dinasId,
         bool reportsRefs,
         bool projectTeamsRefs,
         bool projectDocumentsRefs,
@@ -7588,7 +8694,7 @@ class $$ReportsTableTableManager
           prefetchHooksCallback:
               ({
                 proyekId = false,
-                pengawasId = false,
+                pembuatId = false,
                 tasksRefs = false,
                 reportMaterialsRefs = false,
                 reportPhotosRefs = false,
@@ -7724,7 +8830,7 @@ typedef $$ReportsTableProcessedTableManager =
       Report,
       PrefetchHooks Function({
         bool proyekId,
-        bool pengawasId,
+        bool pembuatId,
         bool tasksRefs,
         bool reportMaterialsRefs,
         bool reportPhotosRefs,
@@ -10605,6 +11711,376 @@ typedef $$LoginHistoryTableProcessedTableManager =
       LoginHistoryData,
       PrefetchHooks Function({bool userId})
     >;
+typedef $$ActivityHistoriesTableCreateCompanionBuilder =
+    ActivityHistoriesCompanion Function({
+      Value<int> id,
+      Value<String?> userId,
+      required String action,
+      required String entityType,
+      required String entityId,
+      required String description,
+      required String timestamp,
+    });
+typedef $$ActivityHistoriesTableUpdateCompanionBuilder =
+    ActivityHistoriesCompanion Function({
+      Value<int> id,
+      Value<String?> userId,
+      Value<String> action,
+      Value<String> entityType,
+      Value<String> entityId,
+      Value<String> description,
+      Value<String> timestamp,
+    });
+
+final class $$ActivityHistoriesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ActivityHistoriesTable,
+          ActivityHistory
+        > {
+  $$ActivityHistoriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $UsersTable _userIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.activityHistories.userId, db.users.firebaseUid),
+  );
+
+  $$UsersTableProcessedTableManager? get userId {
+    final $_column = $_itemColumn<String>('user_id');
+    if ($_column == null) return null;
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.firebaseUid.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ActivityHistoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $ActivityHistoriesTable> {
+  $$ActivityHistoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.firebaseUid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ActivityHistoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ActivityHistoriesTable> {
+  $$ActivityHistoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.firebaseUid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ActivityHistoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ActivityHistoriesTable> {
+  $$ActivityHistoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.firebaseUid,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ActivityHistoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ActivityHistoriesTable,
+          ActivityHistory,
+          $$ActivityHistoriesTableFilterComposer,
+          $$ActivityHistoriesTableOrderingComposer,
+          $$ActivityHistoriesTableAnnotationComposer,
+          $$ActivityHistoriesTableCreateCompanionBuilder,
+          $$ActivityHistoriesTableUpdateCompanionBuilder,
+          (ActivityHistory, $$ActivityHistoriesTableReferences),
+          ActivityHistory,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$ActivityHistoriesTableTableManager(
+    _$AppDatabase db,
+    $ActivityHistoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ActivityHistoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ActivityHistoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ActivityHistoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> timestamp = const Value.absent(),
+              }) => ActivityHistoriesCompanion(
+                id: id,
+                userId: userId,
+                action: action,
+                entityType: entityType,
+                entityId: entityId,
+                description: description,
+                timestamp: timestamp,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                required String action,
+                required String entityType,
+                required String entityId,
+                required String description,
+                required String timestamp,
+              }) => ActivityHistoriesCompanion.insert(
+                id: id,
+                userId: userId,
+                action: action,
+                entityType: entityType,
+                entityId: entityId,
+                description: description,
+                timestamp: timestamp,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ActivityHistoriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.userId,
+                                referencedTable:
+                                    $$ActivityHistoriesTableReferences
+                                        ._userIdTable(db),
+                                referencedColumn:
+                                    $$ActivityHistoriesTableReferences
+                                        ._userIdTable(db)
+                                        .firebaseUid,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ActivityHistoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ActivityHistoriesTable,
+      ActivityHistory,
+      $$ActivityHistoriesTableFilterComposer,
+      $$ActivityHistoriesTableOrderingComposer,
+      $$ActivityHistoriesTableAnnotationComposer,
+      $$ActivityHistoriesTableCreateCompanionBuilder,
+      $$ActivityHistoriesTableUpdateCompanionBuilder,
+      (ActivityHistory, $$ActivityHistoriesTableReferences),
+      ActivityHistory,
+      PrefetchHooks Function({bool userId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10633,4 +12109,6 @@ class $AppDatabaseManager {
       $$ProjectLogsTableTableManager(_db, _db.projectLogs);
   $$LoginHistoryTableTableManager get loginHistory =>
       $$LoginHistoryTableTableManager(_db, _db.loginHistory);
+  $$ActivityHistoriesTableTableManager get activityHistories =>
+      $$ActivityHistoriesTableTableManager(_db, _db.activityHistories);
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/project_provider.dart';
 
 import '../../../backend/models/project_model.dart';
 import 'dashboard_page.dart';
@@ -16,58 +18,181 @@ class ProjectListPage extends StatefulWidget {
 
 class _ProjectListPageState extends State<ProjectListPage> {
   int _selectedIndex = 1; 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
-  // 2. Dummy data
-  final List<ProjectModel> _allProjects = [
-    ProjectModel(
-      title: 'Pembangunan Jembatan',
-      location: 'Purwokerto',
-      kategori: 'Infrastruktur',
-      status: 'Progres',
-      targetProgress: 0.8,
-      actualProgress: 0.5,
-      imagePath: 'assets/images/bottom_bg.png', 
-    ),
-    ProjectModel(
-      title: 'Gor hebat mantap',
-      location: 'Purbalingga',
-      kategori: 'Gedung',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Gorong Gorong Manukan',
-      location: 'Surabaya',
-      kategori: 'Infrastruktur',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Aspal Jl.Desa Kesugihan',
-      location: 'Cilacap',
-      kategori: 'Infrastruktur',
-      status: 'Progres',
-      targetProgress: 0.4,
-      actualProgress: 0.3,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel(
-      title: 'Koperasi Hitam Putih',
-      location: 'Alam Lain',
-      kategori: 'Gedung',
-      status: 'Progres',
-      targetProgress: 0.1,
-      actualProgress: 0.1,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<ProjectProvider>(context, listen: false).loadProjects();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _showAddProjectDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final locationController = TextEditingController();
+    String kategori = 'Infrastruktur';
+    final nilaiKontrakController = TextEditingController();
+    String status = 'Perencanaan';
+    final tanggalMulaiController = TextEditingController();
+    final tanggalSelesaiController = TextEditingController();
+    final pemilikController = TextEditingController();
+    final sumberDanaController = TextEditingController();
+    final kontraktorController = TextEditingController();
+    final deskripsiController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Tambah Proyek Baru', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Nama Proyek'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: locationController,
+                      decoration: const InputDecoration(labelText: 'Lokasi'),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: kategori,
+                      decoration: const InputDecoration(labelText: 'Kategori'),
+                      items: const [
+                        DropdownMenuItem(value: 'Infrastruktur', child: Text('Infrastruktur')),
+                        DropdownMenuItem(value: 'Gedung', child: Text('Gedung')),
+                        DropdownMenuItem(value: 'SDA', child: Text('SDA')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setState(() => kategori = val);
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: nilaiKontrakController,
+                      decoration: const InputDecoration(labelText: 'Nilai Kontrak (Rp)'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: status,
+                      decoration: const InputDecoration(labelText: 'Status'),
+                      items: const [
+                        DropdownMenuItem(value: 'Perencanaan', child: Text('Perencanaan')),
+                        DropdownMenuItem(value: 'Progres', child: Text('Progres')),
+                        DropdownMenuItem(value: 'Selesai', child: Text('Selesai')),
+                        DropdownMenuItem(value: 'Dibatalkan', child: Text('Dibatalkan')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setState(() => status = val);
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: tanggalMulaiController,
+                      decoration: const InputDecoration(labelText: 'Tanggal Mulai (e.g. 1 Januari 2026)'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: tanggalSelesaiController,
+                      decoration: const InputDecoration(labelText: 'Tanggal Selesai (e.g. 30 Februari 2026)'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: pemilikController,
+                      decoration: const InputDecoration(labelText: 'Pemilik Proyek / Instansi'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: sumberDanaController,
+                      decoration: const InputDecoration(labelText: 'Sumber Dana'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: kontraktorController,
+                      decoration: const InputDecoration(labelText: 'Kontraktor Pelaksana'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: deskripsiController,
+                      decoration: const InputDecoration(labelText: 'Deskripsi Proyek'),
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final title = titleController.text.trim();
+                    final location = locationController.text.trim();
+                    final nilaiKontrak = double.tryParse(nilaiKontrakController.text.trim()) ?? 0.0;
+
+                    if (title.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Nama proyek tidak boleh kosong')),
+                      );
+                      return;
+                    }
+
+                    final newProject = ProjectModel(
+                      title: title,
+                      location: location,
+                      kategori: kategori,
+                      status: status,
+                      targetProgress: 0.0,
+                      actualProgress: 0.0,
+                      imagePath: 'assets/images/bottom_bg.png',
+                      nilaiKontrak: nilaiKontrak,
+                      tanggalMulai: tanggalMulaiController.text.trim(),
+                      tanggalSelesai: tanggalSelesaiController.text.trim(),
+                      namaPemilik: pemilikController.text.trim(),
+                      sumberDana: sumberDanaController.text.trim(),
+                      kontraktorId: kontraktorController.text.trim(),
+                      deskripsi: deskripsiController.text.trim(),
+                    );
+
+                    await Provider.of<ProjectProvider>(context, listen: false).createProject(newProject);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final projectProvider = Provider.of<ProjectProvider>(context);
+    final projects = projectProvider.projects.where((p) {
+      if (_searchQuery.isEmpty) return true;
+      return p.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          p.location.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+
     // 3. Use DefaultTabController for the 4 tabs
     return DefaultTabController(
       length: 4,
@@ -102,6 +227,12 @@ class _ProjectListPageState extends State<ProjectListPage> {
                     children: [
                       Expanded(
                         child: TextField(
+                          controller: _searchController,
+                          onChanged: (val) {
+                            setState(() {
+                              _searchQuery = val.trim();
+                            });
+                          },
                           decoration: InputDecoration(
                             hintText: 'Cari Proyek..',
                             hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
@@ -135,7 +266,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => _showAddProjectDialog(context),
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text(
                         'Tambah Proyek',
@@ -178,10 +309,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildProjectList(_allProjects), // Tab Semua
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Progres').toList()), // Tab Progres
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Selesai').toList()), // Tab Selesai
-                  _buildProjectList(_allProjects.where((p) => p.status == 'Dibatalkan').toList()), // Tab Dibatalkan
+                  _buildProjectList(projects), // Tab Semua
+                  _buildProjectList(projects.where((p) => p.status == 'Progres').toList()), // Tab Progres
+                  _buildProjectList(projects.where((p) => p.status == 'Selesai').toList()), // Tab Selesai
+                  _buildProjectList(projects.where((p) => p.status == 'Dibatalkan').toList()), // Tab Dibatalkan
                 ],
               ),
             ),
