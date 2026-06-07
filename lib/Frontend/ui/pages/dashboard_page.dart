@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'project_list_page.dart';
+import 'report_page.dart';
+import 'history_page.dart';
+import 'account_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -249,6 +252,18 @@ class _DashboardPageState extends State<DashboardPage> {
               _navigateToProjectListPage();
               return;
             }
+            if (index == 2) {
+              _navigateToReportPage();
+              return;
+            }
+            if (index == 3) {
+              _navigateToHistoryPage();
+              return;
+            }
+            if (index == 4) {
+              _navigateToAccountPage();
+              return;
+            }
             setState(() {
               _selectedIndex = index;
             });
@@ -317,6 +332,27 @@ class _DashboardPageState extends State<DashboardPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ProjectListPage()),
+    );
+  }
+
+  void _navigateToReportPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ReportPage()),
+    );
+  }
+
+  void _navigateToHistoryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HistoryPage()),
+    );
+  }
+
+  void _navigateToAccountPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AccountPage()),
     );
   }
 
