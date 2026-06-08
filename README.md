@@ -640,3 +640,26 @@ flutter build web --release
 ---
 
 _Dikembangkan sebagai Tugas Besar CLO2 Konstruksi Perangkat Lunak — Telkom University 2025/2026_
+
+---
+
+## 🔍 Detail Implementasi Riil Teknik Automata & Table-Driven Construction
+
+Berikut adalah berkas-berkas di dalam proyek ini yang secara aktif mengimplementasikan logika program menggunakan kedua teknik tersebut (bukan sekadar komentar/spesifikasi):
+
+### 1. Table-Driven Construction
+Teknik ini menghindari penggunaan percabangan logika berkondisi (`if-else` atau `switch-case` yang panjang) dengan mengambil nilai langsung dari pemetaan tabel data terstruktur (`List` atau `Map`).
+
+* **[create_supervision_report_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/create_supervision_report_page.dart)** (Fungsi pembantu `_monthName`):
+  Menggunakan list konstan `names` untuk memetakan nomor bulan (`int`) langsung ke nama bulannya lewat indeks `names[m - 1]`. Hal ini menghindari penggunaan 12 kondisi `if-else` secara beruntun.
+* **[confirmation_request_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/confirmation_request_page.dart)** (Getter `_items`):
+  Menggunakan representasi data di dalam `List<Map<String, String>>` untuk menyimpan pemetaan badge visual seperti `badgeColor`, `badgeTextColor`, judul proyek, dan parameter UI lainnya berdasarkan status. Data ini langsung dipetakan oleh widget pembangun tanpa percabangan logika render.
+* **[app_database.g.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/backend/database/app_database.g.dart)** (Fungsi `map` dan `toColumns`):
+  Drift ORM mengimplementasikan pemetaan data dari database SQLite (kunci bertipe `Map<String, dynamic>`) ke objek data Dart secara langsung menggunakan pemetaan skema kolom database.
+
+### 2. Automata (State Transitions / Finite State Machine)
+Teknik ini memodelkan program sebagai sekumpulan keadaan (states) terdefinisi, di mana perpindahan antar keadaan diatur menggunakan transisi yang valid untuk menghindari "illegal state".
+
+* **[splash_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/splash_page.dart)** (State transition berbasis waktu):
+  Menggunakan `Timer` pada `initState` untuk memicu transisi state waktu (timer transition) dari keadaan awal **Splash Screen** ke halaman berikutnya (**Login Screen**) setelah durasi 3 detik secara teratur menggunakan transisi sekali jalan (`pushReplacement`).
+
