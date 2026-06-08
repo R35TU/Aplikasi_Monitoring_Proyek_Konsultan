@@ -663,3 +663,30 @@ Teknik ini memodelkan program sebagai sekumpulan keadaan (states) terdefinisi, d
 * **[splash_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/splash_page.dart)** (State transition berbasis waktu):
   Menggunakan `Timer` pada `initState` untuk memicu transisi state waktu (timer transition) dari keadaan awal **Splash Screen** ke halaman berikutnya (**Login Screen**) setelah durasi 3 detik secara teratur menggunakan transisi sekali jalan (`pushReplacement`).
 
+---
+
+## ✨ Penerapan Prinsip Clean Code
+
+Proyek ini menerapkan beberapa prinsip **Clean Code** untuk menjaga kualitas, keterbacaan, dan kemudahan pemeliharaan kode:
+
+### 1. Meaningful Names (Penamaan yang Jelas & Bermakna)
+Menghindari penggunaan singkatan yang membingungkan atau variabel satu huruf. Penamaan kelas dan variabel ditulis secara deskriptif untuk memperjelas fungsinya langsung dari namanya.
+* Contoh: Kelas `CreateSupervisionReportPage` dan variabel-variabel pendukung seperti `_selectedProject`, `_selectedDate`, dan `_activityController`.
+
+### 2. Single Responsibility Principle / SRP (Satu Tanggung Jawab)
+Membagi sistem ke dalam bagian-bagian kecil yang hanya memiliki satu tanggung jawab utama.
+* Contoh: Pemisahan arsitektur folder yang tegas antara `lib/backend` (fokus pada data & persistence SQLite) dan `lib/frontend` (fokus pada antarmuka visual UI).
+* Contoh: Fungsi pembantu `_monthName(int m)` di [create_supervision_report_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/create_supervision_report_page.dart) diisolasi khusus untuk konversi nama bulan sehingga tidak mengotori fungsi rendering UI utama.
+
+### 3. Avoid Deep Nesting (Menghindari Percabangan Bertingkat yang Rumit)
+Mengganti struktur percabangan `if-else` atau `switch-case` berjenjang menggunakan pemetaan terstruktur (seperti teknik *Table-Driven*).
+* Contoh: Pemetaan nama bulan langsung menggunakan pencarian berbasis indeks array `names[m - 1]` di fungsi `_monthName`.
+
+### 4. Don't Repeat Yourself / DRY (Menghindari Duplikasi Kode)
+Membungkus blok kode visual atau logika yang sering digunakan kembali menjadi komponen terpisah (*Helper Widgets*).
+* Contoh: Fungsi `_buildProgressBar(...)` dan `_buildProjectCard(...)` di berkas [project_list_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/project_list_page.dart) digunakan berulang kali untuk merender statistik proyek yang berbeda tanpa menduplikasi struktur widget dasar.
+
+### 5. Penggunaan Sintaks Modern Dart yang Ringkas
+Menggunakan ekspresi lambda/arrow function (`=>`) untuk mempersingkat fungsi sederhana serta *Spread Operator* (`...`) untuk penggabungan list widget dinamis secara elegan.
+
+
