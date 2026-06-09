@@ -1,24 +1,64 @@
-// =============================================================
-// FILE   : lib/backend/services/auth_service.dart
-// TEKNIK : API
-// -------------------------------------------------------------
-// FUNGSI :
-//   Menangani semua operasi autentikasi menggunakan
-//   Firebase Authentication SDK.
-//   Perantara antara auth_provider.dart (FSM) dan Firebase Auth.
-//
-// METHOD YANG PERLU DIBUAT :
-//   - signIn(email, password)  : login, return UserCredential
-//   - signOut()                : logout
-//   - resetPassword(email)     : kirim email reset password
-//   - getCurrentUser()         : ambil user yang sedang login
-//   - authStateChanges()       : Stream<User?> untuk listen status login
-//
-// CARA PAKAI :
-//   import 'package:firebase_auth/firebase_auth.dart';
-//   final _auth = FirebaseAuth.instance;
-//
-// DEFENSIVE :
-//   Wrap setiap call Firebase dengan try-catch FirebaseAuthException.
-//   Validasi email tidak kosong sebelum memanggil API.
-// =============================================================
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/user_model.dart';
+import '../supabase/supabase_client.dart';
+
+class AuthService {
+  UserModel? _currentUser;
+
+  UserModel? get currentUser => _currentUser;
+
+  AuthService() {
+    _initAuthStateListener();
+  }
+
+  void _initAuthStateListener() {
+    supabase.auth.onAuthStateChange.listen((data) async {
+      final Session? session = data.session;
+      if (session != null) {
+        final userId = session.user.id;
+        final response = await supabase.from('users').select().eq('firebase_uid', userId).maybeSingle();
+        if (response != null) {
+          _currentUser = UserModel.fromJson(response, session.user.email ?? '');
+        }
+      } else {
+        _currentUser = null;
+      }
+    });
+  }
+
+  Future<void> seedDefaultUser() async {
+    // Seeding is now handled via Supabase Dashboard directly
+  }
+
+  Future<UserModel?> signIn(String email, String password) async {
+    assert(email.isNotEmpty, 'Email tidak boleh kosong');
+    assert(password.isNotEmpty, 'Password tidak boleh kosong');
+
+    try {
+      final AuthResponse res = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      final user = res.user;
+      if (user != null) {
+        final response = await supabase.from('users').select().eq('firebase_uid', user.id).maybeSingle();
+        if (response != null) {
+          _currentUser = UserModel.fromJson(response, user.email ?? '');
+          return _currentUser;
+        } else {
+          // If no custom user data, just return a default
+          _currentUser = UserModel(id: user.id, name: 'User', email: user.email ?? '', role: 'client');
+          return _currentUser;
+        }
+      }
+      return null;
+    } catch (e) {
+      throw Exception("Gagal login: $e");
+    }
+  }
+
+  Future<void> signOut() async {
+    await supabase.auth.signOut();
+    _currentUser = null;
+  }
+}

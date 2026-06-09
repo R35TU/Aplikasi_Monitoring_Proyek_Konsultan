@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/dashboard_provider.dart';
 import 'project_list_page.dart';
 import 'report_page.dart';
 import 'history_page.dart';
@@ -13,6 +15,15 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load data when page initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DashboardProvider>().loadDashboardData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,19 +108,30 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             const SizedBox(height: 24),
 
-            // 2. Summary Cards Section
-            Row(
-              children: [
-                _buildSummaryCard(
-              'Total Proyek',
-              '5',
-              Icons.folder,
-              Colors.blue,
-              onTap: _navigateToProjectListPage,
-            ),
-                const SizedBox(width: 16),
-                _buildSummaryCard('Progres', '3', Icons.bar_chart, Colors.green),
-              ],
+            Consumer<DashboardProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return Row(
+                  children: [
+                    _buildSummaryCard(
+                      'Total Proyek',
+                      provider.totalProjects.toString(),
+                      Icons.folder,
+                      Colors.blue,
+                      onTap: _navigateToProjectListPage,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildSummaryCard(
+                      'Progres',
+                      provider.onProgressProjects.toString(),
+                      Icons.bar_chart,
+                      Colors.green
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 16),
             Row(

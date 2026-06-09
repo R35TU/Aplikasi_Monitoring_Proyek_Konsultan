@@ -1,25 +1,46 @@
-// =============================================================
-// FILE   : lib/backend/repositories/report_repository.dart
-// TEKNIK : Parameterization (via BaseRepository<ReportModel>)
-//          + Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Implementasi konkret dari BaseRepository<ReportModel>.
-//   Repository yang paling sering diakses karena laporan harian
-//   diinput setiap hari dari lapangan.
-//
-// METHOD YANG DIIMPLEMENTASI :
-//   - getAll()                  : ambil semua laporan
-//   - getById(int id)           : ambil laporan berdasarkan ID
-//   - getByProjectId(int id)    : ambil laporan per proyek (PENTING)
-//   - add(ReportModel)          : simpan laporan baru, return id
-//   - update(id, model)         : update laporan, return bool
-//   - delete(id)                : hapus laporan, return bool
-//
-// DIPAKAI OLEH :
-//   report_provider.dart (FSM Automata) untuk update status laporan.
-//
-// DEFENSIVE :
-//   assert(model.title.isNotEmpty, 'Judul tidak boleh kosong')
-//   assert(model.progress >= 0 && model.progress <= 100)
-// =============================================================
+import '../models/report_model.dart';
+import 'base_repository.dart';
+import '../supabase/supabase_client.dart';
+
+class ReportRepository implements BaseRepository<ReportModel> {
+  final String _table = 'reports';
+
+  @override
+  Future<List<ReportModel>> getAll() async {
+    final response = await supabase.from(_table).select();
+    return response.map((json) => ReportModel.fromJson(json)).toList();
+  }
+
+  @override
+  Future<ReportModel?> getById(dynamic id) async {
+    final response = await supabase.from(_table).select().eq('id', id).maybeSingle();
+    if (response == null) return null;
+    return ReportModel.fromJson(response);
+  }
+
+  Future<List<ReportModel>> getByProjectId(int projectId) async {
+    final response = await supabase.from(_table).select().eq('proyek_id', projectId);
+    return response.map((json) => ReportModel.fromJson(json)).toList();
+  }
+
+  @override
+  Future<ReportModel?> add(ReportModel item) async {
+    final response = await supabase.from(_table).insert(item.toJson()).select().maybeSingle();
+    if (response == null) return null;
+    return ReportModel.fromJson(response);
+  }
+
+  @override
+  Future<bool> updateItem(dynamic id, ReportModel item) async {
+    final data = item.toJson();
+    data.remove('id');
+    final response = await supabase.from(_table).update(data).eq('id', id).select();
+    return response.isNotEmpty;
+  }
+
+  @override
+  Future<bool> deleteItem(dynamic id) async {
+    final response = await supabase.from(_table).delete().eq('id', id).select();
+    return response.isNotEmpty;
+  }
+}

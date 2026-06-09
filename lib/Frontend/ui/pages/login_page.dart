@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
 
-  final TextEditingController usernameController =
+  final TextEditingController emailController =
       TextEditingController();
 
   final TextEditingController passwordController =
@@ -86,9 +88,9 @@ class _LoginPageState extends State<LoginPage> {
 
                         /// Username
                         TextField(
-                          controller: usernameController,
+                          controller: emailController,
                           decoration: InputDecoration(
-                            hintText: "Username",
+                            hintText: "Email",
                             filled: true,
                             fillColor: Colors.white,
                             contentPadding:
@@ -178,38 +180,67 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 20),
 
                         /// Tombol Login
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xff0D24FF),
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const DashboardPage(),
+                        Consumer<AuthProvider>(
+                          builder: (context, authProvider, child) {
+                            return SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xff0D24FF),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                              );
-                            },
-                            child: const Text(
-                              "Masuk",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight:
-                                    FontWeight.bold,
+                                onPressed: authProvider.state == AuthState.loading
+                                    ? null
+                                    : () async {
+                                        final email = emailController.text.trim();
+                                        final password = passwordController.text;
+
+                                        if (email.isEmpty || password.isEmpty) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Email dan Password tidak boleh kosong')),
+                                          );
+                                          return;
+                                        }
+
+                                        await authProvider.login(email, password);
+
+                                        if (!mounted) return;
+
+                                        if (authProvider.state == AuthState.authenticated) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(builder: (_) => const DashboardPage()),
+                                          );
+                                        } else if (authProvider.state == AuthState.error) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(authProvider.errorMessage),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                          authProvider.retry();
+                                        }
+                                      },
+                                child: authProvider.state == AuthState.loading
+                                    ? const SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                      )
+                                    : const Text(
+                                        "Masuk",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
 
                         SizedBox(height: height * 0.18),

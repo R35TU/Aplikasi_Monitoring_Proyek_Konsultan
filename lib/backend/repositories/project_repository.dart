@@ -1,23 +1,46 @@
-// =============================================================
-// FILE   : lib/backend/repositories/project_repository.dart
-// TEKNIK : Parameterization (via BaseRepository<ProjectModel>)
-//          + Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Implementasi konkret dari BaseRepository<ProjectModel>.
-//   Operasi CRUD tabel 'projects' di SQLite menggunakan Drift.
-//
-// METHOD YANG DIIMPLEMENTASI :
-//   - getAll()            : ambil semua proyek
-//   - getById(int id)     : ambil proyek berdasarkan ID
-//   - add(ProjectModel)   : tambah proyek baru, return id
-//   - update(id, model)   : update data proyek, return bool
-//   - delete(id)          : hapus proyek, return bool
-//
-// METHOD TAMBAHAN (opsional) :
-//   - getByStatus(String status) : filter proyek by status
-//
-// DEFENSIVE :
-//   Precondition sebelum insert/update:
-//   assert(model.name.isNotEmpty, 'Nama proyek tidak boleh kosong')
-// =============================================================
+import '../models/project_model.dart';
+import 'base_repository.dart';
+import '../supabase/supabase_client.dart';
+
+class ProjectRepository implements BaseRepository<ProjectModel> {
+  final String _table = 'projects';
+
+  @override
+  Future<List<ProjectModel>> getAll() async {
+    final response = await supabase.from(_table).select();
+    return response.map((json) => ProjectModel.fromJson(json)).toList();
+  }
+
+  @override
+  Future<ProjectModel?> getById(dynamic id) async {
+    final response = await supabase.from(_table).select().eq('id', id).maybeSingle();
+    if (response == null) return null;
+    return ProjectModel.fromJson(response);
+  }
+
+  @override
+  Future<ProjectModel?> add(ProjectModel item) async {
+    final response = await supabase.from(_table).insert(item.toJson()).select().maybeSingle();
+    if (response == null) return null;
+    return ProjectModel.fromJson(response);
+  }
+
+  @override
+  Future<bool> updateItem(dynamic id, ProjectModel item) async {
+    final data = item.toJson();
+    data.remove('id'); // Don't update the primary key
+    final response = await supabase.from(_table).update(data).eq('id', id).select();
+    return response.isNotEmpty;
+  }
+
+  @override
+  Future<bool> deleteItem(dynamic id) async {
+    final response = await supabase.from(_table).delete().eq('id', id).select();
+    return response.isNotEmpty;
+  }
+
+  Future<List<ProjectModel>> getByStatus(String status) async {
+    final response = await supabase.from(_table).select().eq('status', status);
+    return response.map((json) => ProjectModel.fromJson(json)).toList();
+  }
+}

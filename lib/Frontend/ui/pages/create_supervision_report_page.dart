@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/project_provider.dart';
+import '../../providers/report_provider.dart';
 
 class CreateSupervisionReportPage extends StatefulWidget {
   const CreateSupervisionReportPage({super.key});
@@ -8,10 +11,10 @@ class CreateSupervisionReportPage extends StatefulWidget {
 }
 
 class _CreateSupervisionReportPageState extends State<CreateSupervisionReportPage> {
-  String? _selectedProject = 'Pembangunan Jembatan Alam';
-  DateTime _selectedDate = DateTime(2026, 1, 1);
-  final TextEditingController _activityController = TextEditingController(text: 'Pembangunan Jembatan Alam');
-  final TextEditingController _workersController = TextEditingController(text: '13');
+  int? _selectedProjectId;
+  DateTime _selectedDate = DateTime.now();
+  final TextEditingController _activityController = TextEditingController();
+  final TextEditingController _progressController = TextEditingController(text: '0');
   String _selectedWeather = 'Cerah';
 
   final List<Map<String, String>> _materials = [
@@ -33,8 +36,16 @@ class _CreateSupervisionReportPageState extends State<CreateSupervisionReportPag
   @override
   void dispose() {
     _activityController.dispose();
-    _workersController.dispose();
+    _progressController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProjectProvider>().loadProjects();
+    });
   }
 
   @override
@@ -58,13 +69,22 @@ class _CreateSupervisionReportPageState extends State<CreateSupervisionReportPag
           children: [
             const Text('Proyek', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _selectedProject,
-              items: const [
-                DropdownMenuItem(value: 'Pembangunan Jembatan Alam', child: Text('Pembangunan Jembatan Alam')),
-              ],
-              onChanged: (v) => setState(() => _selectedProject = v),
-              decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+            Consumer<ProjectProvider>(
+              builder: (context, projectProvider, _) {
+                final projects = projectProvider.projects;
+                return DropdownButtonFormField<int>(
+                  value: _selectedProjectId,
+                  hint: const Text('Pilih Proyek'),
+                  items: projects.map((project) {
+                    return DropdownMenuItem<int>(
+                      value: project.id,
+                      child: Text(project.title),
+                    );
+                  }).toList(),
+                  onChanged: (v) => setState(() => _selectedProjectId = v),
+                  decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                );
+              }
             ),
 
             const SizedBox(height: 16),
@@ -101,10 +121,10 @@ class _CreateSupervisionReportPageState extends State<CreateSupervisionReportPag
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Pekerja', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Progress Laporan (%)', style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       TextFormField(
-                        controller: _workersController,
+                        controller: _progressController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                       ),
@@ -217,13 +237,38 @@ class _CreateSupervisionReportPageState extends State<CreateSupervisionReportPag
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // placeholder submit action
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Laporan disimpan (demo)')));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                child: const Text('Simpan Laporan', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Consumer<ReportProvider>(
+                builder: (context, reportProvider, child) {
+                  return ElevatedButton(
+                    onPressed: reportProvider.state == ReportFetchState.loading ? null : () async {
+                      if (_selectedProjectId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pilih proyek terlebih dahulu')));
+                        return;
+                      }
+                      
+                      final progress = int.tryParse(_progressController.text) ?? 0;
+                      final tgl = '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
+                      
+                      final success = await reportProvider.submitReport(
+                        _selectedProjectId!,
+                        _activityController.text,
+                        progress,
+                        tgl,
+                      );
+                      
+                      if (success && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Laporan berhasil disimpan')));
+                        Navigator.pop(context);
+                      } else if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal: ${reportProvider.errorMessage}')));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                    child: reportProvider.state == ReportFetchState.loading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Simpan Laporan', style: TextStyle(fontWeight: FontWeight.bold)),
+                  );
+                }
               ),
             ),
           ],

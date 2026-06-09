@@ -334,7 +334,7 @@ class ProjectDetailPage extends StatelessWidget {
                   bottomRight: Radius.circular(24),
                 ),
                 child: Image.asset(
-                  project.imagePath,
+                  project.imagePath ?? 'assets/images/placeholder.png',
                   width: double.infinity,
                   height: 240,
                   fit: BoxFit.cover,
@@ -436,7 +436,7 @@ class ProjectDetailPage extends StatelessWidget {
                     (index) => ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
-                        project.imagePath,
+                        project.imagePath ?? 'assets/images/placeholder.png',
                         fit: BoxFit.cover,
                       ),
                     ),
