@@ -1,40 +1,46 @@
-import 'package:drift/drift.dart';
-import '../database/app_database.dart';
+import '../models/report_model.dart';
 import 'base_repository.dart';
+import '../supabase/supabase_client.dart';
 
-class ReportRepository implements BaseRepository<Report, ReportsCompanion> {
-  final AppDatabase db;
-
-  ReportRepository(this.db);
+class ReportRepository implements BaseRepository<ReportModel> {
+  final String _table = 'reports';
 
   @override
-  Future<List<Report>> getAll() async {
-    return await db.select(db.reports).get();
+  Future<List<ReportModel>> getAll() async {
+    final response = await supabase.from(_table).select();
+    return response.map((json) => ReportModel.fromJson(json)).toList();
   }
 
   @override
-  Future<Report?> getById(int id) async {
-    return await (db.select(db.reports)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  Future<ReportModel?> getById(dynamic id) async {
+    final response = await supabase.from(_table).select().eq('id', id).maybeSingle();
+    if (response == null) return null;
+    return ReportModel.fromJson(response);
   }
 
-  Future<List<Report>> getByProjectId(int projectId) async {
-    return await (db.select(db.reports)..where((tbl) => tbl.proyekId.equals(projectId))).get();
-  }
-
-  @override
-  Future<int> add(ReportsCompanion item) async {
-    return await db.into(db.reports).insert(item);
-  }
-
-  @override
-  Future<bool> updateItem(int id, ReportsCompanion item) async {
-    final result = await (db.update(db.reports)..where((tbl) => tbl.id.equals(id))).write(item);
-    return result > 0;
+  Future<List<ReportModel>> getByProjectId(int projectId) async {
+    final response = await supabase.from(_table).select().eq('proyek_id', projectId);
+    return response.map((json) => ReportModel.fromJson(json)).toList();
   }
 
   @override
-  Future<bool> deleteItem(int id) async {
-    final result = await (db.delete(db.reports)..where((tbl) => tbl.id.equals(id))).go();
-    return result > 0;
+  Future<ReportModel?> add(ReportModel item) async {
+    final response = await supabase.from(_table).insert(item.toJson()).select().maybeSingle();
+    if (response == null) return null;
+    return ReportModel.fromJson(response);
+  }
+
+  @override
+  Future<bool> updateItem(dynamic id, ReportModel item) async {
+    final data = item.toJson();
+    data.remove('id');
+    final response = await supabase.from(_table).update(data).eq('id', id).select();
+    return response.isNotEmpty;
+  }
+
+  @override
+  Future<bool> deleteItem(dynamic id) async {
+    final response = await supabase.from(_table).delete().eq('id', id).select();
+    return response.isNotEmpty;
   }
 }

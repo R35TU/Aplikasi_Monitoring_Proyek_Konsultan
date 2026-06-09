@@ -5,13 +5,13 @@
 
 import 'package:flutter/material.dart';
 import '../../backend/repositories/project_repository.dart';
-import '../../backend/database/app_database.dart';
+import '../../backend/models/project_model.dart';
 
 class DashboardProvider extends ChangeNotifier {
   final ProjectRepository _projectRepository;
 
   bool isLoading = false;
-  List<Project> projects = [];
+  List<ProjectModel> projects = [];
   int totalProjects = 0;
   int completedProjects = 0;
   int onProgressProjects = 0;

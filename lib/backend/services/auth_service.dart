@@ -1,54 +1,64 @@
-// =============================================================
-// FILE   : lib/backend/services/auth_service.dart
-// TEKNIK : API (Mock)
-// =============================================================
-
-import 'package:drift/drift.dart' as drift;
-import '../database/app_database.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/user_model.dart';
+import '../supabase/supabase_client.dart';
 
 class AuthService {
-  final AppDatabase db;
-  User? _currentUser;
+  UserModel? _currentUser;
 
-  AuthService(this.db);
+  UserModel? get currentUser => _currentUser;
 
-  User? get currentUser => _currentUser;
-
-  /// Tanam data user awal (admin) jika database masih kosong
-  Future<void> seedDefaultUser() async {
-    final userCount = await db.select(db.users).get();
-    if (userCount.isEmpty) {
-      await db.into(db.users).insert(
-        UsersCompanion.insert(
-          firebaseUid: 'usr-admin-001',
-          nama: 'Administrator',
-          username: const drift.Value('admin'),
-          peran: 'super_admin',
-        ),
-      );
-    }
+  AuthService() {
+    _initAuthStateListener();
   }
 
-  Future<User?> signIn(String username, String password) async {
-    assert(username.isNotEmpty, 'Username tidak boleh kosong');
+  void _initAuthStateListener() {
+    supabase.auth.onAuthStateChange.listen((data) async {
+      final Session? session = data.session;
+      if (session != null) {
+        final userId = session.user.id;
+        final response = await supabase.from('users').select().eq('firebase_uid', userId).maybeSingle();
+        if (response != null) {
+          _currentUser = UserModel.fromJson(response, session.user.email ?? '');
+        }
+      } else {
+        _currentUser = null;
+      }
+    });
+  }
+
+  Future<void> seedDefaultUser() async {
+    // Seeding is now handled via Supabase Dashboard directly
+  }
+
+  Future<UserModel?> signIn(String email, String password) async {
+    assert(email.isNotEmpty, 'Email tidak boleh kosong');
     assert(password.isNotEmpty, 'Password tidak boleh kosong');
 
     try {
-      // Mock login check against SQLite Users table
-      final user = await (db.select(db.users)..where((tbl) => tbl.username.equals(username))).getSingleOrNull();
-      
-      if (user != null && password == 'admin123') { // Hardcoded password for mock
-        _currentUser = user;
-        return user;
-      } else {
-        throw Exception("Username atau Password salah");
+      final AuthResponse res = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      final user = res.user;
+      if (user != null) {
+        final response = await supabase.from('users').select().eq('firebase_uid', user.id).maybeSingle();
+        if (response != null) {
+          _currentUser = UserModel.fromJson(response, user.email ?? '');
+          return _currentUser;
+        } else {
+          // If no custom user data, just return a default
+          _currentUser = UserModel(id: user.id, name: 'User', email: user.email ?? '', role: 'client');
+          return _currentUser;
+        }
       }
+      return null;
     } catch (e) {
       throw Exception("Gagal login: $e");
     }
   }
 
   Future<void> signOut() async {
+    await supabase.auth.signOut();
     _currentUser = null;
   }
 }

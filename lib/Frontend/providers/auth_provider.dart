@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import '../../backend/services/auth_service.dart';
-import '../../backend/database/app_database.dart';
+import '../../backend/models/user_model.dart';
 
 enum AuthState { unauthenticated, loading, authenticated, error }
 
@@ -14,22 +14,22 @@ class AuthProvider extends ChangeNotifier {
   
   AuthState _state = AuthState.unauthenticated;
   String _errorMessage = '';
-  User? _user;
+  UserModel? _user;
 
   AuthProvider(this._authService);
 
   AuthState get state => _state;
   String get errorMessage => _errorMessage;
-  User? get user => _user;
+  UserModel? get user => _user;
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String email, String password) async {
     assert(_state == AuthState.unauthenticated || _state == AuthState.error, 'login() hanya dari UNAUTHENTICATED atau ERROR');
     
     _state = AuthState.loading;
     notifyListeners();
 
     try {
-      _user = await _authService.signIn(username, password);
+      _user = await _authService.signIn(email, password);
       _state = AuthState.authenticated;
     } catch (e) {
       _errorMessage = e.toString();

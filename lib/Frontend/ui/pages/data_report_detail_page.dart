@@ -79,7 +79,7 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    project.imagePath,
+                    project.imagePath ?? 'assets/images/placeholder.png',
                     width: 64,
                     height: 64,
                     fit: BoxFit.cover,
@@ -235,14 +235,15 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
 
                 return Column(
                   children: reports.map((r) {
-                    final isSubmitted = r.status == 'submitted';
+                    final isSubmitted = r.statusPersetujuan == 'submitted';
                     final colorBg = isSubmitted ? const Color(0xFFDDE8FF) : const Color(0xFFE6F4EA);
                     final colorIcon = isSubmitted ? const Color(0xFF2563EB) : const Color(0xFF16A34A);
                     final deskripsi = r.deskripsi ?? 'Tanpa deskripsi';
+                    final formatTanggal = '${r.createdAt.day.toString().padLeft(2, '0')}/${r.createdAt.month.toString().padLeft(2, '0')}/${r.createdAt.year}';
                     
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: _buildReportItem(deskripsi, 'Tanggal : ${r.tanggal} - ${r.progress}%', colorBg, colorIcon),
+                      child: _buildReportItem(deskripsi, 'Tanggal : $formatTanggal', colorBg, colorIcon),
                     );
                   }).toList(),
                 );

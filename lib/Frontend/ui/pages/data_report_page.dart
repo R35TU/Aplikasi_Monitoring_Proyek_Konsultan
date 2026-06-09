@@ -216,13 +216,13 @@ class _DataReportPageState extends State<DataReportPage> {
             const SizedBox(height: 16),
             _buildProgressRow(
               label: 'Pengawasan',
-              value: project.targetProgress,
+              value: project.progressRencana / 100.0,
               color: const Color(0xFF16A34A),
             ),
             const SizedBox(height: 12),
             _buildProgressRow(
               label: 'Fisik',
-              value: project.actualProgress,
+              value: project.progressAktual / 100.0,
               color: const Color(0xFF2563EB),
             ),
           ],

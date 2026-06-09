@@ -273,7 +273,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: Image.asset(
-                project.imagePath,
+                project.imagePath ?? 'assets/images/placeholder.png',
                 width: double.infinity,
                 height: 120,
                 fit: BoxFit.cover,
@@ -335,9 +335,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
                     flex: 2,
                     child: Column(
                       children: [
-                        _buildProgressBar((project.targetProgress * 100).toInt().toString() + '%', project.targetProgress, Colors.green),
+                        _buildProgressBar('${project.progressRencana}%', project.progressRencana / 100.0, Colors.green),
                         const SizedBox(height: 8),
-                        _buildProgressBar((project.actualProgress * 100).toInt().toString() + '%', project.actualProgress, const Color(0xFF0055FF)),
+                        _buildProgressBar('${project.progressAktual}%', project.progressAktual / 100.0, const Color(0xFF0055FF)),
                       ],
                     ),
                   ),

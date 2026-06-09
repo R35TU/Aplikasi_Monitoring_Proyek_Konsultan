@@ -1,46 +1,46 @@
-// =============================================================
-// FILE   : lib/backend/repositories/project_repository.dart
-// TEKNIK : Parameterization (via BaseRepository)
-// =============================================================
-
-import 'package:drift/drift.dart';
-import '../database/app_database.dart';
+import '../models/project_model.dart';
 import 'base_repository.dart';
+import '../supabase/supabase_client.dart';
 
-class ProjectRepository implements BaseRepository<Project, ProjectsCompanion> {
-  final AppDatabase db;
-
-  ProjectRepository(this.db);
+class ProjectRepository implements BaseRepository<ProjectModel> {
+  final String _table = 'projects';
 
   @override
-  Future<List<Project>> getAll() async {
-    return await db.select(db.projects).get();
+  Future<List<ProjectModel>> getAll() async {
+    final response = await supabase.from(_table).select();
+    return response.map((json) => ProjectModel.fromJson(json)).toList();
   }
 
   @override
-  Future<Project?> getById(int id) async {
-    return await (db.select(db.projects)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  Future<ProjectModel?> getById(dynamic id) async {
+    final response = await supabase.from(_table).select().eq('id', id).maybeSingle();
+    if (response == null) return null;
+    return ProjectModel.fromJson(response);
   }
 
   @override
-  Future<int> add(ProjectsCompanion item) async {
-    assert(item.namaProyek.present && item.namaProyek.value.isNotEmpty, 'Nama proyek tidak boleh kosong');
-    return await db.into(db.projects).insert(item);
+  Future<ProjectModel?> add(ProjectModel item) async {
+    final response = await supabase.from(_table).insert(item.toJson()).select().maybeSingle();
+    if (response == null) return null;
+    return ProjectModel.fromJson(response);
   }
 
   @override
-  Future<bool> updateItem(int id, ProjectsCompanion item) async {
-    final result = await (db.update(db.projects)..where((tbl) => tbl.id.equals(id))).write(item);
-    return result > 0;
+  Future<bool> updateItem(dynamic id, ProjectModel item) async {
+    final data = item.toJson();
+    data.remove('id'); // Don't update the primary key
+    final response = await supabase.from(_table).update(data).eq('id', id).select();
+    return response.isNotEmpty;
   }
 
   @override
-  Future<bool> deleteItem(int id) async {
-    final result = await (db.delete(db.projects)..where((tbl) => tbl.id.equals(id))).go();
-    return result > 0;
+  Future<bool> deleteItem(dynamic id) async {
+    final response = await supabase.from(_table).delete().eq('id', id).select();
+    return response.isNotEmpty;
   }
 
-  Future<List<Project>> getByStatus(String status) async {
-    return await (db.select(db.projects)..where((tbl) => tbl.status.equals(status))).get();
+  Future<List<ProjectModel>> getByStatus(String status) async {
+    final response = await supabase.from(_table).select().eq('status', status);
+    return response.map((json) => ProjectModel.fromJson(json)).toList();
   }
 }

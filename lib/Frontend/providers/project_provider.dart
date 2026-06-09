@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/backend/database/app_database.dart';
 import 'package:my_app/backend/repositories/project_repository.dart';
 import 'package:my_app/backend/models/project_model.dart';
-import 'package:drift/drift.dart' as drift;
 
 enum ProjectState { initial, loading, loaded, error }
 
@@ -23,16 +21,7 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> loadProjects() async {
     _setState(ProjectState.loading);
     try {
-      final dbProjects = await _repository.getAll();
-      _projects = dbProjects.map((p) => ProjectModel(
-        id: p.id,
-        title: p.namaProyek,
-        location: p.lokasi ?? 'Lokasi Belum Ditentukan',
-        status: p.status,
-        targetProgress: 1.0, // Mock for now
-        actualProgress: p.status == 'Selesai' ? 1.0 : 0.5, // Mock for now
-        imagePath: 'assets/images/bottom_bg.png',
-      )).toList();
+      _projects = await _repository.getAll();
       _setState(ProjectState.loaded);
     } catch (e) {
       _errorMessage = e.toString();
@@ -43,13 +32,16 @@ class ProjectProvider extends ChangeNotifier {
   Future<bool> addProject(String namaProyek, String lokasi, String status) async {
     _setState(ProjectState.loading);
     try {
-      final companion = ProjectsCompanion(
-        namaProyek: drift.Value(namaProyek),
-        lokasi: drift.Value(lokasi),
-        status: drift.Value(status),
+      final project = ProjectModel(
+        title: namaProyek,
+        location: lokasi,
+        status: status,
+        progressRencana: 0,
+        progressAktual: 0,
+        imagePath: '',
       );
       
-      await _repository.add(companion);
+      await _repository.add(project);
       await loadProjects(); // reload after insert
       return true;
     } catch (e) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'Frontend/ui/pages/splash_page.dart';
-import 'backend/config/app_config.dart';
-import 'backend/database/app_database.dart';
 import 'backend/services/auth_service.dart';
 import 'backend/repositories/project_repository.dart';
 import 'backend/repositories/report_repository.dart';
@@ -15,19 +15,19 @@ import 'Frontend/providers/report_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // 1. Initialize Config
-  await AppConfig.load();
+  // 1. Initialize DotEnv
+  await dotenv.load(fileName: ".env");
 
-  // 2. Initialize Database
-  final db = AppDatabase();
+  // 2. Initialize Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+  );
 
   // 3. Initialize Services & Repositories
-  final authService = AuthService(db);
-  final projectRepo = ProjectRepository(db);
-  final reportRepo = ReportRepository(db);
-
-  // 4. Seed Database
-  await authService.seedDefaultUser();
+  final authService = AuthService();
+  final projectRepo = ProjectRepository();
+  final reportRepo = ReportRepository();
 
   runApp(
     MultiProvider(

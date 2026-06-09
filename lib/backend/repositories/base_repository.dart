@@ -1,12 +1,7 @@
-// =============================================================
-// FILE   : lib/backend/repositories/base_repository.dart
-// TEKNIK : Parameterization / Generics
-// =============================================================
-
-abstract class BaseRepository<T, InsertType> {
+abstract class BaseRepository<T> {
   Future<List<T>> getAll();
-  Future<T?> getById(int id);
-  Future<int> add(InsertType item);
-  Future<bool> updateItem(int id, InsertType item);
-  Future<bool> deleteItem(int id);
+  Future<T?> getById(dynamic id);
+  Future<T?> add(T item);
+  Future<bool> updateItem(dynamic id, T item);
+  Future<bool> deleteItem(dynamic id);
 }

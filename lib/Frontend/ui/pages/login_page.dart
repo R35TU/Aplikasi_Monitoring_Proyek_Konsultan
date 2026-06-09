@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
 
-  final TextEditingController usernameController =
+  final TextEditingController emailController =
       TextEditingController();
 
   final TextEditingController passwordController =
@@ -88,9 +88,9 @@ class _LoginPageState extends State<LoginPage> {
 
                         /// Username
                         TextField(
-                          controller: usernameController,
+                          controller: emailController,
                           decoration: InputDecoration(
-                            hintText: "Username",
+                            hintText: "Email",
                             filled: true,
                             fillColor: Colors.white,
                             contentPadding:
@@ -195,17 +195,17 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: authProvider.state == AuthState.loading
                                     ? null
                                     : () async {
-                                        final username = usernameController.text.trim();
+                                        final email = emailController.text.trim();
                                         final password = passwordController.text;
 
-                                        if (username.isEmpty || password.isEmpty) {
+                                        if (email.isEmpty || password.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Username dan Password tidak boleh kosong')),
+                                            const SnackBar(content: Text('Email dan Password tidak boleh kosong')),
                                           );
                                           return;
                                         }
 
-                                        await authProvider.login(username, password);
+                                        await authProvider.login(email, password);
 
                                         if (!mounted) return;
 
