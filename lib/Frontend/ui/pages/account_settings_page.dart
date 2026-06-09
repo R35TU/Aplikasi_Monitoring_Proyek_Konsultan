@@ -33,7 +33,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         ),
         title: const Text(
           'Pengaturan',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -42,7 +46,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Preferensi Aplikasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Preferensi Aplikasi',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.wb_sunny_outlined,
@@ -60,7 +67,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               onTap: () {},
             ),
             const SizedBox(height: 24),
-            const Text('Notifikasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Notifikasi',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildNotificationTile(
               icon: Icons.notifications_outlined,
@@ -81,7 +91,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               title: 'Notifikasi Proyek',
               subtitle: 'Update terkait proyek terkait',
               value: _projectNotification,
-              onChanged: (value) => setState(() => _projectNotification = value),
+              onChanged: (value) =>
+                  setState(() => _projectNotification = value),
             ),
             _buildNotificationTile(
               icon: Icons.insert_drive_file_outlined,
@@ -91,7 +102,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               onChanged: (value) => setState(() => _reportNotification = value),
             ),
             const SizedBox(height: 24),
-            const Text('Lainnya', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Lainnya',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.notifications_active_outlined,
@@ -122,7 +136,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -144,7 +162,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             if (index == 1) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectListPage(),
+                ),
               );
               return;
             }
@@ -167,11 +187,26 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
@@ -211,14 +246,30 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
             if (trailing.isNotEmpty)
-              Text(trailing, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
+              Text(
+                trailing,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
             const SizedBox(width: 10),
             const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           ],
@@ -258,13 +309,26 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
               ],
             ),
           ),
-          Switch(value: value, onChanged: onChanged, activeColor: const Color(0xFF2563EB)),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: const Color(0xFF2563EB),
+          ),
         ],
       ),
     );

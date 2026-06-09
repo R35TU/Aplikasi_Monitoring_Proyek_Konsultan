@@ -14,9 +14,15 @@ class AccountEditPage extends StatefulWidget {
 
 class _AccountEditPageState extends State<AccountEditPage> {
   int _selectedIndex = 4;
-  final TextEditingController _nameController = TextEditingController(text: 'Restu Aditya');
-  final TextEditingController _usernameController = TextEditingController(text: 'konsultan_001');
-  final TextEditingController _roleController = TextEditingController(text: 'Konsultan');
+  final TextEditingController _nameController = TextEditingController(
+    text: 'Restu Aditya',
+  );
+  final TextEditingController _usernameController = TextEditingController(
+    text: 'konsultan_001',
+  );
+  final TextEditingController _roleController = TextEditingController(
+    text: 'Konsultan',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,11 @@ class _AccountEditPageState extends State<AccountEditPage> {
         ),
         title: const Text(
           'Edit Profil',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -63,12 +73,22 @@ class _AccountEditPageState extends State<AccountEditPage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 2))],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: const CircleAvatar(
                         radius: 16,
                         backgroundColor: Color(0xFF2563EB),
-                        child: Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -77,27 +97,47 @@ class _AccountEditPageState extends State<AccountEditPage> {
             ),
             const SizedBox(height: 16),
             const Center(
-              child: Text('Tap untuk ganti foto', style: TextStyle(fontSize: 12, color: Colors.grey)),
+              child: Text(
+                'Tap untuk ganti foto',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
             ),
             const SizedBox(height: 24),
-            const Text('Informasi Profil', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Informasi Profil',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildTextField(label: 'Nama Lengkap', controller: _nameController),
             const SizedBox(height: 16),
-            _buildStaticField(label: 'Username', value: _usernameController.text),
+            _buildStaticField(
+              label: 'Username',
+              value: _usernameController.text,
+            ),
             const SizedBox(height: 16),
             _buildStaticField(label: 'Role', value: _roleController.text),
             const SizedBox(height: 24),
-            const Text('Lainnya', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Lainnya',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
-            _buildMenuItem(Icons.help_outline, 'Bantuan & FAQ', 'Pusat bantuan dan pertanyaan'),
+            _buildMenuItem(
+              Icons.help_outline,
+              'Bantuan & FAQ',
+              'Pusat bantuan dan pertanyaan',
+            ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -119,7 +159,9 @@ class _AccountEditPageState extends State<AccountEditPage> {
             if (index == 1) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectListPage(),
+                ),
               );
               return;
             }
@@ -142,29 +184,53 @@ class _AccountEditPageState extends State<AccountEditPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField({required String label, required TextEditingController controller}) {
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(color: Colors.grey.shade300),
@@ -183,7 +249,10 @@ class _AccountEditPageState extends State<AccountEditPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
@@ -193,7 +262,10 @@ class _AccountEditPageState extends State<AccountEditPage> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: Colors.grey.shade300),
           ),
-          child: Text(value, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
         ),
       ],
     );
@@ -207,7 +279,13 @@ class _AccountEditPageState extends State<AccountEditPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -217,9 +295,18 @@ class _AccountEditPageState extends State<AccountEditPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),

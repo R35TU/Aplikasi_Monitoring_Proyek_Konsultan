@@ -1,24 +1,27 @@
-// =============================================================
-// FILE   : lib/backend/models/report_model.dart
-// TEKNIK : Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Model domain untuk data laporan harian.
-//   Digunakan di provider, UI, dan dikirim ke repository
-//   untuk disimpan ke SQLite via Drift.
-//
-// FIELD :
-//   - id        : int
-//   - projectId : int     (wajib valid, > 0)
-//   - title     : String  (tidak boleh kosong)
-//   - progress  : int     (0 - 100)
-//   - photoPath : String? (nullable, path foto lapangan)
-//   - status    : String  (draft/submitted/approved/rejected)
-//   - createdAt : DateTime
-//
-// DEFENSIVE PROGRAMMING — tambahkan di constructor :
-//   assert(title.isNotEmpty, 'Judul laporan tidak boleh kosong')
-//   assert(progress >= 0 && progress <= 100, 'Progress harus 0-100')
-//   assert(projectId > 0, 'projectId tidak valid')
-//   assert(!createdAt.isAfter(DateTime.now()), 'Tanggal tidak valid')
-// =============================================================
+
+class ReportModel {
+  final int id;
+  final int proyekId;
+  final String pembuatId;
+  final String? penyetujuId;
+  final String jenisLaporan;
+  final String tanggal;
+  final String? cuaca;
+  final int? jumlahPekerja;
+  final String? deskripsi;
+  final String statusPersetujuan;
+
+  ReportModel({
+    required this.id,
+    required this.proyekId,
+    required this.pembuatId,
+    this.penyetujuId,
+    required this.jenisLaporan,
+    required this.tanggal,
+    this.cuaca,
+    this.jumlahPekerja,
+    this.deskripsi,
+    required this.statusPersetujuan,
+  });
+
+}

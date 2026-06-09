@@ -18,64 +18,61 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Very light gray background
-     appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 1,
-  shadowColor: Colors.black12,
-  leading: IconButton(
-    icon: const Icon(
-      Icons.menu,
-      color: Colors.black,
-    ),
-    onPressed: () {},
-  ),
-  centerTitle: true,
-  title: const Text(
-    "Dashboard",
-    style: TextStyle(
-      color: Colors.black,
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-  actions: [
-    Stack(
-      children: [
-        IconButton(
-          onPressed: () {
-            // Handle notification tap
-          },
-          icon: const Icon(
-            Icons.notifications_rounded,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        shadowColor: Colors.black12,
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.black),
+          onPressed: () {},
+        ),
+        centerTitle: true,
+        title: const Text(
+          "Dashboard",
+          style: TextStyle(
             color: Colors.black,
-            size: 28,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        // Notification badge
-        Positioned(
-          right: 8,
-          top: 8,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
-            ),
-            child: const Text(
-              '3',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  // Handle notification tap
+                },
+                icon: const Icon(
+                  Icons.notifications_rounded,
+                  color: Colors.black,
+                  size: 28,
+                ),
               ),
-            ),
+              // Notification badge
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text(
+                    '3',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
-    ),
-    const SizedBox(width: 8),
-  ],
-),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -89,7 +86,11 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 4),
             const Text(
               'Aradea Kingdom',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
             const Text(
               'Konsultan',
@@ -101,22 +102,37 @@ class _DashboardPageState extends State<DashboardPage> {
             Row(
               children: [
                 _buildSummaryCard(
-              'Total Proyek',
-              '5',
-              Icons.folder,
-              Colors.blue,
-              onTap: _navigateToProjectListPage,
-            ),
+                  'Total Proyek',
+                  '5',
+                  Icons.folder,
+                  Colors.blue,
+                  onTap: _navigateToProjectListPage,
+                ),
                 const SizedBox(width: 16),
-                _buildSummaryCard('Progres', '3', Icons.bar_chart, Colors.green),
+                _buildSummaryCard(
+                  'Progres',
+                  '3',
+                  Icons.bar_chart,
+                  Colors.green,
+                ),
               ],
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildSummaryCard('Laporan Hari Ini', '4', Icons.insert_drive_file, Colors.orange),
+                _buildSummaryCard(
+                  'Laporan Hari Ini',
+                  '4',
+                  Icons.insert_drive_file,
+                  Colors.orange,
+                ),
                 const SizedBox(width: 16),
-                _buildSummaryCard('Proyek Selesai', '2', Icons.check_box, Colors.blue),
+                _buildSummaryCard(
+                  'Proyek Selesai',
+                  '2',
+                  Icons.check_box,
+                  Colors.blue,
+                ),
               ],
             ),
             const SizedBox(height: 32),
@@ -133,15 +149,31 @@ class _DashboardPageState extends State<DashboardPage> {
                   onTap: () {},
                   child: const Text(
                     'Lihat Semua',
-                    style: TextStyle(fontSize: 14, color: Colors.blue, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            _buildProgressItem('Fly Over Jl. Jendral Sudirman', 0.8, Colors.green),
-            _buildProgressItem('Pembangunan Jembatan Sirothol Mustakim', 0.4, Colors.orange),
-            _buildProgressItem('Pengecoran Jalan Desa Hebat Sekali', 0.15, Colors.deepOrange),
+            _buildProgressItem(
+              'Fly Over Jl. Jendral Sudirman',
+              0.8,
+              Colors.green,
+            ),
+            _buildProgressItem(
+              'Pembangunan Jembatan Sirothol Mustakim',
+              0.4,
+              Colors.orange,
+            ),
+            _buildProgressItem(
+              'Pengecoran Jalan Desa Hebat Sekali',
+              0.15,
+              Colors.deepOrange,
+            ),
             const SizedBox(height: 32),
 
             // 4. Project Progress Section (Donut Chart)
@@ -152,7 +184,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey.shade200),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
@@ -178,11 +214,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: CircularProgressIndicator(
                                 value: 1.0,
                                 strokeWidth: 20,
-                                color: Colors.blue.shade100, // Background progress color
+                                color: Colors
+                                    .blue
+                                    .shade100, // Background progress color
                               ),
                             ),
                             Transform.rotate(
-                              angle: -1.5708, // Rotate indicator to start from the top (12 o'clock)
+                              angle:
+                                  -1.5708, // Rotate indicator to start from the top (12 o'clock)
                               child: const SizedBox(
                                 width: 120,
                                 height: 120,
@@ -199,11 +238,17 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 Text(
                                   '67%',
-                                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Text(
                                   'Rata-rata Progres',
-                                  style: TextStyle(fontSize: 8, color: Colors.black87),
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                               ],
                             ),
@@ -211,15 +256,23 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                       const SizedBox(width: 32),
-                      
+
                       // Legend Section
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLegendItem(const Color(0xFF3B82F6), 'Selesai', '(37,5%)'),
+                            _buildLegendItem(
+                              const Color(0xFF3B82F6),
+                              'Selesai',
+                              '(37,5%)',
+                            ),
                             const SizedBox(height: 12),
-                            _buildLegendItem(Colors.blue.shade100, 'Proses', '(25.0%)'),
+                            _buildLegendItem(
+                              Colors.blue.shade100,
+                              'Proses',
+                              '(25.0%)',
+                            ),
                           ],
                         ),
                       ),
@@ -231,12 +284,16 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
       ),
-      
+
       // 5. Bottom Navigation Bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -269,11 +326,26 @@ class _DashboardPageState extends State<DashboardPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
@@ -281,7 +353,13 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // Custom widget for Summary Cards
-  Widget _buildSummaryCard(String title, String count, IconData icon, Color iconColor, {VoidCallback? onTap}) {
+  Widget _buildSummaryCard(
+    String title,
+    String count,
+    IconData icon,
+    Color iconColor, {
+    VoidCallback? onTap,
+  }) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -292,7 +370,11 @@ class _DashboardPageState extends State<DashboardPage> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Column(
@@ -303,13 +385,17 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   // Icon with 15% opacity background
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.15),
+                      color: iconColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(icon, color: iconColor, size: 18),
@@ -319,7 +405,11 @@ class _DashboardPageState extends State<DashboardPage> {
               const SizedBox(height: 12),
               Text(
                 count,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -398,10 +488,16 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             CircleAvatar(radius: 5, backgroundColor: color),
             const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontSize: 12, color: Colors.black)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+            ),
           ],
         ),
-        Text(percentage, style: const TextStyle(fontSize: 12, color: Colors.black)),
+        Text(
+          percentage,
+          style: const TextStyle(fontSize: 12, color: Colors.black),
+        ),
       ],
     );
   }

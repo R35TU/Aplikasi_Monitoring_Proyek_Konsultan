@@ -1,21 +1,33 @@
-// =============================================================
-// FILE   : lib/backend/repositories/user_repository.dart
-// TEKNIK : Parameterization (via BaseRepository<UserModel>)
-//          + Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Implementasi konkret dari BaseRepository<UserModel>.
-//   Operasi CRUD tabel 'users' di SQLite.
-//
-// METHOD YANG DIIMPLEMENTASI :
-//   - getAll()               : ambil semua user
-//   - getById(int id)        : ambil user berdasarkan ID lokal
-//   - getByEmail(String)     : cari user berdasarkan email (TAMBAHAN)
-//   - add(UserModel)         : tambah user baru
-//   - update(id, model)      : update data user
-//   - delete(id)             : hapus user
-//
-// DEFENSIVE :
-//   assert(model.email.contains('@'), 'Email tidak valid')
-//   assert(model.name.isNotEmpty, 'Nama tidak boleh kosong')
-// =============================================================
+import '../models/user_model.dart';
+import 'base_repository.dart';
+
+class UserRepository extends BaseRepository {
+  UserRepository(super.supabase);
+
+  Future<List<UserModel>> getAll() async {
+    final response = await supabase.from('users').select();
+    return [];
+  }
+
+  Future<UserModel?> getById(int id) async {
+    final response = await supabase.from('users').select().eq('id', id).maybeSingle();
+    return null;
+  }
+
+  Future<UserModel?> getByEmail(String email) async {
+    final response = await supabase.from('users').select().eq('email', email).maybeSingle();
+    return null;
+  }
+
+  Future<void> add(Map<String, dynamic> entry) async {
+    await supabase.from('users').insert(entry);
+  }
+
+  Future<void> update(int id, Map<String, dynamic> entry) async {
+    await supabase.from('users').update(entry).eq('id', id);
+  }
+
+  Future<void> delete(int id) async {
+    await supabase.from('users').delete().eq('id', id);
+  }
+}

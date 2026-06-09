@@ -12,7 +12,8 @@ class DataReportDetailPage extends StatefulWidget {
 
 class _DataReportDetailPageState extends State<DataReportDetailPage> {
   int _selectedDayIndex = 3; // example selected day (4th day)
-  int _startDayIndex = 0; // starting position for date display (shows 7 days at a time)
+  int _startDayIndex =
+      0; // starting position for date display (shows 7 days at a time)
 
   // days 1..30 for the horizontal selector (repeating weekday names)
   final List<Map<String, dynamic>> _days = List.generate(30, (i) {
@@ -54,7 +55,10 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Data Laporan', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Data Laporan',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -78,24 +82,56 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(project.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        project.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 6),
-                      Text(project.location, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                      Text(
+                        project.location,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: project.status == 'Selesai' ? const Color(0xFFDDE8FF) : const Color(0xFFE6F4EA),
+                              color: project.status == 'Selesai'
+                                  ? const Color(0xFFDDE8FF)
+                                  : const Color(0xFFE6F4EA),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(width: 8, height: 8, decoration: BoxDecoration(color: project.status == 'Selesai' ? const Color(0xFF2563EB) : const Color(0xFF16A34A), shape: BoxShape.circle)),
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: project.status == 'Selesai'
+                                        ? const Color(0xFF2563EB)
+                                        : const Color(0xFF16A34A),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
                                 const SizedBox(width: 6),
-                                Text(project.status, style: TextStyle(color: project.status == 'Selesai' ? const Color(0xFF2563EB) : const Color(0xFF16A34A), fontWeight: FontWeight.bold, fontSize: 12)),
+                                Text(
+                                  project.status,
+                                  style: TextStyle(
+                                    color: project.status == 'Selesai'
+                                        ? const Color(0xFF2563EB)
+                                        : const Color(0xFF16A34A),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -112,9 +148,21 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.chevron_left, color: Colors.black54)),
-                Text('Januari 2025', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.bold)),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.chevron_right, color: Colors.black54)),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.chevron_left, color: Colors.black54),
+                ),
+                Text(
+                  'Januari 2025',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.chevron_right, color: Colors.black54),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -123,7 +171,10 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
               children: [
                 SizedBox(
                   width: 48,
-                  child: IconButton(onPressed: _previousWeek, icon: const Icon(Icons.chevron_left, color: Colors.black54)),
+                  child: IconButton(
+                    onPressed: _previousWeek,
+                    icon: const Icon(Icons.chevron_left, color: Colors.black54),
+                  ),
                 ),
                 Expanded(
                   child: SizedBox(
@@ -131,95 +182,161 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
-                      children: List.generate(
-                        7,
-                        (viewIndex) {
-                          final index = _startDayIndex + viewIndex;
-                          if (index >= _days.length) {
-                            return const SizedBox.shrink();
-                          }
-                          final d = _days[index];
-                          final selected = index == _selectedDayIndex;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
-                            child: GestureDetector(
-                              onTap: () => setState(() => _selectedDayIndex = index),
-                              child: Container(
-                                width: 56,
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: selected ? const Color(0xFF2563EB) : Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: selected ? const Color(0xFF2563EB) : Colors.grey.shade300),
-                                  boxShadow: selected
-                                      ? [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))]
-                                      : null,
+                      children: List.generate(7, (viewIndex) {
+                        final index = _startDayIndex + viewIndex;
+                        if (index >= _days.length) {
+                          return const SizedBox.shrink();
+                        }
+                        final d = _days[index];
+                        final selected = index == _selectedDayIndex;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: GestureDetector(
+                            onTap: () =>
+                                setState(() => _selectedDayIndex = index),
+                            child: Container(
+                              width: 56,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: selected
+                                    ? const Color(0xFF2563EB)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: selected
+                                      ? const Color(0xFF2563EB)
+                                      : Colors.grey.shade300,
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(d['name'], style: TextStyle(color: selected ? Colors.white : Colors.grey.shade700, fontSize: 11)),
-                                    const SizedBox(height: 4),
-                                    Text(d['date'], style: TextStyle(color: selected ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        // Pengawasan dot with thin white outline
-                                        Container(
-                                          width: 6,
-                                          height: 6,
-                                          decoration: BoxDecoration(
-                                            color: d['hasPengawasan'] ? const Color(0xFF16A34A) : Colors.transparent,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: Colors.white, width: 1),
+                                boxShadow: selected
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.04,
                                           ),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
                                         ),
-                                        const SizedBox(width: 4),
-                                        // Fisik dot with thin white outline
-                                        Container(
-                                          width: 6,
-                                          height: 6,
-                                          decoration: BoxDecoration(
-                                            color: d['hasFisik'] ? const Color(0xFF2563EB) : Colors.transparent,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: Colors.white, width: 1),
-                                          ),
-                                        ),
-                                      ],
+                                      ]
+                                    : null,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    d['name'],
+                                    style: TextStyle(
+                                      color: selected
+                                          ? Colors.white
+                                          : Colors.grey.shade700,
+                                      fontSize: 11,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    d['date'],
+                                    style: TextStyle(
+                                      color: selected
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Pengawasan dot with thin white outline
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: d['hasPengawasan']
+                                              ? const Color(0xFF16A34A)
+                                              : Colors.transparent,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      // Fisik dot with thin white outline
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: d['hasFisik']
+                                              ? const Color(0xFF2563EB)
+                                              : Colors.transparent,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      }),
                     ),
                   ),
                 ),
                 SizedBox(
                   width: 48,
-                  child: IconButton(onPressed: _nextWeek, icon: const Icon(Icons.chevron_right, color: Colors.black54)),
+                  child: IconButton(
+                    onPressed: _nextWeek,
+                    icon: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.black54,
+                    ),
+                  ),
                 ),
               ],
             ),
 
             const SizedBox(height: 16),
-            Text('Kamis, 04 Januari 2025', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade800)),
+            Text(
+              'Kamis, 04 Januari 2025',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
             const SizedBox(height: 12),
 
             // Report items
-            _buildReportItem('Laporan Pengawasan Harian', 'Dibuat : 04 Januari 2025 - 10:48', const Color(0xFFE6F4EA), const Color(0xFF16A34A)),
+            _buildReportItem(
+              'Laporan Pengawasan Harian',
+              'Dibuat : 04 Januari 2025 - 10:48',
+              const Color(0xFFE6F4EA),
+              const Color(0xFF16A34A),
+            ),
             const SizedBox(height: 12),
-            _buildReportItem('Laporan Fisik Harian', 'Dibuat : 04 Januari 2025 - 16:30', const Color(0xFFDDE8FF), const Color(0xFF2563EB)),
+            _buildReportItem(
+              'Laporan Fisik Harian',
+              'Dibuat : 04 Januari 2025 - 16:30',
+              const Color(0xFFDDE8FF),
+              const Color(0xFF2563EB),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildReportItem(String title, String subtitle, Color bg, Color iconColor) {
+  Widget _buildReportItem(
+    String title,
+    String subtitle,
+    Color bg,
+    Color iconColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -231,7 +348,10 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Icon(Icons.insert_drive_file, color: iconColor),
           ),
           const SizedBox(width: 12),
@@ -239,9 +359,15 @@ class _DataReportDetailPageState extends State<DataReportDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 6),
-                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
               ],
             ),
           ),

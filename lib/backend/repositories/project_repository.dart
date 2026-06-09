@@ -1,23 +1,19 @@
-// =============================================================
-// FILE   : lib/backend/repositories/project_repository.dart
-// TEKNIK : Parameterization (via BaseRepository<ProjectModel>)
-//          + Defensive Programming
-// -------------------------------------------------------------
-// FUNGSI :
-//   Implementasi konkret dari BaseRepository<ProjectModel>.
-//   Operasi CRUD tabel 'projects' di SQLite menggunakan Drift.
-//
-// METHOD YANG DIIMPLEMENTASI :
-//   - getAll()            : ambil semua proyek
-//   - getById(int id)     : ambil proyek berdasarkan ID
-//   - add(ProjectModel)   : tambah proyek baru, return id
-//   - update(id, model)   : update data proyek, return bool
-//   - delete(id)          : hapus proyek, return bool
-//
-// METHOD TAMBAHAN (opsional) :
-//   - getByStatus(String status) : filter proyek by status
-//
-// DEFENSIVE :
-//   Precondition sebelum insert/update:
-//   assert(model.name.isNotEmpty, 'Nama proyek tidak boleh kosong')
-// =============================================================
+import '../models/project_model.dart';
+import 'base_repository.dart';
+
+class ProjectRepository extends BaseRepository {
+  ProjectRepository(super.supabase);
+
+  // Fungsi ambil semua proyek dari Supabase
+  Future<List<ProjectModel>> ambilSemuaProyek() async {
+    final response = await supabase.from('projects').select();
+    // Anda bisa menyesuaikan parsing JSON-nya nanti
+    // return response.map((e) => ProjectModel.fromJson(e)).toList();
+    return []; // Sementara mengembalikan list kosong agar tidak error
+  }
+
+  // Fungsi tambah proyek
+  Future<void> tambahProyek(Map<String, dynamic> entry) async {
+    await supabase.from('projects').insert(entry);
+  }
+}
