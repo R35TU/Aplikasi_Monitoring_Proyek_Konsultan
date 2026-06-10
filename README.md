@@ -36,7 +36,7 @@ Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih 
 | Teknologi                   | Versi  | Kegunaan                                                |
 | --------------------------- | ------ | ------------------------------------------------------- |
 | Flutter                     | 3.x    | Framework utama untuk membuat PWA                       |
-| Riverpod                    | 2.x    | State management                                        |
+| Provider                    | 6.x    | State management                                        |
 | FL Chart                    | latest | Grafik untuk tracking progress proyek (Kurva S)         |
 | Lucide Icons                | latest | Library icon UI                                         |
 | go_router                   | latest | Declarative routing berbasis tabel konfigurasi          |
@@ -50,16 +50,13 @@ Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih 
 
 ### Backend & Database
 
-| Teknologi                | Kegunaan                                                    |
-| ------------------------ | ----------------------------------------------------------- |
-| **SQLite via Drift**     | Database utama — penyimpanan lokal terstruktur (relasional) |
-| **drift_sqflite**        | Driver SQLite untuk platform Android & iOS                  |
-| **sqlite3_flutter_libs** | Native SQLite binary untuk semua platform                   |
-| Firebase Authentication  | Autentikasi pengguna (register, login, logout)              |
-| Firebase Storage         | Penyimpanan foto dokumentasi lapangan                       |
-| Firebase Cloud Messaging | Notifikasi ke pengawas & admin                              |
+| Teknologi            | Kegunaan                                                    |
+| -------------------- | ----------------------------------------------------------- |
+| **Supabase Database**| Database PostgreSQL utama — penyimpanan awan relasional      |
+| **Supabase Auth**    | Autentikasi pengguna (register, login, logout)              |
+| **Supabase Storage** | Penyimpanan foto dokumentasi lapangan                       |
 
-> 💡 **Mengapa Drift?** Drift adalah ORM untuk SQLite yang mendukung Flutter Web (via SQLite WASM), mobile, dan desktop dalam satu codebase — cocok untuk proyek PWA ini.
+> 💡 **Mengapa Supabase?** Supabase adalah alternatif Firebase open-source yang menyediakan basis data PostgreSQL real-time, autentikasi instan, dan storage file dalam satu ekosistem backend terpadu dengan integrasi Flutter yang sangat mudah.
 
 ### Data & Tools
 
@@ -68,7 +65,7 @@ Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih 
 | Git + GitHub          | Version control & kolaborasi                   |
 | VS Code + Flutter SDK | IDE utama                                      |
 | GitHub Actions        | CI/CD pipeline otomatis                        |
-| DB Browser for SQLite | Inspeksi & debug database SQLite secara visual |
+| Supabase Dashboard    | Inspeksi & kelola database PostgreSQL visual   |
 | .env (dev & prod)     | Konfigurasi environment runtime                |
 
 ---
@@ -77,7 +74,7 @@ Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih 
 
 > 📌 Proyek ini adalah **satu Flutter project** dengan pemisahan logis di dalam `lib/`:
 >
-> - `lib/backend/` → semua kode yang **bersentuhan dengan database SQLite & layanan eksternal**
+> - `lib/backend/` → semua kode yang **bersentuhan dengan database Supabase & layanan eksternal**
 > - `lib/frontend/` → semua kode **pure UI** (screens, widgets, providers, routing, utils)
 
 ```
@@ -87,17 +84,10 @@ CV.TATA SAKA CONSULTANT/
 │   ├── backend/                                    # 🔴 BACKEND – database, model, service
 │   │   │
 │   │   ├── config/
-│   │   │   ├── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
-│   │   │   └── firebase_options.dart              # RUNTIME CONFIG – generated Firebase config
+│   │   │   └── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
 │   │   │
-│   │   ├── database/
-│   │   │   ├── app_database.dart                  # DRIFT – definisi database & koneksi SQLite
-│   │   │   ├── app_database.g.dart                # AUTO-GENERATED oleh build_runner
-│   │   │   └── tables/
-│   │   │       ├── users_table.dart               # DRIFT Table – skema tabel users
-│   │   │       ├── projects_table.dart            # DRIFT Table – skema tabel projects
-│   │   │       ├── reports_table.dart             # DRIFT Table – skema tabel laporan harian
-│   │   │       └── tasks_table.dart               # DRIFT Table – skema tabel item pekerjaan
+│   │   ├── supabase/
+│   │   │   └── supabase_client.dart               # SUPABASE – inisialisasi Supabase client
 │   │   │
 │   │   ├── models/                                # DEFENSIVE + PARAMETERIZATION
 │   │   │   ├── user_model.dart                    # Model domain pengguna + role
@@ -113,9 +103,8 @@ CV.TATA SAKA CONSULTANT/
 │   │   │   └── user_repository.dart               # extends BaseRepository<UserModel>
 │   │   │
 │   │   ├── services/
-│   │   │   ├── auth_service.dart                  # API – Firebase Authentication
-│   │   │   ├── storage_service.dart               # API – Firebase Storage (upload/download foto)
-│   │   │   ├── notification_service.dart          # API – Firebase Cloud Messaging (FCM)
+│   │   │   ├── auth_service.dart                  # API – Supabase Authentication
+│   │   │   ├── storage_service.dart               # API – Supabase Storage (upload/download foto)
 │   │   │   └── pdf_service.dart                   # CODE REUSE – generate & export PDF laporan
 │   │   │
 │   │   └── constants/
@@ -214,24 +203,21 @@ CV.TATA SAKA CONSULTANT/
 
 ### Ringkasan Teknik per Fitur
 
-| Teknik               | File / Modul                                 | Deskripsi Implementasi                                                                   |
-| -------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | **Automata**         | `frontend/providers/auth_provider.dart`      | FSM: `unauthenticated → loading → authenticated → error`                                 |
-| **Automata**         | `frontend/providers/report_provider.dart`    | FSM: `draft → submitted → reviewed → approved / rejected`                                |
-| **Automata**         | `frontend/providers/upload_provider.dart`    | FSM: `idle → picking → uploading → success / failed`                                     |
-| **Table-driven**     | `backend/constants/role_permissions.dart`    | `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
-| **Table-driven**     | `frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                                  |
-| **Table-driven**     | `frontend/core/router/app_router.dart`       | List definisi route + required role (go_router)                                          |
-| **Parameterization** | `backend/repositories/base_repository.dart`  | `abstract class BaseRepository<T>` dengan method generik                                 |
-| **Parameterization** | `backend/models/db_result.dart`              | `class DbResult<T>` wrapper response success/error dari SQLite                           |
-| **Runtime Config**   | `backend/config/app_config.dart`             | Load `.env.development` / `.env.production` saat startup                                 |
-| **Code Reuse**       | `frontend/ui/widgets/`                       | Widget `progress_chart`, `s_curve_chart`, `photo_upload_widget` dipakai di banyak screen |
-| **Code Reuse**       | `backend/services/pdf_service.dart`          | Library PDF generation dipanggil dari berbagai modul                                     |
-| **API**              | `backend/services/auth_service.dart`         | Integrasi Firebase Authentication SDK                                                    |
-| **API**              | `backend/services/storage_service.dart`      | Integrasi Firebase Storage — upload/download foto                                        |
-| **API**              | `backend/services/notification_service.dart` | Integrasi FCM — push notification ke pengguna                                            |
-| **Defensive**        | `backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
-| **Defensive**        | `frontend/utils/validators.dart`             | Validasi input form sebelum disimpan ke SQLite                                           |
+│ | **Automata**         | `frontend/providers/project_provider.dart`   | FSM: `initial → loading → loaded → error`                                                |
+│ | **Automata**         | `frontend/providers/report_provider.dart`    | FSM: `initial → loading → loaded → error`                                                |
+│ | **Table-driven**     | `backend/constants/role_permissions.dart`    | `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
+│ | **Table-driven**     | `frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                                  |
+│ | **Table-driven**     | `frontend/core/router/app_router.dart`       | List definisi route + required role (go_router)                                          |
+│ | **Parameterization** | `backend/repositories/base_repository.dart`  | `abstract class BaseRepository<T>` dengan method generik                                 |
+│ | **Parameterization** | `backend/models/db_result.dart`              | `class DbResult<T>` wrapper response success/error dari database                         |
+│ | **Runtime Config**   | `backend/config/app_config.dart`             | Load `.env.development` / `.env.production` saat startup                                 |
+│ | **Code Reuse**       | `frontend/ui/widgets/`                       | Widget `progress_chart`, `s_curve_chart`, `photo_upload_widget` dipakai di banyak screen |
+│ | **Code Reuse**       | `backend/services/pdf_service.dart`          | Library PDF generation dipanggil dari berbagai modul                                     |
+│ | **API**              | `backend/services/auth_service.dart`         | Integrasi Supabase Authentication SDK                                                    |
+│ | **API**              | `backend/services/storage_service.dart`      | Integrasi Supabase Storage — upload/download foto                                        |
+│ | **Defensive**        | `backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
+│ | **Defensive**        | `frontend/utils/validators.dart`             | Validasi input form sebelum disimpan ke database                                         |
 
 ---
 
@@ -654,14 +640,18 @@ Teknik ini menghindari penggunaan percabangan logika berkondisi (`if-else` atau 
   Menggunakan list konstan `names` untuk memetakan nomor bulan (`int`) langsung ke nama bulannya lewat indeks `names[m - 1]`. Hal ini menghindari penggunaan 12 kondisi `if-else` secara beruntun.
 * **[confirmation_request_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/confirmation_request_page.dart)** (Getter `_items`):
   Menggunakan representasi data di dalam `List<Map<String, String>>` untuk menyimpan pemetaan badge visual seperti `badgeColor`, `badgeTextColor`, judul proyek, dan parameter UI lainnya berdasarkan status. Data ini langsung dipetakan oleh widget pembangun tanpa percabangan logika render.
-* **[app_database.g.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/backend/database/app_database.g.dart)** (Fungsi `map` dan `toColumns`):
-  Drift ORM mengimplementasikan pemetaan data dari database SQLite (kunci bertipe `Map<String, dynamic>`) ke objek data Dart secara langsung menggunakan pemetaan skema kolom database.
+* **Model Serialization (`fromJson` / `toJson`)**:
+  Model data di dalam `lib/backend/models/` menggunakan pemetaan map-to-object untuk parsing data JSON dari query Supabase secara terstruktur.
 
 ### 2. Automata (State Transitions / Finite State Machine)
 Teknik ini memodelkan program sebagai sekumpulan keadaan (states) terdefinisi, di mana perpindahan antar keadaan diatur menggunakan transisi yang valid untuk menghindari "illegal state".
 
 * **[splash_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/splash_page.dart)** (State transition berbasis waktu):
   Menggunakan `Timer` pada `initState` untuk memicu transisi state waktu (timer transition) dari keadaan awal **Splash Screen** ke halaman berikutnya (**Login Screen**) setelah durasi 3 detik secara teratur menggunakan transisi sekali jalan (`pushReplacement`).
+* **[auth_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/auth_provider.dart)** (FSM Autentikasi Pengawas):
+  Mengelola transisi status keamanan (`unauthenticated` $\rightarrow$ `loading` $\rightarrow$ `authenticated` / `error`) lengkap dengan validasi transisi asersi defensif (`assert`).
+* **[report_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/report_provider.dart)** & **[project_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/project_provider.dart)** (FSM Load/Fetch Data):
+  Kedua berkas menggunakan enum state (`initial`, `loading`, `loaded`, `error`) untuk merepresentasikan transisi status penarikan data dari backend Supabase.
 
 ---
 
