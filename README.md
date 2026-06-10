@@ -427,69 +427,43 @@ void main() {
 
 ## ⚡ Performance Testing
 
-Performance testing dilakukan menggunakan **`flutter_test`** dengan **`Stopwatch`** bawaan Dart untuk mengukur durasi eksekusi operasi database SQLite. Testing difokuskan pada operasi yang paling sering digunakan dan berpotensi menjadi bottleneck performa.
+Performance testing dilakukan menggunakan **`flutter_test`** dengan **`Stopwatch`** bawaan Dart untuk mengukur efisiensi durasi eksekusi data parsing dan algoritma penyaringan (filtering) data lokal dalam jumlah besar.
 
 ### Skenario & Jumlah Percobaan
 
 | Skenario                              | File Test                  | Jumlah Run | Target Waktu |
 | ------------------------------------- | -------------------------- | ---------- | ------------ |
-| Bulk INSERT 100 laporan harian        | `db_insert_perf_test.dart` | **5 kali** | < 500 ms     |
-| SELECT + filter berdasarkan ID proyek | `db_query_perf_test.dart`  | **5 kali** | < 100 ms     |
-| UPDATE status laporan (batch 50 data) | `db_update_perf_test.dart` | **5 kali** | < 300 ms     |
-
-> Setiap skenario dijalankan **5 kali** dan diambil rata-ratanya. Database di-reset ke kondisi bersih (SQLite in-memory) setiap sebelum run baru untuk memastikan konsistensi hasil.
+| Bulk JSON parsing (1000 item)         | `performance_test.dart`    | **1 kali** | < 100 ms     |
+| Searching & Filtering (5000 item)     | `performance_test.dart`    | **1 kali** | < 50 ms      |
 
 ### Cara Menjalankan Performance Test
 
 ```bash
-# Jalankan semua performance test sekaligus
-flutter test test/performance/
-
-# Jalankan satu skenario spesifik
-flutter test test/performance/db_query_perf_test.dart
+# Jalankan file performance test
+flutter test test/performance_test.dart
 ```
 
 ### Contoh Implementasi Performance Test
 
 ```dart
-// test/performance/db_insert_perf_test.dart
+// test/performance_test.dart
 void main() {
-  late AppDatabase db;
-  late ReportRepository repo;
-
-  setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
-    repo = ReportRepository(db);
-  });
-
-  tearDown(() async => await db.close());
-
-  test('INSERT 100 laporan — rata-rata dari 5 run', () async {
-    final List<int> durations = [];
-
-    for (int run = 1; run <= 5; run++) {
-      // Reset database setiap run
-      await db.delete(db.reports).go();
+  group('Performance Benchmark - Model Parsing and Filtering', () {
+    test('Mengukur kecepatan parse 1000 JSON ke ProjectModel', () {
+      final List<Map<String, dynamic>> rawJsonList = List.generate(1000, (index) => ...);
 
       final stopwatch = Stopwatch()..start();
-      for (int i = 0; i < 100; i++) {
-        await repo.add(ReportModel(title: 'Laporan $i', progress: i % 100));
-      }
+      final List<ProjectModel> projects = rawJsonList.map((json) => ProjectModel.fromJson(json)).toList();
       stopwatch.stop();
 
-      durations.add(stopwatch.elapsedMilliseconds);
-      print('Run $run: ${stopwatch.elapsedMilliseconds} ms');
-    }
-
-    final avg = durations.reduce((a, b) => a + b) / durations.length;
-    print('Rata-rata 5 run: ${avg.toStringAsFixed(1)} ms');
-
-    // Assertion: rata-rata harus di bawah target
-    expect(avg, lessThan(500),
-        reason: 'Rata-rata INSERT 100 data harus < 500ms');
+      print('Waktu eksekusi parse 1000 data: ${stopwatch.elapsedMilliseconds} ms');
+      
+      expect(stopwatch.elapsedMilliseconds, lessThan(100));
+    });
   });
 }
 ```
+
 
 ---
 
