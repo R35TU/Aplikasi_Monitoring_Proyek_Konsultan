@@ -16,6 +16,19 @@
 
 ---
 
+## 🧭 Peran Kelompok (Roles)
+
+Berikut pembagian peran yang ditetapkan untuk progres tugas ini. Posisi dipilih agar sesuai dengan keahlian tanpa merubah bagian lain dari proyek.
+
+| Nama (panggilan) | Peran utama |
+| ---------------- | ------------------------------------------------------------ |
+| Ulung Putra Sadewo (Ulung) | Runtime configuration, Code reuse / library |
+| Nadia Tambunan (Nadia) | Automata, Table-driven construction |
+| Muhammad Restu Aditya (Restu) | Code reuse / library, Runtime configuration |
+| Aradea Satria Permana (Aradea) | Parameterization / Generics, Automata |
+| Putra Anugrah Pamungkas (Putra) | API, Parameterization / Generics |
+
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -23,7 +36,7 @@
 | Teknologi                   | Versi  | Kegunaan                                                |
 | --------------------------- | ------ | ------------------------------------------------------- |
 | Flutter                     | 3.x    | Framework utama untuk membuat PWA                       |
-| Riverpod                    | 2.x    | State management                                        |
+| Provider                    | 6.x    | State management                                        |
 | FL Chart                    | latest | Grafik untuk tracking progress proyek (Kurva S)         |
 | Lucide Icons                | latest | Library icon UI                                         |
 | go_router                   | latest | Declarative routing berbasis tabel konfigurasi          |
@@ -37,16 +50,13 @@
 
 ### Backend & Database
 
-| Teknologi                | Kegunaan                                                    |
-| ------------------------ | ----------------------------------------------------------- |
-| **SQLite via Drift**     | Database utama — penyimpanan lokal terstruktur (relasional) |
-| **drift_sqflite**        | Driver SQLite untuk platform Android & iOS                  |
-| **sqlite3_flutter_libs** | Native SQLite binary untuk semua platform                   |
-| Firebase Authentication  | Autentikasi pengguna (register, login, logout)              |
-| Firebase Storage         | Penyimpanan foto dokumentasi lapangan                       |
-| Firebase Cloud Messaging | Notifikasi ke pengawas & admin                              |
+| Teknologi            | Kegunaan                                                    |
+| -------------------- | ----------------------------------------------------------- |
+| **Supabase Database**| Database PostgreSQL utama — penyimpanan awan relasional      |
+| **Supabase Auth**    | Autentikasi pengguna (register, login, logout)              |
+| **Supabase Storage** | Penyimpanan foto dokumentasi lapangan                       |
 
-> 💡 **Mengapa Drift?** Drift adalah ORM untuk SQLite yang mendukung Flutter Web (via SQLite WASM), mobile, dan desktop dalam satu codebase — cocok untuk proyek PWA ini.
+> 💡 **Mengapa Supabase?** Supabase adalah alternatif Firebase open-source yang menyediakan basis data PostgreSQL real-time, autentikasi instan, dan storage file dalam satu ekosistem backend terpadu dengan integrasi Flutter yang sangat mudah.
 
 ### Data & Tools
 
@@ -55,7 +65,7 @@
 | Git + GitHub          | Version control & kolaborasi                   |
 | VS Code + Flutter SDK | IDE utama                                      |
 | GitHub Actions        | CI/CD pipeline otomatis                        |
-| DB Browser for SQLite | Inspeksi & debug database SQLite secara visual |
+| Supabase Dashboard    | Inspeksi & kelola database PostgreSQL visual   |
 | .env (dev & prod)     | Konfigurasi environment runtime                |
 
 ---
@@ -64,7 +74,7 @@
 
 > 📌 Proyek ini adalah **satu Flutter project** dengan pemisahan logis di dalam `lib/`:
 >
-> - `lib/backend/` → semua kode yang **bersentuhan dengan database SQLite & layanan eksternal**
+> - `lib/backend/` → semua kode yang **bersentuhan dengan database Supabase & layanan eksternal**
 > - `lib/frontend/` → semua kode **pure UI** (screens, widgets, providers, routing, utils)
 
 ```
@@ -74,17 +84,10 @@ CV.TATA SAKA CONSULTANT/
 │   ├── backend/                                    # 🔴 BACKEND – database, model, service
 │   │   │
 │   │   ├── config/
-│   │   │   ├── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
-│   │   │   └── firebase_options.dart              # RUNTIME CONFIG – generated Firebase config
+│   │   │   └── app_config.dart                    # RUNTIME CONFIG – load .env dev/prod
 │   │   │
-│   │   ├── database/
-│   │   │   ├── app_database.dart                  # DRIFT – definisi database & koneksi SQLite
-│   │   │   ├── app_database.g.dart                # AUTO-GENERATED oleh build_runner
-│   │   │   └── tables/
-│   │   │       ├── users_table.dart               # DRIFT Table – skema tabel users
-│   │   │       ├── projects_table.dart            # DRIFT Table – skema tabel projects
-│   │   │       ├── reports_table.dart             # DRIFT Table – skema tabel laporan harian
-│   │   │       └── tasks_table.dart               # DRIFT Table – skema tabel item pekerjaan
+│   │   ├── supabase/
+│   │   │   └── supabase_client.dart               # SUPABASE – inisialisasi Supabase client
 │   │   │
 │   │   ├── models/                                # DEFENSIVE + PARAMETERIZATION
 │   │   │   ├── user_model.dart                    # Model domain pengguna + role
@@ -100,9 +103,8 @@ CV.TATA SAKA CONSULTANT/
 │   │   │   └── user_repository.dart               # extends BaseRepository<UserModel>
 │   │   │
 │   │   ├── services/
-│   │   │   ├── auth_service.dart                  # API – Firebase Authentication
-│   │   │   ├── storage_service.dart               # API – Firebase Storage (upload/download foto)
-│   │   │   ├── notification_service.dart          # API – Firebase Cloud Messaging (FCM)
+│   │   │   ├── auth_service.dart                  # API – Supabase Authentication
+│   │   │   ├── storage_service.dart               # API – Supabase Storage (upload/download foto)
 │   │   │   └── pdf_service.dart                   # CODE REUSE – generate & export PDF laporan
 │   │   │
 │   │   └── constants/
@@ -201,24 +203,21 @@ CV.TATA SAKA CONSULTANT/
 
 ### Ringkasan Teknik per Fitur
 
-| Teknik               | File / Modul                                 | Deskripsi Implementasi                                                                   |
-| -------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | **Automata**         | `frontend/providers/auth_provider.dart`      | FSM: `unauthenticated → loading → authenticated → error`                                 |
-| **Automata**         | `frontend/providers/report_provider.dart`    | FSM: `draft → submitted → reviewed → approved / rejected`                                |
-| **Automata**         | `frontend/providers/upload_provider.dart`    | FSM: `idle → picking → uploading → success / failed`                                     |
-| **Table-driven**     | `backend/constants/role_permissions.dart`    | `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
-| **Table-driven**     | `frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                                  |
-| **Table-driven**     | `frontend/core/router/app_router.dart`       | List definisi route + required role (go_router)                                          |
-| **Parameterization** | `backend/repositories/base_repository.dart`  | `abstract class BaseRepository<T>` dengan method generik                                 |
-| **Parameterization** | `backend/models/db_result.dart`              | `class DbResult<T>` wrapper response success/error dari SQLite                           |
-| **Runtime Config**   | `backend/config/app_config.dart`             | Load `.env.development` / `.env.production` saat startup                                 |
-| **Code Reuse**       | `frontend/ui/widgets/`                       | Widget `progress_chart`, `s_curve_chart`, `photo_upload_widget` dipakai di banyak screen |
-| **Code Reuse**       | `backend/services/pdf_service.dart`          | Library PDF generation dipanggil dari berbagai modul                                     |
-| **API**              | `backend/services/auth_service.dart`         | Integrasi Firebase Authentication SDK                                                    |
-| **API**              | `backend/services/storage_service.dart`      | Integrasi Firebase Storage — upload/download foto                                        |
-| **API**              | `backend/services/notification_service.dart` | Integrasi FCM — push notification ke pengguna                                            |
-| **Defensive**        | `backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
-| **Defensive**        | `frontend/utils/validators.dart`             | Validasi input form sebelum disimpan ke SQLite                                           |
+│ | **Automata**         | `frontend/providers/project_provider.dart`   | FSM: `initial → loading → loaded → error`                                                |
+│ | **Automata**         | `frontend/providers/report_provider.dart`    | FSM: `initial → loading → loaded → error`                                                |
+│ | **Table-driven**     | `backend/constants/role_permissions.dart`    | `Map<String, List<String>>` role → daftar aksi yang diizinkan                            |
+│ | **Table-driven**     | `frontend/core/constants/status_config.dart` | `Map<String, StatusConfig>` status → warna, label, icon                                  |
+│ | **Table-driven**     | `frontend/core/router/app_router.dart`       | List definisi route + required role (go_router)                                          |
+│ | **Parameterization** | `backend/repositories/base_repository.dart`  | `abstract class BaseRepository<T>` dengan method generik                                 |
+│ | **Parameterization** | `backend/models/db_result.dart`              | `class DbResult<T>` wrapper response success/error dari database                         |
+│ | **Runtime Config**   | `backend/config/app_config.dart`             | Load `.env.development` / `.env.production` saat startup                                 |
+│ | **Code Reuse**       | `frontend/ui/widgets/`                       | Widget `progress_chart`, `s_curve_chart`, `photo_upload_widget` dipakai di banyak screen |
+│ | **Code Reuse**       | `backend/services/pdf_service.dart`          | Library PDF generation dipanggil dari berbagai modul                                     |
+│ | **API**              | `backend/services/auth_service.dart`         | Integrasi Supabase Authentication SDK                                                    |
+│ | **API**              | `backend/services/storage_service.dart`      | Integrasi Supabase Storage — upload/download foto                                        |
+│ | **Defensive**        | `backend/models/*.dart`                      | Validasi tipe data & null check di setiap constructor model                              |
+│ | **Defensive**        | `frontend/utils/validators.dart`             | Validasi input form sebelum disimpan ke database                                         |
 
 ---
 
@@ -428,69 +427,43 @@ void main() {
 
 ## ⚡ Performance Testing
 
-Performance testing dilakukan menggunakan **`flutter_test`** dengan **`Stopwatch`** bawaan Dart untuk mengukur durasi eksekusi operasi database SQLite. Testing difokuskan pada operasi yang paling sering digunakan dan berpotensi menjadi bottleneck performa.
+Performance testing dilakukan menggunakan **`flutter_test`** dengan **`Stopwatch`** bawaan Dart untuk mengukur efisiensi durasi eksekusi data parsing dan algoritma penyaringan (filtering) data lokal dalam jumlah besar.
 
 ### Skenario & Jumlah Percobaan
 
 | Skenario                              | File Test                  | Jumlah Run | Target Waktu |
 | ------------------------------------- | -------------------------- | ---------- | ------------ |
-| Bulk INSERT 100 laporan harian        | `db_insert_perf_test.dart` | **5 kali** | < 500 ms     |
-| SELECT + filter berdasarkan ID proyek | `db_query_perf_test.dart`  | **5 kali** | < 100 ms     |
-| UPDATE status laporan (batch 50 data) | `db_update_perf_test.dart` | **5 kali** | < 300 ms     |
-
-> Setiap skenario dijalankan **5 kali** dan diambil rata-ratanya. Database di-reset ke kondisi bersih (SQLite in-memory) setiap sebelum run baru untuk memastikan konsistensi hasil.
+| Bulk JSON parsing (1000 item)         | `performance_test.dart`    | **1 kali** | < 100 ms     |
+| Searching & Filtering (5000 item)     | `performance_test.dart`    | **1 kali** | < 50 ms      |
 
 ### Cara Menjalankan Performance Test
 
 ```bash
-# Jalankan semua performance test sekaligus
-flutter test test/performance/
-
-# Jalankan satu skenario spesifik
-flutter test test/performance/db_query_perf_test.dart
+# Jalankan file performance test
+flutter test test/performance_test.dart
 ```
 
 ### Contoh Implementasi Performance Test
 
 ```dart
-// test/performance/db_insert_perf_test.dart
+// test/performance_test.dart
 void main() {
-  late AppDatabase db;
-  late ReportRepository repo;
-
-  setUp(() {
-    db = AppDatabase(NativeDatabase.memory());
-    repo = ReportRepository(db);
-  });
-
-  tearDown(() async => await db.close());
-
-  test('INSERT 100 laporan — rata-rata dari 5 run', () async {
-    final List<int> durations = [];
-
-    for (int run = 1; run <= 5; run++) {
-      // Reset database setiap run
-      await db.delete(db.reports).go();
+  group('Performance Benchmark - Model Parsing and Filtering', () {
+    test('Mengukur kecepatan parse 1000 JSON ke ProjectModel', () {
+      final List<Map<String, dynamic>> rawJsonList = List.generate(1000, (index) => ...);
 
       final stopwatch = Stopwatch()..start();
-      for (int i = 0; i < 100; i++) {
-        await repo.add(ReportModel(title: 'Laporan $i', progress: i % 100));
-      }
+      final List<ProjectModel> projects = rawJsonList.map((json) => ProjectModel.fromJson(json)).toList();
       stopwatch.stop();
 
-      durations.add(stopwatch.elapsedMilliseconds);
-      print('Run $run: ${stopwatch.elapsedMilliseconds} ms');
-    }
-
-    final avg = durations.reduce((a, b) => a + b) / durations.length;
-    print('Rata-rata 5 run: ${avg.toStringAsFixed(1)} ms');
-
-    // Assertion: rata-rata harus di bawah target
-    expect(avg, lessThan(500),
-        reason: 'Rata-rata INSERT 100 data harus < 500ms');
+      print('Waktu eksekusi parse 1000 data: ${stopwatch.elapsedMilliseconds} ms');
+      
+      expect(stopwatch.elapsedMilliseconds, lessThan(100));
+    });
   });
 }
 ```
+
 
 ---
 
@@ -667,3 +640,57 @@ flutter build web --release
 ---
 
 _Dikembangkan sebagai Tugas Besar CLO2 Konstruksi Perangkat Lunak — Telkom University 2025/2026_
+
+---
+
+## 🔍 Detail Implementasi Riil Teknik Automata & Table-Driven Construction
+
+Berikut adalah berkas-berkas di dalam proyek ini yang secara aktif mengimplementasikan logika program menggunakan kedua teknik tersebut (bukan sekadar komentar/spesifikasi):
+
+### 1. Table-Driven Construction
+Teknik ini menghindari penggunaan percabangan logika berkondisi (`if-else` atau `switch-case` yang panjang) dengan mengambil nilai langsung dari pemetaan tabel data terstruktur (`List` atau `Map`).
+
+* **[create_supervision_report_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/create_supervision_report_page.dart)** (Fungsi pembantu `_monthName`):
+  Menggunakan list konstan `names` untuk memetakan nomor bulan (`int`) langsung ke nama bulannya lewat indeks `names[m - 1]`. Hal ini menghindari penggunaan 12 kondisi `if-else` secara beruntun.
+* **[confirmation_request_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/confirmation_request_page.dart)** (Getter `_items`):
+  Menggunakan representasi data di dalam `List<Map<String, String>>` untuk menyimpan pemetaan badge visual seperti `badgeColor`, `badgeTextColor`, judul proyek, dan parameter UI lainnya berdasarkan status. Data ini langsung dipetakan oleh widget pembangun tanpa percabangan logika render.
+* **Model Serialization (`fromJson` / `toJson`)**:
+  Model data di dalam `lib/backend/models/` menggunakan pemetaan map-to-object untuk parsing data JSON dari query Supabase secara terstruktur.
+
+### 2. Automata (State Transitions / Finite State Machine)
+Teknik ini memodelkan program sebagai sekumpulan keadaan (states) terdefinisi, di mana perpindahan antar keadaan diatur menggunakan transisi yang valid untuk menghindari "illegal state".
+
+* **[splash_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/splash_page.dart)** (State transition berbasis waktu):
+  Menggunakan `Timer` pada `initState` untuk memicu transisi state waktu (timer transition) dari keadaan awal **Splash Screen** ke halaman berikutnya (**Login Screen**) setelah durasi 3 detik secara teratur menggunakan transisi sekali jalan (`pushReplacement`).
+* **[auth_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/auth_provider.dart)** (FSM Autentikasi Pengawas):
+  Mengelola transisi status keamanan (`unauthenticated` $\rightarrow$ `loading` $\rightarrow$ `authenticated` / `error`) lengkap dengan validasi transisi asersi defensif (`assert`).
+* **[report_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/report_provider.dart)** & **[project_provider.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/providers/project_provider.dart)** (FSM Load/Fetch Data):
+  Kedua berkas menggunakan enum state (`initial`, `loading`, `loaded`, `error`) untuk merepresentasikan transisi status penarikan data dari backend Supabase.
+
+---
+
+## ✨ Penerapan Prinsip Clean Code
+
+Proyek ini menerapkan beberapa prinsip **Clean Code** untuk menjaga kualitas, keterbacaan, dan kemudahan pemeliharaan kode:
+
+### 1. Meaningful Names (Penamaan yang Jelas & Bermakna)
+Menghindari penggunaan singkatan yang membingungkan atau variabel satu huruf. Penamaan kelas dan variabel ditulis secara deskriptif untuk memperjelas fungsinya langsung dari namanya.
+* Contoh: Kelas `CreateSupervisionReportPage` dan variabel-variabel pendukung seperti `_selectedProject`, `_selectedDate`, dan `_activityController`.
+
+### 2. Single Responsibility Principle / SRP (Satu Tanggung Jawab)
+Membagi sistem ke dalam bagian-bagian kecil yang hanya memiliki satu tanggung jawab utama.
+* Contoh: Pemisahan arsitektur folder yang tegas antara `lib/backend` (fokus pada data & persistence SQLite) dan `lib/frontend` (fokus pada antarmuka visual UI).
+* Contoh: Fungsi pembantu `_monthName(int m)` di [create_supervision_report_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/create_supervision_report_page.dart) diisolasi khusus untuk konversi nama bulan sehingga tidak mengotori fungsi rendering UI utama.
+
+### 3. Avoid Deep Nesting (Menghindari Percabangan Bertingkat yang Rumit)
+Mengganti struktur percabangan `if-else` atau `switch-case` berjenjang menggunakan pemetaan terstruktur (seperti teknik *Table-Driven*).
+* Contoh: Pemetaan nama bulan langsung menggunakan pencarian berbasis indeks array `names[m - 1]` di fungsi `_monthName`.
+
+### 4. Don't Repeat Yourself / DRY (Menghindari Duplikasi Kode)
+Membungkus blok kode visual atau logika yang sering digunakan kembali menjadi komponen terpisah (*Helper Widgets*).
+* Contoh: Fungsi `_buildProgressBar(...)` dan `_buildProjectCard(...)` di berkas [project_list_page.dart](file:///c:/Users/LENOVO/Documents/MataKuliah/Semester%204/Konstruksi%20Perangkat%20Lunak/Tubes/belajar/Aplikasi_Monitoring_Proyek_Konsultan/lib/Frontend/ui/pages/project_list_page.dart) digunakan berulang kali untuk merender statistik proyek yang berbeda tanpa menduplikasi struktur widget dasar.
+
+### 5. Penggunaan Sintaks Modern Dart yang Ringkas
+Menggunakan ekspresi lambda/arrow function (`=>`) untuk mempersingkat fungsi sederhana serta *Spread Operator* (`...`) untuk penggabungan list widget dinamis secara elegan.
+
+

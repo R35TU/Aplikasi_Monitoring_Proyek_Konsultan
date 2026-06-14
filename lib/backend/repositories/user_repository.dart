@@ -10,12 +10,20 @@ class UserRepository extends BaseRepository {
   }
 
   Future<UserModel?> getById(String id) async {
-    final response = await supabase.from('users').select().eq('user_id', id).maybeSingle();
+    final response = await supabase
+        .from('users')
+        .select()
+        .eq('user_id', id)
+        .maybeSingle();
     return null;
   }
 
   Future<UserModel?> getByEmail(String email) async {
-    final response = await supabase.from('users').select().eq('email', email).maybeSingle();
+    final response = await supabase
+        .from('users')
+        .select()
+        .eq('email', email)
+        .maybeSingle();
     return null;
   }
 

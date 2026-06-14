@@ -1,4 +1,3 @@
-
 class ReportModel {
   final int reportsId;
   final int proyekId;
@@ -23,5 +22,4 @@ class ReportModel {
     this.deskripsi,
     required this.statusPersetujuan,
   });
-
 }

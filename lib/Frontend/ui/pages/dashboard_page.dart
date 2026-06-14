@@ -26,10 +26,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final projects = await projectRepo.ambilSemuaProyek();
     final reports = await reportRepo.ambilSemuaLaporan();
 
-    return {
-      'projects': projects,
-      'reports': reports,
-    };
+    return {'projects': projects, 'reports': reports};
   }
 
   @override
@@ -106,18 +103,27 @@ class _DashboardPageState extends State<DashboardPage> {
           final List<Map<String, dynamic>> reports = data['reports'];
 
           final int totalProjects = projects.length;
-          final int completedProjects = projects.where((p) => p.status == 'Selesai').length;
-          final int onProgressProjectsCount = projects.where((p) => p.status == 'Progres').length;
+          final int completedProjects = projects
+              .where((p) => p.status == 'Selesai')
+              .length;
+          final int onProgressProjectsCount = projects
+              .where((p) => p.status == 'Progres')
+              .length;
           final int reportsTodayCount = reports.where((r) {
             final dateStr = r['tanggal'] as String?;
             if (dateStr == null) return false;
             final date = DateTime.tryParse(dateStr);
             if (date == null) return false;
             final now = DateTime.now();
-            return date.year == now.year && date.month == now.month && date.day == now.day;
+            return date.year == now.year &&
+                date.month == now.month &&
+                date.day == now.day;
           }).length;
 
-          final onProgressProjects = projects.where((p) => p.status == 'Progres').take(3).toList();
+          final onProgressProjects = projects
+              .where((p) => p.status == 'Progres')
+              .take(3)
+              .toList();
 
           double totalProgress = 0.0;
           if (projects.isNotEmpty) {
@@ -197,7 +203,10 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     const Text(
                       'Proyek On Progress',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     GestureDetector(
                       onTap: _navigateToProjectListPage,
@@ -214,13 +223,18 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 16),
                 if (onProgressProjects.isEmpty)
-                  const Text('Belum ada proyek on progress.', style: TextStyle(color: Colors.grey))
+                  const Text(
+                    'Belum ada proyek on progress.',
+                    style: TextStyle(color: Colors.grey),
+                  )
                 else
-                  ...onProgressProjects.map((p) => _buildProgressItem(
-                        p.title,
-                        p.targetProgress,
-                        Colors.green,
-                      )),
+                  ...onProgressProjects.map(
+                    (p) => _buildProgressItem(
+                      p.title,
+                      p.targetProgress,
+                      Colors.green,
+                    ),
+                  ),
                 const SizedBox(height: 32),
 
                 // 4. Project Progress Section (Donut Chart)
@@ -243,7 +257,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     children: [
                       const Text(
                         'Progres Proyek Keseluruhan',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -261,18 +278,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                   child: CircularProgressIndicator(
                                     value: 1.0,
                                     strokeWidth: 20,
-                                    color: Colors.blue.shade100, // Background progress color
+                                    color: Colors
+                                        .blue
+                                        .shade100, // Background progress color
                                   ),
                                 ),
                                 Transform.rotate(
-                                  angle: -1.5708, // Rotate indicator to start from the top (12 o'clock)
+                                  angle:
+                                      -1.5708, // Rotate indicator to start from the top (12 o'clock)
                                   child: SizedBox(
                                     width: 120,
                                     height: 120,
                                     child: CircularProgressIndicator(
                                       value: totalProgress,
                                       strokeWidth: 20,
-                                      color: const Color(0xFF3B82F6), // Main blue color
+                                      color: const Color(
+                                        0xFF3B82F6,
+                                      ), // Main blue color
                                       strokeCap: StrokeCap.round,
                                     ),
                                   ),
@@ -328,7 +350,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           );
-        }
+        },
       ),
 
       // 5. Bottom Navigation Bar

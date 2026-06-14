@@ -5,7 +5,9 @@ class AppConfig {
   static String get supabaseUrl {
     final url = dotenv.env['SUPABASE_URL'];
     if (url == null || url.isEmpty) {
-      throw Exception('Konfigurasi SUPABASE_URL tidak ditemukan di environment file.');
+      throw Exception(
+        'Konfigurasi SUPABASE_URL tidak ditemukan di environment file.',
+      );
     }
     return url;
   }
@@ -14,7 +16,9 @@ class AppConfig {
   static String get supabaseAnonKey {
     final key = dotenv.env['SUPABASE_ANON_KEY'];
     if (key == null || key.isEmpty) {
-      throw Exception('Konfigurasi SUPABASE_ANON_KEY tidak ditemukan di environment file.');
+      throw Exception(
+        'Konfigurasi SUPABASE_ANON_KEY tidak ditemukan di environment file.',
+      );
     }
     return key;
   }

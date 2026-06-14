@@ -1,35 +1,38 @@
-// lib/providers/dashboard_provider.dart
+// =============================================================
+// FILE   : lib/Frontend/providers/dashboard_provider.dart
+// TEKNIK : State Management
+// =============================================================
+
 import 'package:flutter/material.dart';
+import '../../backend/repositories/project_repository.dart';
+import '../../backend/models/project_model.dart';
 
 class DashboardProvider extends ChangeNotifier {
-  // Data inisial 0 (Menunggu Database SQL)
-  int _totalProyek = 0;
-  List<String> _listNamaProyek = [];
+  final ProjectRepository _projectRepository;
 
-  int get totalProyek => _totalProyek;
-  List<String> get listNamaProyek => _listNamaProyek;
+  bool isLoading = false;
+  List<ProjectModel> projects = [];
+  int totalProjects = 0;
+  int completedProjects = 0;
+  int onProgressProjects = 0;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  DashboardProvider(this._projectRepository);
 
-  // [SARAN TEKNIK: API disebelah sini] 
-  // "Saran buat yang ambil teknik API: Letakkan fungsi http.get() di sini 
-  // untuk narik data dari database SQL melalui REST API."
-  Future<void> loadDataFromDatabase() async {
-    _isLoading = true;
+  Future<void> loadDashboardData() async {
+    isLoading = true;
     notifyListeners();
 
     try {
-      await Future.delayed(const Duration(seconds: 1)); // Simulasi
+      projects = await _projectRepository.ambilSemuaProyek();
+      totalProjects = projects.length;
       
-      // [SARAN TEKNIK: PARAMETERIZATION / GENERICS disebelah sini]
-      // "Saran buat yang ambil Generics: Kita bisa bikin fungsi fetch data yang 
-      // bisa nerima tipe data <T> supaya kodenya lebih reusable."
+      completedProjects = projects.where((p) => p.status.toLowerCase() == 'selesai').length;
+      onProgressProjects = projects.where((p) => p.status.toLowerCase() == 'berjalan').length;
       
-      _totalProyek = 0;
-      _listNamaProyek = [];
+    } catch (e) {
+      print("Error loading dashboard data: $e");
     } finally {
-      _isLoading = false;
+      isLoading = false;
       notifyListeners();
     }
   }

@@ -25,7 +25,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
   }
 
   void _loadData() async {
-    final reports = await _reportRepository.ambilLaporanBerdasarkanProyek(widget.project.id);
+    final reports = await _reportRepository.ambilLaporanBerdasarkanProyek(
+      widget.project.id,
+    );
     if (mounted) {
       setState(() {
         _totalReports = reports.length;
@@ -244,7 +246,11 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
             const Color(0xFF0055FF),
           ),
           const SizedBox(height: 20),
-          _buildProgressLabel('Progres Fisik', widget.project.actualProgress, Colors.green),
+          _buildProgressLabel(
+            'Progres Fisik',
+            widget.project.actualProgress,
+            Colors.green,
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
@@ -252,8 +258,14 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                 child: SizedBox(
                   height: 56,
                   child: Center(
-                    child: Text('Total Laporan Dibuat: $_totalReports', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  )
+                    child: Text(
+                      'Total Laporan Dibuat: $_totalReports',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -416,7 +428,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                   bottomRight: Radius.circular(24),
                 ),
                 child: Image.asset(
-                  project.imagePath,
+                  project.imagePath ?? 'assets/images/placeholder.png',
                   width: double.infinity,
                   height: 240,
                   fit: BoxFit.cover,
@@ -520,20 +532,11 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                 const SizedBox(height: 12),
                 _buildDetailInfoCard('Sumber Dana', project.sumberDana ?? '-'),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard(
-                  'Konsultan Pengawas',
-                  '-',
-                ),
+                _buildDetailInfoCard('Konsultan Pengawas', '-'),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard(
-                  'Kontraktor Pelaksana',
-                  '-',
-                ),
+                _buildDetailInfoCard('Kontraktor Pelaksana', '-'),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard(
-                  'Deskripsi',
-                  project.deskripsi ?? '-',
-                ),
+                _buildDetailInfoCard('Deskripsi', project.deskripsi ?? '-'),
                 const SizedBox(height: 24),
                 const Text(
                   'Tim Proyek',

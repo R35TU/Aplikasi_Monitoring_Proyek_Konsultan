@@ -194,17 +194,21 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
-                  
+
                   final _allProjects = snapshot.data ?? [];
 
                   return TabBarView(
                     children: [
                       _buildProjectList(_allProjects), // Tab Semua
                       _buildProjectList(
-                        _allProjects.where((p) => p.status == 'Progres').toList(),
+                        _allProjects
+                            .where((p) => p.status == 'Progres')
+                            .toList(),
                       ), // Tab Progres
                       _buildProjectList(
-                        _allProjects.where((p) => p.status == 'Selesai').toList(),
+                        _allProjects
+                            .where((p) => p.status == 'Selesai')
+                            .toList(),
                       ), // Tab Selesai
                       _buildProjectList(
                         _allProjects
@@ -213,7 +217,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       ), // Tab Dibatalkan
                     ],
                   );
-                }
+                },
               ),
             ),
           ],
@@ -356,7 +360,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 top: Radius.circular(12),
               ),
               child: Image.asset(
-                project.imagePath,
+                project.imagePath ?? 'assets/images/placeholder.png',
                 width: double.infinity,
                 height: 120,
                 fit: BoxFit.cover,

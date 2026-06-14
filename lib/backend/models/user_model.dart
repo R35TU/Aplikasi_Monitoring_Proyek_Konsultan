@@ -1,4 +1,3 @@
-
 class UserModel {
   final String userId; // UUID
   final String nama;
@@ -15,5 +14,4 @@ class UserModel {
     this.perusahaanId,
     this.nomorHp,
   });
-
 }

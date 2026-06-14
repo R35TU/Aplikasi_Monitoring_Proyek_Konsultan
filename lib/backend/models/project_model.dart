@@ -1,4 +1,3 @@
-
 class ProjectModel {
   final int id;
   final String namaProyek;
@@ -33,7 +32,9 @@ class ProjectModel {
   // --- GETTER (Tetap ada agar UI bisa baca variabel lama) ---
   String get title => namaProyek;
   String get location => lokasi;
-  String get imagePath => (gambarUrl == null || gambarUrl!.isEmpty) ? 'assets/images/bottom_bg.png' : gambarUrl!;
+  String get imagePath => (gambarUrl == null || gambarUrl!.isEmpty)
+      ? 'assets/images/bottom_bg.png'
+      : gambarUrl!;
   double get targetProgress => progressRencana / 100;
   double get actualProgress => progressAktual / 100;
 
@@ -54,5 +55,4 @@ class ProjectModel {
       deskripsi: json['deskripsi'] as String?,
     );
   }
-
 }
