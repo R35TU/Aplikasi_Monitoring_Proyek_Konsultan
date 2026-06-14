@@ -1,6 +1,6 @@
 
 class UserModel {
-  final String firebaseUid;
+  final String userId; // UUID
   final String nama;
   final String? username;
   final String peran;
@@ -8,7 +8,7 @@ class UserModel {
   final String? nomorHp;
 
   UserModel({
-    required this.firebaseUid,
+    required this.userId,
     required this.nama,
     this.username,
     required this.peran,

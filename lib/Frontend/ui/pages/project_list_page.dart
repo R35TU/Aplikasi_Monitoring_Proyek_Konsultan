@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../backend/models/project_model.dart';
+import '../../../backend/repositories/project_repository.dart';
 import 'dashboard_page.dart';
 import 'project_detail_page.dart';
 import 'report_page.dart';
 import 'history_page.dart';
 import 'account_page.dart';
+import 'create_project_page.dart';
 
 class ProjectListPage extends StatefulWidget {
   const ProjectListPage({super.key});
@@ -17,49 +20,21 @@ class ProjectListPage extends StatefulWidget {
 class _ProjectListPageState extends State<ProjectListPage> {
   int _selectedIndex = 1;
 
-  // 2. Dummy data
-  final List<ProjectModel> _allProjects = [
-    ProjectModel.dummy(
-      title: 'Pembangunan Jembatan',
-      location: 'Purwokerto',
-      status: 'Progres',
-      targetProgress: 0.8,
-      actualProgress: 0.5,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel.dummy(
-      title: 'Gor hebat mantap',
-      location: 'Purbalingga',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel.dummy(
-      title: 'Gorong Gorong Manukan',
-      location: 'Surabaya',
-      status: 'Selesai',
-      targetProgress: 1.0,
-      actualProgress: 1.0,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel.dummy(
-      title: 'Aspal Jl.Desa Kesugihan',
-      location: 'Cilacap',
-      status: 'Progres',
-      targetProgress: 0.4,
-      actualProgress: 0.3,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-    ProjectModel.dummy(
-      title: 'Koperasi Hitam Putih',
-      location: 'Alam Lain',
-      status: 'Progres',
-      targetProgress: 0.1,
-      actualProgress: 0.1,
-      imagePath: 'assets/images/bottom_bg.png',
-    ),
-  ];
+  late ProjectRepository _projectRepository;
+  late Future<List<ProjectModel>> _projectsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _projectRepository = ProjectRepository(Supabase.instance.client);
+    _loadProjects();
+  }
+
+  void _loadProjects() {
+    setState(() {
+      _projectsFuture = _projectRepository.ambilSemuaProyek();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +123,17 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CreateProjectPage(),
+                          ),
+                        );
+                        if (result == true) {
+                          _loadProjects(); // Refresh the list if a project was added
+                        }
+                      },
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text(
                         'Tambah Proyek',
@@ -200,21 +185,35 @@ class _ProjectListPageState extends State<ProjectListPage> {
 
             // 7. TabBar Views (The Lists)
             Expanded(
-              child: TabBarView(
-                children: [
-                  _buildProjectList(_allProjects), // Tab Semua
-                  _buildProjectList(
-                    _allProjects.where((p) => p.status == 'Progres').toList(),
-                  ), // Tab Progres
-                  _buildProjectList(
-                    _allProjects.where((p) => p.status == 'Selesai').toList(),
-                  ), // Tab Selesai
-                  _buildProjectList(
-                    _allProjects
-                        .where((p) => p.status == 'Dibatalkan')
-                        .toList(),
-                  ), // Tab Dibatalkan
-                ],
+              child: FutureBuilder<List<ProjectModel>>(
+                future: _projectsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  
+                  final _allProjects = snapshot.data ?? [];
+
+                  return TabBarView(
+                    children: [
+                      _buildProjectList(_allProjects), // Tab Semua
+                      _buildProjectList(
+                        _allProjects.where((p) => p.status == 'Progres').toList(),
+                      ), // Tab Progres
+                      _buildProjectList(
+                        _allProjects.where((p) => p.status == 'Selesai').toList(),
+                      ), // Tab Selesai
+                      _buildProjectList(
+                        _allProjects
+                            .where((p) => p.status == 'Dibatalkan')
+                            .toList(),
+                      ), // Tab Dibatalkan
+                    ],
+                  );
+                }
               ),
             ),
           ],

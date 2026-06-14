@@ -60,10 +60,8 @@ class _DataReportPageState extends State<DataReportPage> {
               );
             }
 
-            // KUNCI UTAMA: Hanya tampilkan proyek yang sudah diisi laporan (targetProgress > 0)
-            final projects = (snapshot.data ?? [])
-                .where((p) => p.targetProgress > 0)
-                .toList();
+            // Tampilkan semua proyek agar laporan yang baru dibuat pada proyek baru tetap muncul
+            final projects = (snapshot.data ?? []).toList();
 
             return Column(
               children: [

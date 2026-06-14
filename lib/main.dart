@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'Frontend/ui/pages/splash_page.dart'; // Pastikan path import ini sesuai dengan letak filemu
+import 'Frontend/ui/pages/splash_page.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'backend/config/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load environment variables from .env
-  await dotenv.load(fileName: ".env");
+  // Load environment variables dari .env
+  const String envFile = String.fromEnvironment('ENV_FILE', defaultValue: '.env.production');
+  await dotenv.load(fileName: envFile);
   
-  // Initialize Supabase
+  // Initialize Supabase menggunakan AppConfig
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: AppConfig.supabaseUrl,
+    anonKey: AppConfig.supabaseAnonKey,
   );
   
   runApp(const MyApp());

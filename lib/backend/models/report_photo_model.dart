@@ -1,11 +1,11 @@
 
 class ReportPhotoModel {
-  final int id;
+  final int reportPhotosId;
   final int reportId;
   final String fotoUrl;
 
   ReportPhotoModel({
-    required this.id,
+    required this.reportPhotosId,
     required this.reportId,
     required this.fotoUrl,
   });

@@ -598,6 +598,46 @@ void approve() {
 
 ---
 
+## 🎨 Design Pattern: Factory Method
+
+Dalam aplikasi ini, terdapat penerapan design pattern **Factory Method**. Pattern ini diimplementasikan menggunakan keyword `factory` pada bahasa Dart. 
+
+Tujuan dari penggunaan pattern ini adalah untuk mengenkapsulasi logika pembuatan objek (instansiasi) dari sumber data eksternal, seperti Map (JSON) yang diambil dari database atau API, menjadi objek model domain yang strongly-typed dan terstruktur.
+
+**Contoh Implementasi pada `ProjectModel`:**
+
+Pada file `lib/backend/models/project_model.dart`, `ProjectModel.fromJson` adalah sebuah Factory Method. Constructor ini bertanggung jawab untuk membaca data JSON (berupa `Map<String, dynamic>`) dan mengembalikan sebuah instance dari `ProjectModel`. 
+
+```dart
+// lib/backend/models/project_model.dart
+
+class ProjectModel {
+  // ... (deklarasi properti) ...
+
+  // Factory Method untuk membuat instance dari data JSON
+  factory ProjectModel.fromJson(Map<String, dynamic> json) {
+    return ProjectModel(
+      id: json['id'] as int? ?? 0,
+      namaProyek: json['nama_proyek'] as String? ?? 'Tanpa Nama',
+      perusahaanId: json['perusahaan_id'] as int? ?? 0,
+      pemilikProyek: json['pemilik_proyek'] as String?,
+      sumberDana: json['sumber_dana'] as String?,
+      lokasi: json['lokasi'] as String? ?? 'Tidak diketahui',
+      gambarUrl: json['gambar_url'] as String?,
+      tanggalMulai: json['tanggal_mulai'] as String? ?? '',
+      targetSelesai: json['target_selesai'] as String? ?? '',
+      progressRencana: json['progress_rencana'] as int? ?? 0,
+      progressAktual: json['progress_aktual'] as int? ?? 0,
+      status: json['status'] as String? ?? 'Perencanaan',
+    );
+  }
+}
+```
+
+Penerapan pola ini memungkinkan kita untuk menyembunyikan logika parsing, pengecekan null safety, dan pemberian nilai default saat objek dibuat.
+
+---
+
 ## 📦 Setup & Instalasi
 
 ```bash

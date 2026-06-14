@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'login_page.dart';
 
 import 'dashboard_page.dart';
 import 'project_list_page.dart';
@@ -201,7 +204,15 @@ class _AccountPageState extends State<AccountPage> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  await Supabase.instance.client.auth.signOut();
+                  if (!context.mounted) return;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    (route) => false,
+                  );
+                },
                 icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
                 label: const Text(
                   'Keluar Akun',

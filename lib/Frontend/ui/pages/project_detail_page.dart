@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../backend/repositories/report_repository.dart';
 
 import '../../../backend/models/project_model.dart';
 
-class ProjectDetailPage extends StatelessWidget {
+class ProjectDetailPage extends StatefulWidget {
   final ProjectModel project;
 
   const ProjectDetailPage({super.key, required this.project});
 
   @override
+  State<ProjectDetailPage> createState() => _ProjectDetailPageState();
+}
+
+class _ProjectDetailPageState extends State<ProjectDetailPage> {
+  late ReportRepository _reportRepository;
+  int _totalReports = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportRepository = ReportRepository(Supabase.instance.client);
+    _loadData();
+  }
+
+  void _loadData() async {
+    final reports = await _reportRepository.ambilLaporanBerdasarkanProyek(widget.project.id);
+    if (mounted) {
+      setState(() {
+        _totalReports = reports.length;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final project = widget.project;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -213,70 +240,25 @@ class ProjectDetailPage extends StatelessWidget {
         children: [
           _buildProgressLabel(
             'Progres Pengawasan',
-            0.8,
+            widget.project.targetProgress,
             const Color(0xFF0055FF),
           ),
           const SizedBox(height: 20),
-          _buildProgressLabel('Progres Fisik', 0.5, Colors.green),
+          _buildProgressLabel('Progres Fisik', widget.project.actualProgress, Colors.green),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: SizedBox(
                   height: 56,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 7,
-                    separatorBuilder: (_, _) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final day = index + 1;
-                      return _buildDateButton(day, index == 0);
-                    },
-                  ),
+                  child: Center(
+                    child: Text('Total Laporan Dibuat: $_totalReports', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  )
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: const [
-                  Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                  SizedBox(height: 4),
-                  Text(
-                    'Januari 2026',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E5EA)),
-            ),
-            child: Column(
-              children: [
-                _buildProgressTableHeader(),
-                _buildProgressTableRow(
-                  'Pengawasan',
-                  true,
-                  '4,5%',
-                  const Color(0xFFE8F8EE),
-                ),
-                _buildProgressTableRow(
-                  'Fisik',
-                  false,
-                  '0%',
-                  const Color(0xFFEFF5FF),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -417,6 +399,7 @@ class ProjectDetailPage extends StatelessWidget {
   }
 
   Widget _buildGeneralInfo(BuildContext context) {
+    final project = widget.project;
     final Color statusColor = project.status == 'Selesai'
         ? const Color(0xFF0055FF)
         : Colors.green;
@@ -517,14 +500,14 @@ class ProjectDetailPage extends StatelessWidget {
                     Expanded(
                       child: _buildSmallInfoCard(
                         'Tanggal Mulai',
-                        '1 Januari 2026',
+                        project.tanggalMulai,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSmallInfoCard(
                         'Tanggal Selesai',
-                        '30 Februari 2026',
+                        project.targetSelesai,
                       ),
                     ),
                   ],
@@ -532,24 +515,24 @@ class ProjectDetailPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildDetailInfoCard(
                   'Pemilik Proyek',
-                  'Pemerintah Kabupaten Banyumas',
+                  project.pemilikProyek ?? '-',
                 ),
                 const SizedBox(height: 12),
-                _buildDetailInfoCard('Sumber Dana', 'APBD 2026'),
+                _buildDetailInfoCard('Sumber Dana', project.sumberDana ?? '-'),
                 const SizedBox(height: 12),
                 _buildDetailInfoCard(
                   'Konsultan Pengawas',
-                  'CV. Tata Sakti Consultant',
+                  '-',
                 ),
                 const SizedBox(height: 12),
                 _buildDetailInfoCard(
                   'Kontraktor Pelaksana',
-                  'PT. Maju Mundur Jaya',
+                  '-',
                 ),
                 const SizedBox(height: 12),
                 _buildDetailInfoCard(
                   'Deskripsi',
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  project.deskripsi ?? '-',
                 ),
                 const SizedBox(height: 24),
                 const Text(

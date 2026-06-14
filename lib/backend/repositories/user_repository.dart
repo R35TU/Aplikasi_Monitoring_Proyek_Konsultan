@@ -9,8 +9,8 @@ class UserRepository extends BaseRepository {
     return [];
   }
 
-  Future<UserModel?> getById(int id) async {
-    final response = await supabase.from('users').select().eq('id', id).maybeSingle();
+  Future<UserModel?> getById(String id) async {
+    final response = await supabase.from('users').select().eq('user_id', id).maybeSingle();
     return null;
   }
 
@@ -23,11 +23,11 @@ class UserRepository extends BaseRepository {
     await supabase.from('users').insert(entry);
   }
 
-  Future<void> update(int id, Map<String, dynamic> entry) async {
-    await supabase.from('users').update(entry).eq('id', id);
+  Future<void> update(String id, Map<String, dynamic> entry) async {
+    await supabase.from('users').update(entry).eq('user_id', id);
   }
 
-  Future<void> delete(int id) async {
-    await supabase.from('users').delete().eq('id', id);
+  Future<void> delete(String id) async {
+    await supabase.from('users').delete().eq('user_id', id);
   }
 }

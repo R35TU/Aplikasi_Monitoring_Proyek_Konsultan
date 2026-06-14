@@ -1,9 +1,9 @@
 
 class ReportModel {
-  final int id;
+  final int reportsId;
   final int proyekId;
   final String pembuatId;
-  final String? penyetujuId;
+  final String? penyatujuId;
   final String jenisLaporan;
   final String tanggal;
   final String? cuaca;
@@ -12,10 +12,10 @@ class ReportModel {
   final String statusPersetujuan;
 
   ReportModel({
-    required this.id,
+    required this.reportsId,
     required this.proyekId,
     required this.pembuatId,
-    this.penyetujuId,
+    this.penyatujuId,
     required this.jenisLaporan,
     required this.tanggal,
     this.cuaca,

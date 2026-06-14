@@ -1,23 +1,26 @@
-// =============================================================
-// FILE   : lib/backend/config/app_config.dart
-// TEKNIK : Runtime Configuration
-// -------------------------------------------------------------
-// FUNGSI :
-//   Membaca variabel environment dari file .env.development
-//   atau .env.production saat aplikasi pertama kali dijalankan.
-//   Menyediakan nilai konfigurasi seperti nama database, base URL,
-//   dan mode debug kepada seluruh bagian aplikasi.
-//
-// CARA PAKAI :
-//   1. Tambahkan package flutter_dotenv di pubspec.yaml
-//   2. Load file .env di main.dart sebelum runApp()
-//   3. Akses nilai via AppConfig.dbName, AppConfig.isDebug, dst.
-//
-// CONTOH ISI .env :
-//   DB_NAME=tata_saka.db
-//   DEBUG=true
-//
-// CATATAN DEFENSIVE :
-//   Validasi bahwa variabel wajib tidak kosong saat load.
-//   Lempar Exception jika konfigurasi kritis tidak ditemukan.
-// =============================================================
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class AppConfig {
+  /// Mengambil URL Supabase dari file .env
+  static String get supabaseUrl {
+    final url = dotenv.env['SUPABASE_URL'];
+    if (url == null || url.isEmpty) {
+      throw Exception('Konfigurasi SUPABASE_URL tidak ditemukan di environment file.');
+    }
+    return url;
+  }
+
+  /// Mengambil Anon Key Supabase dari file .env
+  static String get supabaseAnonKey {
+    final key = dotenv.env['SUPABASE_ANON_KEY'];
+    if (key == null || key.isEmpty) {
+      throw Exception('Konfigurasi SUPABASE_ANON_KEY tidak ditemukan di environment file.');
+    }
+    return key;
+  }
+
+  /// Cek apakah mode debug aktif (contoh tambahan jika diperlukan)
+  static bool get isDebug {
+    return dotenv.env['DEBUG'] == 'true';
+  }
+}

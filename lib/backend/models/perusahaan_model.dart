@@ -1,11 +1,11 @@
 
 class PerusahaanModel {
-  final int id;
+  final int perusahaanId;
   final String namaPerusahaan;
   final String? alamat;
 
   PerusahaanModel({
-    required this.id,
+    required this.perusahaanId,
     required this.namaPerusahaan,
     this.alamat,
   });
