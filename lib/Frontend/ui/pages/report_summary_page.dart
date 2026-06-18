@@ -14,7 +14,10 @@ class ReportSummaryPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Buat Rekap Laporan', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Buat Rekap Laporan',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -27,7 +30,10 @@ class ReportSummaryPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReportSummaryDetailPage(type: 'Mingguan')),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const ReportSummaryDetailPage(type: 'Mingguan'),
+                ),
               );
             },
           ),
@@ -39,7 +45,10 @@ class ReportSummaryPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReportSummaryDetailPage(type: 'Bulanan')),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const ReportSummaryDetailPage(type: 'Bulanan'),
+                ),
               );
             },
           ),
@@ -51,7 +60,10 @@ class ReportSummaryPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReportSummaryDetailPage(type: 'Custom')),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const ReportSummaryDetailPage(type: 'Custom'),
+                ),
               );
             },
           ),
@@ -74,7 +86,13 @@ class ReportSummaryPage extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -82,9 +100,18 @@ class ReportSummaryPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  ),
                 ],
               ),
             ),
@@ -109,7 +136,8 @@ class ReportSummaryDetailPage extends StatefulWidget {
   const ReportSummaryDetailPage({super.key, required this.type});
 
   @override
-  State<ReportSummaryDetailPage> createState() => _ReportSummaryDetailPageState();
+  State<ReportSummaryDetailPage> createState() =>
+      _ReportSummaryDetailPageState();
 }
 
 class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
@@ -192,7 +220,13 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Buat Rekap Laporan - ${widget.type}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Buat Rekap Laporan - ${widget.type}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -201,37 +235,73 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
           const Text('Proyek', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _selectedProject,
+            initialValue: _selectedProject,
             items: const [
-              DropdownMenuItem(value: 'Pembangunan Kuil Api', child: Text('Pembangunan Kuil Api')),
-              DropdownMenuItem(value: 'Pembangunan Jalan Moon', child: Text('Pembangunan Jalan Moon')),
+              DropdownMenuItem(
+                value: 'Pembangunan Kuil Api',
+                child: Text('Pembangunan Kuil Api'),
+              ),
+              DropdownMenuItem(
+                value: 'Pembangunan Jalan Moon',
+                child: Text('Pembangunan Jalan Moon'),
+              ),
             ],
-            onChanged: (value) => setState(() => _selectedProject = value ?? _selectedProject),
-            decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+            onChanged: (value) =>
+                setState(() => _selectedProject = value ?? _selectedProject),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           if (widget.type == 'Mingguan') ...[
-            const Text('Tanggal Mulai', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Tanggal Mulai',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            _buildDateInput(label: _formatDate(_startDate), onTap: _pickStartDate),
+            _buildDateInput(
+              label: _formatDate(_startDate),
+              onTap: _pickStartDate,
+            ),
             const SizedBox(height: 16),
-            const Text('Tanggal Selesai', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Tanggal Selesai',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            _buildDateInput(label: _formatDate(_endDate), onTap: null, enabled: false),
+            _buildDateInput(
+              label: _formatDate(_endDate),
+              onTap: null,
+              enabled: false,
+            ),
           ] else if (widget.type == 'Bulanan') ...[
             const Text('Bulan', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             _buildMonthSelector(),
           ] else ...[
-            const Text('Tanggal Mulai', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Tanggal Mulai',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            _buildDateInput(label: _formatDate(_startDate), onTap: _pickStartDate),
+            _buildDateInput(
+              label: _formatDate(_startDate),
+              onTap: _pickStartDate,
+            ),
             const SizedBox(height: 16),
-            const Text('Tanggal Selesai', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Tanggal Selesai',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             _buildDateInput(label: _formatDate(_endDate), onTap: _pickEndDate),
             const SizedBox(height: 16),
-            Text('Rentang Cepat ($_customRangeDays Hari)', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Rentang Cepat ($_customRangeDays Hari)',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -251,10 +321,14 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
               onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: const Text('Buat Rekapan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              child: const Text(
+                'Buat Rekapan',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -262,7 +336,11 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
     );
   }
 
-  Widget _buildDateInput({required String label, required VoidCallback? onTap, bool enabled = true}) {
+  Widget _buildDateInput({
+    required String label,
+    required VoidCallback? onTap,
+    bool enabled = true,
+  }) {
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: Container(
@@ -276,7 +354,12 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: TextStyle(color: enabled ? Colors.black : Colors.grey.shade600)),
+            Text(
+              label,
+              style: TextStyle(
+                color: enabled ? Colors.black : Colors.grey.shade600,
+              ),
+            ),
             const Icon(Icons.calendar_today, color: Colors.black54),
           ],
         ),
@@ -293,8 +376,9 @@ class _ReportSummaryDetailPageState extends State<ReportSummaryDetailPage> {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: DropdownButtonFormField<int>(
-        value: _selectedMonth,
-        onChanged: (value) => setState(() => _selectedMonth = value ?? _selectedMonth),
+        initialValue: _selectedMonth,
+        onChanged: (value) =>
+            setState(() => _selectedMonth = value ?? _selectedMonth),
         decoration: const InputDecoration(border: InputBorder.none),
         items: List.generate(12, (index) {
           final month = index + 1;

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../backend/models/project_model.dart';
-import 'package:provider/provider.dart';
-import '../../providers/project_provider.dart';
+import '../../../backend/repositories/project_repository.dart';
 import 'dashboard_page.dart';
 import 'project_detail_page.dart';
 import 'report_page.dart';
 import 'history_page.dart';
 import 'account_page.dart';
+import 'create_project_page.dart';
 
 class ProjectListPage extends StatefulWidget {
   const ProjectListPage({super.key});
@@ -17,14 +18,21 @@ class ProjectListPage extends StatefulWidget {
 }
 
 class _ProjectListPageState extends State<ProjectListPage> {
-  int _selectedIndex = 1; 
+  int _selectedIndex = 1;
+
+  late ProjectRepository _projectRepository;
+  late Future<List<ProjectModel>> _projectsFuture;
 
   @override
   void initState() {
     super.initState();
-    // Load projects when the page initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProjectProvider>().loadProjects();
+    _projectRepository = ProjectRepository(Supabase.instance.client);
+    _loadProjects();
+  }
+
+  void _loadProjects() {
+    setState(() {
+      _projectsFuture = _projectRepository.ambilSemuaProyek();
     });
   }
 
@@ -56,7 +64,10 @@ class _ProjectListPageState extends State<ProjectListPage> {
           children: [
             Container(
               color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Column(
                 children: [
                   // 4. Search Bar and Filter Icon
@@ -66,16 +77,28 @@ class _ProjectListPageState extends State<ProjectListPage> {
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'Cari Proyek..',
-                            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                            prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                           ),
                         ),
@@ -87,26 +110,42 @@ class _ProjectListPageState extends State<ProjectListPage> {
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.filter_alt_outlined, color: Colors.blue),
+                        child: const Icon(
+                          Icons.filter_alt_outlined,
+                          color: Colors.blue,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 5. Add Project Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        _showAddProjectDialog(context);
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CreateProjectPage(),
+                          ),
+                        );
+                        if (result == true) {
+                          _loadProjects(); // Refresh the list if a project was added
+                        }
                       },
                       icon: const Icon(Icons.add, color: Colors.white),
                       label: const Text(
                         'Tambah Proyek',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0055FF), // Main blue color
+                        backgroundColor: const Color(
+                          0xFF0055FF,
+                        ), // Main blue color
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -118,7 +157,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 ],
               ),
             ),
-            
+
             // 6. TabBar Menu
             Container(
               color: Colors.white,
@@ -127,8 +166,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: Color(0xFF0055FF),
                 indicatorWeight: 3,
-                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12,
+                ),
                 tabs: [
                   Tab(text: 'Semua'),
                   Tab(text: 'Progres'),
@@ -137,22 +182,39 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 ],
               ),
             ),
-            
+
             // 7. TabBar Views (The Lists)
             Expanded(
-              child: Consumer<ProjectProvider>(
-                builder: (context, provider, child) {
-                  if (provider.state == ProjectState.loading) {
+              child: FutureBuilder<List<ProjectModel>>(
+                future: _projectsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  final allProjects = provider.projects;
-                  
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  final _allProjects = snapshot.data ?? [];
+
                   return TabBarView(
                     children: [
-                      _buildProjectList(allProjects), // Tab Semua
-                      _buildProjectList(allProjects.where((p) => p.status == 'Progres' || p.status == 'Perencanaan').toList()), // Tab Progres
-                      _buildProjectList(allProjects.where((p) => p.status == 'Selesai').toList()), // Tab Selesai
-                      _buildProjectList(allProjects.where((p) => p.status == 'Dibatalkan').toList()), // Tab Dibatalkan
+                      _buildProjectList(_allProjects), // Tab Semua
+                      _buildProjectList(
+                        _allProjects
+                            .where((p) => p.status == 'Progres')
+                            .toList(),
+                      ), // Tab Progres
+                      _buildProjectList(
+                        _allProjects
+                            .where((p) => p.status == 'Selesai')
+                            .toList(),
+                      ), // Tab Selesai
+                      _buildProjectList(
+                        _allProjects
+                            .where((p) => p.status == 'Dibatalkan')
+                            .toList(),
+                      ), // Tab Dibatalkan
                     ],
                   );
                 },
@@ -165,7 +227,11 @@ class _ProjectListPageState extends State<ProjectListPage> {
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
             ],
           ),
           child: BottomNavigationBar(
@@ -180,7 +246,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
               if (index == 0) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const DashboardPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const DashboardPage(),
+                  ),
                 );
                 return;
               }
@@ -210,11 +278,26 @@ class _ProjectListPageState extends State<ProjectListPage> {
               });
             },
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Dashboard'),
-              BottomNavigationBarItem(icon: Icon(Icons.folder), label: 'Proyek'),
-              BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-              BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-              BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                label: 'Dashboard',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.folder),
+                label: 'Proyek',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.insert_drive_file_outlined),
+                label: 'Laporan',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.history),
+                label: 'Riwayat',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                label: 'Akun',
+              ),
             ],
           ),
         ),
@@ -229,7 +312,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
         child: Text('Tidak ada proyek.', style: TextStyle(color: Colors.grey)),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: projects.length,
@@ -242,7 +325,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
   // Helper widget to build individual Project Card
   Widget _buildProjectCard(ProjectModel project) {
     // Determine colors based on status
-    Color statusColor = project.status == 'Selesai' ? const Color(0xFF0055FF) : Colors.green;
+    Color statusColor = project.status == 'Selesai'
+        ? const Color(0xFF0055FF)
+        : Colors.green;
 
     return GestureDetector(
       onTap: () {
@@ -260,7 +345,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -271,7 +356,9 @@ class _ProjectListPageState extends State<ProjectListPage> {
           children: [
             // Project Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
               child: Image.asset(
                 project.imagePath ?? 'assets/images/placeholder.png',
                 width: double.infinity,
@@ -279,7 +366,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                 fit: BoxFit.cover,
               ),
             ),
-            
+
             // Project Details
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -294,26 +381,38 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       children: [
                         Text(
                           project.title,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           project.location,
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              CircleAvatar(radius: 4, backgroundColor: statusColor),
+                              CircleAvatar(
+                                radius: 4,
+                                backgroundColor: statusColor,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 project.status,
@@ -329,15 +428,23 @@ class _ProjectListPageState extends State<ProjectListPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Right side: Progress Bars
                   Expanded(
                     flex: 2,
                     child: Column(
                       children: [
-                        _buildProgressBar('${project.progressRencana}%', project.progressRencana / 100.0, Colors.green),
+                        _buildProgressBar(
+                          '${(project.targetProgress * 100).toInt()}%',
+                          project.targetProgress,
+                          Colors.green,
+                        ),
                         const SizedBox(height: 8),
-                        _buildProgressBar('${project.progressAktual}%', project.progressAktual / 100.0, const Color(0xFF0055FF)),
+                        _buildProgressBar(
+                          '${(project.actualProgress * 100).toInt()}%',
+                          project.actualProgress,
+                          const Color(0xFF0055FF),
+                        ),
                       ],
                     ),
                   ),
@@ -370,75 +477,6 @@ class _ProjectListPageState extends State<ProjectListPage> {
           ),
         ),
       ],
-    );
-  }
-
-  void _showAddProjectDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final locationController = TextEditingController();
-    String selectedStatus = 'Perencanaan';
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              title: const Text('Tambah Proyek Baru'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(labelText: 'Nama Proyek'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: locationController,
-                      decoration: const InputDecoration(labelText: 'Lokasi'),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      value: selectedStatus,
-                      items: const [
-                        DropdownMenuItem(value: 'Perencanaan', child: Text('Perencanaan')),
-                        DropdownMenuItem(value: 'Progres', child: Text('Progres')),
-                        DropdownMenuItem(value: 'Selesai', child: Text('Selesai')),
-                      ],
-                      onChanged: (v) {
-                        if (v != null) setStateDialog(() => selectedStatus = v);
-                      },
-                      decoration: const InputDecoration(labelText: 'Status Awal'),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Batal'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (titleController.text.trim().isEmpty) return;
-                    final success = await context.read<ProjectProvider>().addProject(
-                      titleController.text.trim(),
-                      locationController.text.trim(),
-                      selectedStatus,
-                    );
-                    if (success && mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Proyek berhasil ditambahkan!')));
-                    }
-                  },
-                  child: const Text('Simpan'),
-                ),
-              ],
-            );
-          }
-        );
-      },
     );
   }
 }

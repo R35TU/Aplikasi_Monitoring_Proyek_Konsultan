@@ -1,15 +1,12 @@
+/// Class pembungkus untuk membedakan hasil database yang Sukses dan Gagal
 class DbResult<T> {
   final T? data;
   final String? errorMessage;
   final bool isSuccess;
 
-  DbResult._({this.data, this.errorMessage, required this.isSuccess});
+  // Constructor jika sukses
+  DbResult.success(this.data) : isSuccess = true, errorMessage = null;
 
-  factory DbResult.success({required T data}) {
-    return DbResult._(data: data, isSuccess: true);
-  }
-
-  factory DbResult.failure({required String message}) {
-    return DbResult._(errorMessage: message, isSuccess: false);
-  }
+  // Constructor jika gagal/error
+  DbResult.error(this.errorMessage) : isSuccess = false, data = null;
 }

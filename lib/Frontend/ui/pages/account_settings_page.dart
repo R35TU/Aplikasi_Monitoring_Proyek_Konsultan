@@ -33,7 +33,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         ),
         title: const Text(
           'Pengaturan',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -42,7 +46,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Preferensi Aplikasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Preferensi Aplikasi',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildGroupedOptionCard([
               (
@@ -61,40 +68,45 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               ),
             ]),
             const SizedBox(height: 24),
-            const Text('Notifikasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Notifikasi',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
-            _buildGroupedNotificationCard([
-              (
-                icon: Icons.notifications_outlined,
-                title: 'Notifikasi Push',
-                subtitle: 'Terima notifikasi di perangkat',
-                value: _pushNotification,
-                onChanged: (value) => setState(() => _pushNotification = value),
-              ),
-              (
-                icon: Icons.email_outlined,
-                title: 'Email Notifikasi',
-                subtitle: 'Terima notifikasi melalui email',
-                value: _emailNotification,
-                onChanged: (value) => setState(() => _emailNotification = value),
-              ),
-              (
-                icon: Icons.folder_open_outlined,
-                title: 'Notifikasi Proyek',
-                subtitle: 'Update terkait proyek terkait',
-                value: _projectNotification,
-                onChanged: (value) => setState(() => _projectNotification = value),
-              ),
-              (
-                icon: Icons.insert_drive_file_outlined,
-                title: 'Notifikasi Laporan',
-                subtitle: 'Pengingat dan status laporan',
-                value: _reportNotification,
-                onChanged: (value) => setState(() => _reportNotification = value),
-              ),
-            ]),
+            _buildNotificationTile(
+              icon: Icons.notifications_outlined,
+              title: 'Notifikasi Push',
+              subtitle: 'Terima notifikasi di perangkat',
+              value: _pushNotification,
+              onChanged: (value) => setState(() => _pushNotification = value),
+            ),
+            _buildNotificationTile(
+              icon: Icons.email_outlined,
+              title: 'Email Notifikasi',
+              subtitle: 'Terima notifikasi melalui email',
+              value: _emailNotification,
+              onChanged: (value) => setState(() => _emailNotification = value),
+            ),
+            _buildNotificationTile(
+              icon: Icons.folder_open_outlined,
+              title: 'Notifikasi Proyek',
+              subtitle: 'Update terkait proyek terkait',
+              value: _projectNotification,
+              onChanged: (value) =>
+                  setState(() => _projectNotification = value),
+            ),
+            _buildNotificationTile(
+              icon: Icons.insert_drive_file_outlined,
+              title: 'Notifikasi Laporan',
+              subtitle: 'Pengingat dan status laporan',
+              value: _reportNotification,
+              onChanged: (value) => setState(() => _reportNotification = value),
+            ),
             const SizedBox(height: 24),
-            const Text('Lainnya', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Lainnya',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildGroupedOptionCard([
               (
@@ -125,7 +137,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -147,7 +163,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             if (index == 1) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectListPage(),
+                ),
               );
               return;
             }
@@ -170,11 +188,26 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
@@ -214,14 +247,30 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
             if (trailing.isNotEmpty)
-              Text(trailing, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
+              Text(
+                trailing,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
             const SizedBox(width: 10),
             const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           ],
@@ -261,19 +310,43 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
               ],
             ),
           ),
-          Switch(value: value, onChanged: onChanged, activeColor: const Color(0xFF2563EB)),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: const Color(0xFF2563EB),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildGroupedOptionCard(List<({IconData icon, String title, String subtitle, String trailing, VoidCallback onTap})> items) {
+  Widget _buildGroupedOptionCard(
+    List<
+      ({
+        IconData icon,
+        String title,
+        String subtitle,
+        String trailing,
+        VoidCallback onTap,
+      })
+    >
+    items,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -281,118 +354,168 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
-        children: List.generate(
-          items.length,
-          (index) {
-            final item = items[index];
-            final isLast = index == items.length - 1;
-            return Column(
-              children: [
-                InkWell(
-                  onTap: item.onTap,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F0FE),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(item.icon, color: const Color(0xFF2563EB)),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              const SizedBox(height: 4),
-                              Text(item.subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                            ],
-                          ),
-                        ),
-                        if (item.trailing.isNotEmpty)
-                          Text(item.trailing, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
-                        const SizedBox(width: 10),
-                        const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                      ],
-                    ),
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          final isLast = index == items.length - 1;
+          return Column(
+            children: [
+              InkWell(
+                onTap: item.onTap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
                   ),
-                ),
-                if (!isLast)
-                  Divider(
-                    height: 0,
-                    color: const Color(0xFFE5E7EB),
-                    thickness: 1,
-                    indent: 62,
-                    endIndent: 16,
-                  ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGroupedNotificationCard(List<({IconData icon, String title, String subtitle, bool value, ValueChanged<bool> onChanged})> items) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        children: List.generate(
-          items.length,
-          (index) {
-            final item = items[index];
-            final isLast = index == items.length - 1;
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   child: Row(
                     children: [
                       Container(
-                        width: 44,
-                        height: 44,
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF3F4F6),
+                          color: const Color(0xFFE8F0FE),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Icon(item.icon, color: const Color(0xFF334155)),
+                        child: Icon(item.icon, color: const Color(0xFF2563EB)),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            Text(
+                              item.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
                             const SizedBox(height: 4),
-                            Text(item.subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            Text(
+                              item.subtitle,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Switch(value: item.value, onChanged: item.onChanged, activeColor: const Color(0xFF2563EB)),
+                      if (item.trailing.isNotEmpty)
+                        Text(
+                          item.trailing,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                 ),
-                if (!isLast)
-                  Divider(
-                    height: 0,
-                    color: const Color(0xFFE5E7EB),
-                    thickness: 1,
-                    indent: 58,
-                    endIndent: 16,
-                  ),
-              ],
-            );
-          },
-        ),
+              ),
+              if (!isLast)
+                Divider(
+                  height: 0,
+                  color: const Color(0xFFE5E7EB),
+                  thickness: 1,
+                  indent: 62,
+                  endIndent: 16,
+                ),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildGroupedNotificationCard(
+    List<
+      ({
+        IconData icon,
+        String title,
+        String subtitle,
+        bool value,
+        ValueChanged<bool> onChanged,
+      })
+    >
+    items,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          final isLast = index == items.length - 1;
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(item.icon, color: const Color(0xFF334155)),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.subtitle,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch(
+                      value: item.value,
+                      onChanged: item.onChanged,
+                      activeColor: const Color(0xFF2563EB),
+                    ),
+                  ],
+                ),
+              ),
+              if (!isLast)
+                Divider(
+                  height: 0,
+                  color: const Color(0xFFE5E7EB),
+                  thickness: 1,
+                  indent: 58,
+                  endIndent: 16,
+                ),
+            ],
+          );
+        }),
       ),
     );
   }

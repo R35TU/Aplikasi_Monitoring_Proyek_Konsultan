@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../backend/repositories/report_repository.dart';
 
 import '../../../backend/models/project_model.dart';
 
-class ProjectDetailPage extends StatelessWidget {
+class ProjectDetailPage extends StatefulWidget {
   final ProjectModel project;
 
   const ProjectDetailPage({super.key, required this.project});
 
   @override
+  State<ProjectDetailPage> createState() => _ProjectDetailPageState();
+}
+
+class _ProjectDetailPageState extends State<ProjectDetailPage> {
+  late ReportRepository _reportRepository;
+  int _totalReports = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportRepository = ReportRepository(Supabase.instance.client);
+    _loadData();
+  }
+
+  void _loadData() async {
+    final reports = await _reportRepository.ambilLaporanBerdasarkanProyek(
+      widget.project.id,
+    );
+    if (mounted) {
+      setState(() {
+        _totalReports = reports.length;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final project = widget.project;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -22,7 +51,11 @@ class ProjectDetailPage extends StatelessWidget {
           ),
           title: const Text(
             'Detail Proyek',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
           centerTitle: true,
         ),
@@ -30,13 +63,19 @@ class ProjectDetailPage extends StatelessWidget {
           children: [
             Container(
               color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               child: const TabBar(
                 labelColor: Color(0xFF0055FF),
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: Color(0xFF0055FF),
                 indicatorWeight: 3,
-                labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
                 unselectedLabelStyle: TextStyle(fontSize: 14),
                 tabs: [
                   Tab(text: 'Umum'),
@@ -74,13 +113,17 @@ class ProjectDetailPage extends StatelessWidget {
       {'title': 'Addset', 'subtitle': '3 File', 'selected': false},
       {'title': 'Request of Work', 'subtitle': '1 File', 'selected': false},
       {'title': 'Soft Drawing', 'subtitle': '1 File', 'selected': false},
-      {'title': 'Surat Pengunduran Diri', 'subtitle': '2 File', 'selected': false},
+      {
+        'title': 'Surat Pengunduran Diri',
+        'subtitle': '2 File',
+        'selected': false,
+      },
     ];
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: documents.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final doc = documents[index];
         final bool selected = doc['selected'] as bool;
@@ -94,14 +137,18 @@ class ProjectDetailPage extends StatelessWidget {
                 color: selected ? const Color(0xFFE8F0FF) : Colors.white,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
-                  color: selected ? const Color(0xFF0055FF) : const Color(0xFFE5E5EA),
+                  color: selected
+                      ? const Color(0xFF0055FF)
+                      : const Color(0xFFE5E5EA),
                 ),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.folder,
-                    color: selected ? const Color(0xFF0055FF) : const Color(0xFFB0B0B0),
+                    color: selected
+                        ? const Color(0xFF0055FF)
+                        : const Color(0xFFB0B0B0),
                     size: 24,
                   ),
                   const SizedBox(width: 14),
@@ -114,7 +161,9 @@ class ProjectDetailPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: selected ? const Color(0xFF0055FF) : Colors.black,
+                            color: selected
+                                ? const Color(0xFF0055FF)
+                                : Colors.black,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -122,7 +171,9 @@ class ProjectDetailPage extends StatelessWidget {
                           doc['subtitle'] as String,
                           style: TextStyle(
                             fontSize: 12,
-                            color: selected ? const Color(0xFF0055FF).withOpacity(0.9) : Colors.grey,
+                            color: selected
+                                ? const Color(0xFF0055FF).withValues(alpha: 0.9)
+                                : Colors.grey,
                           ),
                         ),
                       ],
@@ -142,7 +193,10 @@ class ProjectDetailPage extends StatelessWidget {
                 children: (doc['files'] as List<String>).map((file) {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -150,15 +204,25 @@ class ProjectDetailPage extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.picture_as_pdf, color: Color(0xFF0055FF), size: 18),
+                        const Icon(
+                          Icons.picture_as_pdf,
+                          color: Color(0xFF0055FF),
+                          size: 18,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             file,
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        const Text('PDF', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const Text(
+                          'PDF',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ],
                     ),
                   );
@@ -176,52 +240,37 @@ class ProjectDetailPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProgressLabel('Progres Pengawasan', 0.8, const Color(0xFF0055FF)),
+          _buildProgressLabel(
+            'Progres Pengawasan',
+            widget.project.targetProgress,
+            const Color(0xFF0055FF),
+          ),
           const SizedBox(height: 20),
-          _buildProgressLabel('Progres Fisik', 0.5, Colors.green),
+          _buildProgressLabel(
+            'Progres Fisik',
+            widget.project.actualProgress,
+            Colors.green,
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
                 child: SizedBox(
                   height: 56,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 7,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final day = index + 1;
-                      return _buildDateButton(day, index == 0);
-                    },
+                  child: Center(
+                    child: Text(
+                      'Total Laporan Dibuat: $_totalReports',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: const [
-                  Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                  SizedBox(height: 4),
-                  Text('Januari 2026', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
-                ],
               ),
             ],
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE5E5EA)),
-            ),
-            child: Column(
-              children: [
-                _buildProgressTableHeader(),
-                _buildProgressTableRow('Pengawasan', true, '4,5%', const Color(0xFFE8F8EE)),
-                _buildProgressTableRow('Fisik', false, '0%', const Color(0xFFEFF5FF)),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -235,7 +284,14 @@ class ProjectDetailPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            Text('${(value * 100).toInt()}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+            Text(
+              '${(value * 100).toInt()}%',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -258,7 +314,9 @@ class ProjectDetailPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: selected ? const Color(0xFF0055FF) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: selected ? const Color(0xFF0055FF) : const Color(0xFFE5E5EA)),
+        border: Border.all(
+          color: selected ? const Color(0xFF0055FF) : const Color(0xFFE5E5EA),
+        ),
       ),
       child: Center(
         child: Text(
@@ -280,15 +338,35 @@ class ProjectDetailPage extends StatelessWidget {
       ),
       child: Row(
         children: const [
-          Expanded(child: Text('Progres', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
-          Expanded(child: Text('Laporan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
-          Expanded(child: Text('Peningkatan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+          Expanded(
+            child: Text(
+              'Progres',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'Laporan',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'Peningkatan',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProgressTableRow(String label, bool hasReport, String improvement, Color backgroundColor) {
+  Widget _buildProgressTableRow(
+    String label,
+    bool hasReport,
+    String improvement,
+    Color backgroundColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
@@ -297,12 +375,25 @@ class ProjectDetailPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
           Expanded(
             child: Center(
               child: hasReport
-                  ? const Icon(Icons.check_circle, color: Color(0xFF0055FF), size: 18)
-                  : const Icon(Icons.remove_circle_outline, color: Colors.grey, size: 18),
+                  ? const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF0055FF),
+                      size: 18,
+                    )
+                  : const Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.grey,
+                      size: 18,
+                    ),
             ),
           ),
           Expanded(
@@ -320,7 +411,10 @@ class ProjectDetailPage extends StatelessWidget {
   }
 
   Widget _buildGeneralInfo(BuildContext context) {
-    final Color statusColor = project.status == 'Selesai' ? const Color(0xFF0055FF) : Colors.green;
+    final project = widget.project;
+    final Color statusColor = project.status == 'Selesai'
+        ? const Color(0xFF0055FF)
+        : Colors.green;
 
     return SingleChildScrollView(
       child: Column(
@@ -344,9 +438,12 @@ class ProjectDetailPage extends StatelessWidget {
                 left: 16,
                 bottom: 16,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
+                    color: Colors.white.withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -355,7 +452,11 @@ class ProjectDetailPage extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         project.status,
-                        style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12),
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -364,50 +465,83 @@ class ProjectDetailPage extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 20.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   project.title,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     const Icon(Icons.location_on, color: Colors.grey, size: 16),
                     const SizedBox(width: 6),
-                    Text(project.location, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                    Text(
+                      project.location,
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
                     const SizedBox(width: 12),
-                    Container(width: 4, height: 4, decoration: const BoxDecoration(color: Colors.grey, shape: BoxShape.circle)),
+                    Container(
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     const Icon(Icons.shield, color: Colors.grey, size: 16),
                     const SizedBox(width: 6),
-                    const Text('Jenis Pengawasan', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    const Text(
+                      'Jenis Pengawasan',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    Expanded(child: _buildSmallInfoCard('Tanggal Mulai', '1 Januari 2026')),
+                    Expanded(
+                      child: _buildSmallInfoCard(
+                        'Tanggal Mulai',
+                        project.tanggalMulai,
+                      ),
+                    ),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildSmallInfoCard('Tanggal Selesai', '30 Februari 2026')),
+                    Expanded(
+                      child: _buildSmallInfoCard(
+                        'Tanggal Selesai',
+                        project.targetSelesai,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildDetailInfoCard('Pemilik Proyek', 'Pemerintah Kabupaten Banyumas'),
-                const SizedBox(height: 12),
-                _buildDetailInfoCard('Sumber Dana', 'APBD 2026'),
-                const SizedBox(height: 12),
-                _buildDetailInfoCard('Konsultan Pengawas', 'CV. Tata Sakti Consultant'),
-                const SizedBox(height: 12),
-                _buildDetailInfoCard('Kontraktor Pelaksana', 'PT. Maju Mundur Jaya'),
-                const SizedBox(height: 12),
                 _buildDetailInfoCard(
-                    'Deskripsi',
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'),
+                  'Pemilik Proyek',
+                  project.pemilikProyek ?? '-',
+                ),
+                const SizedBox(height: 12),
+                _buildDetailInfoCard('Sumber Dana', project.sumberDana ?? '-'),
+                const SizedBox(height: 12),
+                _buildDetailInfoCard('Konsultan Pengawas', '-'),
+                const SizedBox(height: 12),
+                _buildDetailInfoCard('Kontraktor Pelaksana', '-'),
+                const SizedBox(height: 12),
+                _buildDetailInfoCard('Deskripsi', project.deskripsi ?? '-'),
                 const SizedBox(height: 24),
-                const Text('Tim Proyek', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Tim Proyek',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 12),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -422,7 +556,10 @@ class ProjectDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text('Foto Dokumentasi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Foto Dokumentasi',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 12),
                 GridView.count(
                   crossAxisCount: 3,
@@ -435,10 +572,7 @@ class ProjectDetailPage extends StatelessWidget {
                     6,
                     (index) => ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        project.imagePath ?? 'assets/images/placeholder.png',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset(project.imagePath, fit: BoxFit.cover),
                     ),
                   ),
                 ),
@@ -463,7 +597,10 @@ class ProjectDetailPage extends StatelessWidget {
         children: [
           Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12)),
           const SizedBox(height: 8),
-          Text(subtitle, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -483,12 +620,18 @@ class ProjectDetailPage extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
             flex: 3,
-            child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -501,9 +644,19 @@ class ProjectDetailPage extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
             const Spacer(),
-            Text('${(value * 100).toInt()}%', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
+            Text(
+              '${(value * 100).toInt()}%',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -533,7 +686,10 @@ class ProjectDetailPage extends StatelessWidget {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -553,7 +709,10 @@ class ProjectDetailPage extends StatelessWidget {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -567,15 +726,24 @@ class ProjectDetailPage extends StatelessWidget {
           CircleAvatar(
             radius: 24,
             backgroundColor: const Color(0xFFE8F0FF),
-            child: Text(name[0], style: const TextStyle(color: Color(0xFF0055FF), fontWeight: FontWeight.bold)),
+            child: Text(
+              name[0],
+              style: const TextStyle(
+                color: Color(0xFF0055FF),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          Text(name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(
+            name,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF0055FF).withOpacity(0.1),
+              color: const Color(0xFF0055FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(

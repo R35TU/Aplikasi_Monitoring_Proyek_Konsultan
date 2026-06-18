@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_app/backend/models/project_model.dart';
+import '../lib/backend/models/project_model.dart';
 
 void main() {
   group('Performance Benchmark - Model Parsing and Filtering', () {
@@ -44,12 +44,15 @@ void main() {
       final List<ProjectModel> bigList = List.generate(5000, (index) {
         return ProjectModel(
           id: index,
-          title: 'Proyek $index',
-          location: index % 2 == 0 ? 'Purwokerto' : 'Purbalingga',
+          namaProyek: 'Proyek $index',
+          perusahaanId: 1,
+          lokasi: index % 2 == 0 ? 'Purwokerto' : 'Purbalingga',
+          tanggalMulai: '2026-01-01',
+          targetSelesai: '2026-12-31',
           status: index % 5 == 0 ? 'Selesai' : 'Berjalan',
           progressRencana: 50,
           progressAktual: 40,
-          imagePath: '',
+          gambarUrl: '',
         );
       });
 

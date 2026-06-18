@@ -1,7 +1,6 @@
-abstract class BaseRepository<T> {
-  Future<List<T>> getAll();
-  Future<T?> getById(dynamic id);
-  Future<T?> add(T item);
-  Future<bool> updateItem(dynamic id, T item);
-  Future<bool> deleteItem(dynamic id);
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+abstract class BaseRepository {
+  final SupabaseClient supabase;
+  BaseRepository(this.supabase);
 }

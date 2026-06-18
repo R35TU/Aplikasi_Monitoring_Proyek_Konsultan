@@ -1,64 +1,54 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
-import '../supabase/supabase_client.dart';
 
 class AuthService {
-  UserModel? _currentUser;
+  // 1. Singleton Pattern
+  static final AuthService _instance = AuthService._internal();
 
-  UserModel? get currentUser => _currentUser;
-
-  AuthService() {
-    _initAuthStateListener();
+  factory AuthService() {
+    return _instance;
   }
 
-  void _initAuthStateListener() {
-    supabase.auth.onAuthStateChange.listen((data) async {
-      final Session? session = data.session;
-      if (session != null) {
-        final userId = session.user.id;
-        final response = await supabase.from('users').select().eq('firebase_uid', userId).maybeSingle();
-        if (response != null) {
-          _currentUser = UserModel.fromJson(response, session.user.email ?? '');
-        }
-      } else {
-        _currentUser = null;
-      }
-    });
-  }
+  AuthService._internal();
 
-  Future<void> seedDefaultUser() async {
-    // Seeding is now handled via Supabase Dashboard directly
-  }
+  final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<UserModel?> signIn(String email, String password) async {
-    assert(email.isNotEmpty, 'Email tidak boleh kosong');
-    assert(password.isNotEmpty, 'Password tidak boleh kosong');
-
-    try {
-      final AuthResponse res = await supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      final user = res.user;
-      if (user != null) {
-        final response = await supabase.from('users').select().eq('firebase_uid', user.id).maybeSingle();
-        if (response != null) {
-          _currentUser = UserModel.fromJson(response, user.email ?? '');
-          return _currentUser;
-        } else {
-          // If no custom user data, just return a default
-          _currentUser = UserModel(id: user.id, name: 'User', email: user.email ?? '', role: 'client');
-          return _currentUser;
-        }
+    final response = await _supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+    
+    final user = response.user;
+    if (user != null) {
+      // Ambil data user dari tabel users jika ada
+      final userData = await _supabase
+          .from('users')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+      if (userData != null) {
+        return UserModel(
+          userId: user.id,
+          nama: userData['nama'] ?? 'Unknown',
+          username: userData['username'],
+          peran: userData['peran'] ?? 'User',
+          perusahaanId: userData['perusahaan_id'],
+          nomorHp: userData['nomor_hp'],
+        );
       }
-      return null;
-    } catch (e) {
-      throw Exception("Gagal login: $e");
+      
+      return UserModel(
+        userId: user.id,
+        nama: user.email ?? 'Unknown',
+        peran: 'User',
+      );
     }
+    return null;
   }
 
   Future<void> signOut() async {
-    await supabase.auth.signOut();
-    _currentUser = null;
+    await _supabase.auth.signOut();
   }
 }

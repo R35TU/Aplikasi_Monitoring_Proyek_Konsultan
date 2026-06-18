@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../backend/services/supabase_auth_service.dart';
 import 'dashboard_page.dart';
+import '../widgets/custom_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,12 +13,65 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
+  bool _isLoading = false;
 
-  final TextEditingController emailController =
-      TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  final TextEditingController passwordController =
-      TextEditingController();
+  // Instance dari Service Auth
+  final SupabaseAuthService _authService = SupabaseAuthService();
+
+  Future<void> _login() async {
+    final email = usernameController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password tidak boleh kosong')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // 1. Prinsip SOLID (Single Responsibility Principle)
+      // Pemanggilan API dilimpahkan ke SupabaseAuthService, tidak lagi di-hardcode di UI.
+      final response = await _authService.signIn(
+        email: email,
+        password: password,
+      );
+
+      if (response.user != null) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const DashboardPage()),
+          );
+        }
+      }
+    } on AuthException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.message)));
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Terjadi kesalahan yang tidak terduga')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +82,6 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: const Color(0xffFFFFFF),
       body: Stack(
         children: [
-
           /// Background bawah
           Positioned(
             bottom: 0,
@@ -46,22 +99,15 @@ class _LoginPageState extends State<LoginPage> {
             child: Center(
               child: SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 430,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 430),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Column(
                       children: [
-
                         SizedBox(height: height * 0.03),
 
                         /// Logo
-                        Image.asset(
-                          "assets/images/logo.png",
-                          width: 120,
-                        ),
+                        Image.asset("assets/images/logo.png", width: 120),
 
                         const SizedBox(height: 25),
 
@@ -78,73 +124,26 @@ class _LoginPageState extends State<LoginPage> {
                         const Text(
                           "Silahkan masuk ke akun anda\nuntuk melanjutkan.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
                         ),
 
                         const SizedBox(height: 40),
 
                         /// Username
-                        TextField(
-                          controller: emailController,
-                          decoration: InputDecoration(
-                            hintText: "Email",
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding:
-                                const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 16,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ),
+                        // 3. Pemisahan Widget (Modularisasi UI)
+                        // Menggunakan widget yang sudah diekstrak untuk mengurangi kode berulang.
+                        CustomTextField(
+                          controller: usernameController,
+                          hintText: "Username",
                         ),
 
                         const SizedBox(height: 15),
 
                         /// Password
-                        TextField(
+                        CustomTextField(
                           controller: passwordController,
+                          hintText: "Password",
                           obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Password",
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding:
-                                const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 16,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ),
                         ),
 
                         const SizedBox(height: 12),
@@ -157,12 +156,10 @@ class _LoginPageState extends State<LoginPage> {
                               height: 20,
                               child: Checkbox(
                                 value: rememberMe,
-                                activeColor:
-                                    const Color(0xff0D24FF),
+                                activeColor: const Color(0xff0D24FF),
                                 onChanged: (value) {
                                   setState(() {
-                                    rememberMe =
-                                        value ?? false;
+                                    rememberMe = value ?? false;
                                   });
                                 },
                               ),
@@ -170,9 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(width: 8),
                             const Text(
                               "Ingat saya",
-                              style: TextStyle(
-                                fontSize: 13,
-                              ),
+                              style: TextStyle(fontSize: 13),
                             ),
                           ],
                         ),
@@ -180,77 +175,43 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 20),
 
                         /// Tombol Login
-                        Consumer<AuthProvider>(
-                          builder: (context, authProvider, child) {
-                            return SizedBox(
-                              width: double.infinity,
-                              height: 52,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xff0D24FF),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: authProvider.state == AuthState.loading
-                                    ? null
-                                    : () async {
-                                        final email = emailController.text.trim();
-                                        final password = passwordController.text;
-
-                                        if (email.isEmpty || password.isEmpty) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Email dan Password tidak boleh kosong')),
-                                          );
-                                          return;
-                                        }
-
-                                        await authProvider.login(email, password);
-
-                                        if (!mounted) return;
-
-                                        if (authProvider.state == AuthState.authenticated) {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(builder: (_) => const DashboardPage()),
-                                          );
-                                        } else if (authProvider.state == AuthState.error) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text(authProvider.errorMessage),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                          authProvider.retry();
-                                        }
-                                      },
-                                child: authProvider.state == AuthState.loading
-                                    ? const SizedBox(
-                                        height: 24,
-                                        width: 24,
-                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                      )
-                                    : const Text(
-                                        "Masuk",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xff0D24FF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            );
-                          },
+                            ),
+                            onPressed: _isLoading ? null : _login,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Masuk",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
                         ),
 
                         SizedBox(height: height * 0.18),
 
                         /// Contact us
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-
                             const Text(
                               "Don't have an account? ",
                               style: TextStyle(
@@ -265,18 +226,15 @@ class _LoginPageState extends State<LoginPage> {
                                 "Contact Us",
                                 style: TextStyle(
                                   color: Colors.red,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
                               ),
                             ),
-
                           ],
                         ),
 
                         const SizedBox(height: 20),
-
                       ],
                     ),
                   ),

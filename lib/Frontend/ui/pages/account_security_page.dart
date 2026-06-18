@@ -14,9 +14,11 @@ class AccountSecurityPage extends StatefulWidget {
 
 class _AccountSecurityPageState extends State<AccountSecurityPage> {
   int _selectedIndex = 4;
-  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool get _showSaveButton {
     return _currentPasswordController.text.isNotEmpty ||
@@ -61,7 +63,11 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
         ),
         title: const Text(
           'Keamanan',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -70,13 +76,22 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Ubah Password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Ubah Password',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
-            _buildPasswordField('Password Saat ini', _currentPasswordController),
+            _buildPasswordField(
+              'Password Saat ini',
+              _currentPasswordController,
+            ),
             const SizedBox(height: 12),
             _buildPasswordField('Password Baru', _newPasswordController),
             const SizedBox(height: 12),
-            _buildPasswordField('Konfirmasi Password Baru', _confirmPasswordController),
+            _buildPasswordField(
+              'Konfirmasi Password Baru',
+              _confirmPasswordController,
+            ),
             const SizedBox(height: 16),
             Container(
               width: double.infinity,
@@ -89,11 +104,16 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text('Syarat Password', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Syarat Password',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 12),
                   _SecurityRequirement(text: 'Minimal 8 Karakter'),
                   SizedBox(height: 8),
-                  _SecurityRequirement(text: 'Mengandung huruf besar dan kecil'),
+                  _SecurityRequirement(
+                    text: 'Mengandung huruf besar dan kecil',
+                  ),
                   SizedBox(height: 8),
                   _SecurityRequirement(text: 'Mengandung angka'),
                   SizedBox(height: 8),
@@ -111,18 +131,25 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('Simpan Password Baru', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Simpan Password Baru',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               const Divider(height: 1, thickness: 1, color: Color(0xFFE5E7EB)),
               const SizedBox(height: 16),
             ],
-            const Text('Aktivitas Login Terakhir', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Aktivitas Login Terakhir',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _buildActivityCard(),
             const SizedBox(height: 16),
@@ -131,10 +158,18 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
               child: OutlinedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
-                label: const Text('Keluar Dari Semua Perangkat', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Keluar Dari Semua Perangkat',
+                  style: TextStyle(
+                    color: Color(0xFFEF4444),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFFEF4444)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
@@ -145,7 +180,11 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -167,7 +206,9 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
             if (index == 1) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectListPage(),
+                ),
               );
               return;
             }
@@ -190,11 +231,26 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
@@ -205,7 +261,10 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -213,9 +272,14 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             suffixIcon: const Icon(Icons.visibility_off, color: Colors.grey),
-            hintText: label == 'Password Saat ini' ? 'Masukkan password saat ini' : 'Masukkan password baru',
+            hintText: label == 'Password Saat ini'
+                ? 'Masukkan password saat ini'
+                : 'Masukkan password baru',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(color: Colors.grey.shade300),
@@ -236,24 +300,45 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFEAECF0)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          _buildActivityTile('iPhone 11', 'Jakarta, Indonesia', '01 Januari 2025 10:30 WIB', Icons.smartphone_outlined),
+          _buildActivityTile(
+            'iPhone 11',
+            'Jakarta, Indonesia',
+            '01 Januari 2025 10:30 WIB',
+            Icons.smartphone_outlined,
+          ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFE5E7EB)),
-          _buildActivityTile('Windows - Brave', 'Semarang, Indonesia', '25 November 2024 17:23 WIB', Icons.desktop_windows_outlined),
+          _buildActivityTile(
+            'Windows - Brave',
+            'Semarang, Indonesia',
+            '25 November 2024 17:23 WIB',
+            Icons.desktop_windows_outlined,
+          ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFE5E7EB)),
           InkWell(
             onTap: () {},
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(18)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(18),
+            ),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               alignment: Alignment.center,
               child: const Text(
                 'Lihat Semua Aktivitas',
-                style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Color(0xFF2563EB),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -262,7 +347,12 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
     );
   }
 
-  Widget _buildActivityTile(String title, String subtitle, String description, IconData icon) {
+  Widget _buildActivityTile(
+    String title,
+    String subtitle,
+    String description,
+    IconData icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
@@ -281,11 +371,23 @@ class _AccountSecurityPageState extends State<AccountSecurityPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
                 const SizedBox(height: 4),
-                Text(description, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text(
+                  description,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
               ],
             ),
           ),

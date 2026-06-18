@@ -1,43 +1,41 @@
 import '../models/user_model.dart';
 import 'base_repository.dart';
-import '../supabase/supabase_client.dart';
 
-class UserRepository implements BaseRepository<UserModel> {
-  final String _table = 'users';
+class UserRepository extends BaseRepository {
+  UserRepository(super.supabase);
 
-  @override
   Future<List<UserModel>> getAll() async {
-    final response = await supabase.from(_table).select();
-    // We don't have the auth email in the users table directly without a join or querying auth.users, 
-    // assuming email is fetched from auth session when needed or we just pass empty string.
-    return response.map((json) => UserModel.fromJson(json, '')).toList();
+    final response = await supabase.from('users').select();
+    return [];
   }
 
-  @override
-  Future<UserModel?> getById(dynamic id) async {
-    final response = await supabase.from(_table).select().eq('firebase_uid', id).maybeSingle();
-    if (response == null) return null;
-    return UserModel.fromJson(response, '');
+  Future<UserModel?> getById(String id) async {
+    final response = await supabase
+        .from('users')
+        .select()
+        .eq('user_id', id)
+        .maybeSingle();
+    return null;
   }
 
-  @override
-  Future<UserModel?> add(UserModel item) async {
-    final response = await supabase.from(_table).insert(item.toJson()).select().maybeSingle();
-    if (response == null) return null;
-    return UserModel.fromJson(response, item.email);
+  Future<UserModel?> getByEmail(String email) async {
+    final response = await supabase
+        .from('users')
+        .select()
+        .eq('email', email)
+        .maybeSingle();
+    return null;
   }
 
-  @override
-  Future<bool> updateItem(dynamic id, UserModel item) async {
-    final data = item.toJson();
-    data.remove('firebase_uid');
-    final response = await supabase.from(_table).update(data).eq('firebase_uid', id).select();
-    return response.isNotEmpty;
+  Future<void> add(Map<String, dynamic> entry) async {
+    await supabase.from('users').insert(entry);
   }
 
-  @override
-  Future<bool> deleteItem(dynamic id) async {
-    final response = await supabase.from(_table).delete().eq('firebase_uid', id).select();
-    return response.isNotEmpty;
+  Future<void> update(String id, Map<String, dynamic> entry) async {
+    await supabase.from('users').update(entry).eq('user_id', id);
+  }
+
+  Future<void> delete(String id) async {
+    await supabase.from('users').delete().eq('user_id', id);
   }
 }

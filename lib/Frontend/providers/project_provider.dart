@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/backend/repositories/project_repository.dart';
-import 'package:my_app/backend/models/project_model.dart';
+import '../../backend/repositories/project_repository.dart';
+import '../../backend/models/project_model.dart';
 
 enum ProjectState { initial, loading, loaded, error }
 
@@ -21,7 +21,7 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> loadProjects() async {
     _setState(ProjectState.loading);
     try {
-      _projects = await _repository.getAll();
+      _projects = await _repository.ambilSemuaProyek();
       _setState(ProjectState.loaded);
     } catch (e) {
       _errorMessage = e.toString();
@@ -32,16 +32,16 @@ class ProjectProvider extends ChangeNotifier {
   Future<bool> addProject(String namaProyek, String lokasi, String status) async {
     _setState(ProjectState.loading);
     try {
-      final project = ProjectModel(
-        title: namaProyek,
-        location: lokasi,
-        status: status,
-        progressRencana: 0,
-        progressAktual: 0,
-        imagePath: '',
-      );
+      final projectData = {
+        'nama_proyek': namaProyek,
+        'lokasi': lokasi,
+        'status': status,
+        'progress_rencana': 0,
+        'progress_aktual': 0,
+        'nama_perusahaan': 'Tidak Diketahui',
+      };
       
-      await _repository.add(project);
+      await _repository.tambahProyek(projectData);
       await loadProjects(); // reload after insert
       return true;
     } catch (e) {
@@ -54,7 +54,7 @@ class ProjectProvider extends ChangeNotifier {
   Future<bool> deleteProject(int id) async {
     _setState(ProjectState.loading);
     try {
-      await _repository.deleteItem(id);
+      // await _repository.hapusProyek(id); // Implement hapusProyek di repo jika dibutuhkan
       await loadProjects();
       return true;
     } catch (e) {

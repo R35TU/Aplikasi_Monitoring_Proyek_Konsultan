@@ -80,7 +80,8 @@ class _ReportPageState extends State<ReportPage> {
           children: [
             _buildReportCard(
               title: 'Data Laporan',
-              subtitle: 'Lihat daftar proyek dan semua data laporan yang tersedia',
+              subtitle:
+                  'Lihat daftar proyek dan semua data laporan yang tersedia',
               icon: Icons.folder_outlined,
               iconBackground: const Color(0xFFE0F2FE),
               iconColor: const Color(0xFF3B82F6),
@@ -119,7 +120,11 @@ class _ReportPageState extends State<ReportPage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
           ],
         ),
         child: BottomNavigationBar(
@@ -141,7 +146,9 @@ class _ReportPageState extends State<ReportPage> {
             if (index == 1) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProjectListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ProjectListPage(),
+                ),
               );
               return;
             }
@@ -164,11 +171,26 @@ class _ReportPageState extends State<ReportPage> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), label: 'Proyek'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file_outlined), label: 'Laporan'),
-            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.folder_outlined),
+              label: 'Proyek',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insert_drive_file_outlined),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Akun',
+            ),
           ],
         ),
       ),
@@ -178,14 +200,16 @@ class _ReportPageState extends State<ReportPage> {
   void _navigateToDataReportPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const DataReportPage()),
+      MaterialPageRoute(builder: (context) => DataReportPage()),
     );
   }
 
   void _navigateToCreateReportPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const CreateSupervisionReportPage()),
+      MaterialPageRoute(
+        builder: (context) => const CreateSupervisionReportPage(),
+      ),
     );
   }
 
@@ -220,7 +244,11 @@ class _ReportPageState extends State<ReportPage> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Row(
@@ -240,7 +268,10 @@ class _ReportPageState extends State<ReportPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(

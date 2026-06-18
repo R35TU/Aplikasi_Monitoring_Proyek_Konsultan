@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Import jalur relatif (naik 3 folder)
 import '../../../backend/models/project_model.dart';
-import 'package:provider/provider.dart';
-import '../../providers/project_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../backend/repositories/project_repository.dart';
 import 'data_report_detail_page.dart';
 
 class DataReportPage extends StatefulWidget {
@@ -11,13 +12,17 @@ class DataReportPage extends StatefulWidget {
   @override
   State<DataReportPage> createState() => _DataReportPageState();
 }
+
 class _DataReportPageState extends State<DataReportPage> {
+  late ProjectRepository _projectRepository;
+  late Future<List<ProjectModel>> _projectsFuture;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProjectProvider>().loadProjects();
-    });
+    final supabase = Supabase.instance.client;
+    _projectRepository = ProjectRepository(supabase);
+    _projectsFuture = _projectRepository.ambilSemuaProyek();
   }
 
   @override
@@ -43,74 +48,100 @@ class _DataReportPageState extends State<DataReportPage> {
           ),
           centerTitle: true,
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Cari Proyek..',
-                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+        body: FutureBuilder<List<ProjectModel>>(
+          future: _projectsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              );
+            }
+
+            // Tampilkan semua proyek agar laporan yang baru dibuat pada proyek baru tetap muncul
+            final projects = (snapshot.data ?? []).toList();
+
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Cari Proyek..',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5FF),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: TabBar(
-                  indicatorPadding: EdgeInsets.zero,
-                  indicator: BoxDecoration(
-                    color: const Color(0xFFD8E7FF),
-                    borderRadius: BorderRadius.circular(12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
                   ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelColor: const Color(0xFF0055FF),
-                  unselectedLabelColor: const Color(0xFF6B7280),
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                  unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
-                  tabs: const [
-                    Tab(text: 'Semua'),
-                    Tab(text: 'On Progress'),
-                    Tab(text: 'Selesai'),
-                  ],
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5FF),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: TabBar(
+                      indicatorPadding: EdgeInsets.zero,
+                      indicator: BoxDecoration(
+                        color: const Color(0xFFD8E7FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelColor: const Color(0xFF0055FF),
+                      unselectedLabelColor: const Color(0xFF6B7280),
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+                      ),
+                      tabs: const [
+                        Tab(text: 'Semua'),
+                        Tab(text: 'On Progress'),
+                        Tab(text: 'Selesai'),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: Consumer<ProjectProvider>(
-                builder: (context, provider, _) {
-                  if (provider.state == ProjectState.loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final projects = provider.projects;
-                  return TabBarView(
+                Expanded(
+                  child: TabBarView(
                     children: [
                       _buildProjectList(projects),
-                      _buildProjectList(projects.where((p) => p.status == 'Progres' || p.status == 'Perencanaan').toList()),
-                      _buildProjectList(projects.where((p) => p.status == 'Selesai').toList()),
+                      _buildProjectList(
+                        projects.where((p) => p.status == 'Progres').toList(),
+                      ),
+                      _buildProjectList(
+                        projects.where((p) => p.status == 'Selesai').toList(),
+                      ),
                     ],
-                  );
-                }
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
+        // Tombol FAB (+) SUDAH DIHAPUS TOTAL sesuai rikuesmu!
       ),
     );
   }
@@ -118,7 +149,10 @@ class _DataReportPageState extends State<DataReportPage> {
   Widget _buildProjectList(List<ProjectModel> projects) {
     if (projects.isEmpty) {
       return const Center(
-        child: Text('Tidak ada laporan.', style: TextStyle(color: Colors.grey)),
+        child: Text(
+          'Belum ada laporan proyek.',
+          style: TextStyle(color: Colors.grey),
+        ),
       );
     }
 
@@ -170,20 +204,29 @@ class _DataReportPageState extends State<DataReportPage> {
                     children: [
                       Text(
                         project.title,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         project.location,
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(16),
@@ -242,7 +285,10 @@ class _DataReportPageState extends State<DataReportPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
               const SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),

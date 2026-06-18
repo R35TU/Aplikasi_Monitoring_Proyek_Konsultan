@@ -1,33 +1,30 @@
-// =============================================================
-// FILE   : lib/backend/config/app_config.dart
-// TEKNIK : Runtime Configuration
-// -------------------------------------------------------------
-// FUNGSI :
-//   Membaca variabel environment dari file .env.
-// =============================================================
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConfig {
-  static Future<void> load() async {
-    try {
-      await dotenv.load(fileName: ".env");
-    } catch (e) {
-      // Fallback if .env is missing, prevents crash on first run
-      print("Warning: .env file not found, using default configurations.");
-      dotenv.testLoad(fileInput: '''
-DB_NAME=konsultan.db
-DEBUG=true
-''');
+  /// Mengambil URL Supabase dari file .env
+  static String get supabaseUrl {
+    final url = dotenv.env['SUPABASE_URL'];
+    if (url == null || url.isEmpty) {
+      throw Exception(
+        'Konfigurasi SUPABASE_URL tidak ditemukan di environment file.',
+      );
     }
+    return url;
   }
 
-  static String get dbName {
-    final name = dotenv.env['DB_NAME'];
-    return name ?? 'konsultan_default.db';
+  /// Mengambil Anon Key Supabase dari file .env
+  static String get supabaseAnonKey {
+    final key = dotenv.env['SUPABASE_ANON_KEY'];
+    if (key == null || key.isEmpty) {
+      throw Exception(
+        'Konfigurasi SUPABASE_ANON_KEY tidak ditemukan di environment file.',
+      );
+    }
+    return key;
   }
 
+  /// Cek apakah mode debug aktif (contoh tambahan jika diperlukan)
   static bool get isDebug {
-    return dotenv.env['DEBUG']?.toLowerCase() == 'true';
+    return dotenv.env['DEBUG'] == 'true';
   }
 }

@@ -23,7 +23,7 @@ class DashboardProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      projects = await _projectRepository.getAll();
+      projects = await _projectRepository.ambilSemuaProyek();
       totalProjects = projects.length;
       
       completedProjects = projects.where((p) => p.status.toLowerCase() == 'selesai').length;
